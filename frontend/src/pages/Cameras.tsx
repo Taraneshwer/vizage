@@ -52,7 +52,7 @@ export const Cameras: React.FC = () => {
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Camera Management</h2>
-          <p className="text-sm text-gray-400 mt-1">Configure RTSP and Webcam sources for recognition.</p>
+          <p className="text-sm text-gray-600 mt-1">Configure RTSP and Webcam sources for recognition.</p>
         </div>
         <Button variant="primary" onClick={() => setIsAdding(true)} disabled={isAdding}>
           <Plus size={16} className="mr-2" /> Add Camera
@@ -61,36 +61,36 @@ export const Cameras: React.FC = () => {
 
       {isAdding && (
         <Card className="p-6 border-primary/50">
-          <h3 className="text-lg font-medium text-white mb-4">Add New Camera</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Camera</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Camera Name</label>
+              <label className="block text-xs text-gray-600 mb-1">Camera Name</label>
               <input 
                 type="text" 
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-black border border-white/10 rounded px-3 py-2 text-white focus:border-primary outline-none" 
+                className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none" 
                 placeholder="e.g. Front Entrance"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Source Type</label>
+              <label className="block text-xs text-gray-600 mb-1">Source Type</label>
               <select 
                 value={formData.source_type}
                 onChange={e => setFormData({ ...formData, source_type: e.target.value })}
-                className="w-full bg-black border border-white/10 rounded px-3 py-2 text-white focus:border-primary outline-none"
+                className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none"
               >
                 <option value="RTSP">RTSP Stream (IP Camera)</option>
                 <option value="WEBCAM">USB Webcam (Local)</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Connection URL / Device ID</label>
+              <label className="block text-xs text-gray-600 mb-1">Connection URL / Device ID</label>
               <input 
                 type="text" 
                 value={formData.connection_url}
                 onChange={e => setFormData({ ...formData, connection_url: e.target.value })}
-                className="w-full bg-black border border-white/10 rounded px-3 py-2 text-white focus:border-primary outline-none" 
+                className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none" 
                 placeholder={formData.source_type === 'RTSP' ? 'rtsp://user:pass@ip:port/stream' : '0'}
               />
             </div>
@@ -115,15 +115,15 @@ export const Cameras: React.FC = () => {
           {cameras?.map(camera => (
             <Card key={camera.id} className={`p-4 flex items-center justify-between ${camera.is_active ? 'border-success/50 bg-success/5' : ''}`}>
               <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded flex items-center justify-center ${camera.is_active ? 'bg-success/20 text-success' : 'bg-secondary text-gray-400'}`}>
+                <div className={`w-12 h-12 rounded flex items-center justify-center ${camera.is_active ? 'bg-success/20 text-success' : 'bg-secondary text-gray-600'}`}>
                   <Video size={24} />
                 </div>
                 <div>
-                  <h3 className="text-white font-medium flex items-center gap-2">
+                  <h3 className="text-gray-900 font-medium flex items-center gap-2">
                     {camera.name}
                     {camera.is_active && <span className="text-[10px] bg-success/20 text-success px-2 py-0.5 rounded uppercase tracking-wider">Active</span>}
                   </h3>
-                  <p className="text-xs text-gray-400 mt-1 font-mono">{camera.source_type} • {camera.connection_url}</p>
+                  <p className="text-xs text-gray-600 mt-1 font-mono">{camera.source_type} • {camera.connection_url}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">

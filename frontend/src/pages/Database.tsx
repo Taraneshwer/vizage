@@ -95,7 +95,7 @@ export const Database: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Identity Database</h2>
-            <p className="text-sm text-gray-400 mt-1">Manage registered identities and facial embeddings.</p>
+            <p className="text-sm text-gray-600 mt-1">Manage registered identities and facial embeddings.</p>
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" onClick={() => window.location.href = 'http://127.0.0.1:8000/api/v1/enrollment/export'}><Download size={14} className="mr-2"/> Export CSV</Button>
@@ -107,14 +107,14 @@ export const Database: React.FC = () => {
           <Card className="p-4 flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded"><Users className="text-primary"/></div>
             <div>
-              <p className="text-xs text-gray-400 uppercase">Total People</p>
+              <p className="text-xs text-gray-600 uppercase">Total People</p>
               <p className="text-xl font-bold">{identities?.length || 0}</p>
             </div>
           </Card>
           <Card className="p-4 flex items-center gap-4">
             <div className="p-3 bg-accent/10 rounded"><HardDrive className="text-accent"/></div>
             <div>
-              <p className="text-xs text-gray-400 uppercase">Recognitions</p>
+              <p className="text-xs text-gray-600 uppercase">Recognitions</p>
               <p className="text-xl font-bold font-mono">
                 {identities?.reduce((acc, curr) => acc + curr.recognition_count, 0) || 0}
               </p>
@@ -130,7 +130,7 @@ export const Database: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, ID, or department..." 
-              className="w-full bg-black/40 border border-white/10 rounded-md py-1.5 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-primary/50"
+              className="w-full bg-black/40 border border-gray-300 rounded-md py-1.5 pl-9 pr-4 text-sm text-gray-900 focus:outline-none focus:border-primary/50"
             />
           </div>
           <Button variant="outline" size="sm"><Filter size={14} className="mr-2"/> Filters</Button>
@@ -148,27 +148,27 @@ export const Database: React.FC = () => {
               {filteredPeople.map((person) => (
                 <Card 
                   key={person.identity_id} 
-                  className={`p-4 flex flex-col gap-4 hover:border-white/20 transition-colors group relative cursor-pointer ${selectedPerson?.identity_id === person.identity_id ? 'border-primary' : 'border-white/5'}`}
+                  className={`p-4 flex flex-col gap-4 hover:border-white/20 transition-colors group relative cursor-pointer ${selectedPerson?.identity_id === person.identity_id ? 'border-primary' : 'border-gray-200'}`}
                   onClick={() => { setSelectedPerson(person); setIsEditing(false); }}
                 >
                   <div className="flex gap-4">
-                    <div className="w-14 h-14 rounded overflow-hidden border border-white/10 bg-black shrink-0">
+                    <div className="w-14 h-14 rounded overflow-hidden border border-gray-300 bg-black shrink-0">
                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${person.identity_id}`} alt={person.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold text-white truncate pr-6">{person.name}</h3>
-                      <p className="text-xs text-gray-400 font-mono mt-0.5">{person.identity_id}</p>
+                      <h3 className="text-base font-semibold text-gray-900 truncate pr-6">{person.name}</h3>
+                      <p className="text-xs text-gray-600 font-mono mt-0.5">{person.identity_id}</p>
                       <div className="mt-1">
-                         <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-white/5 text-gray-300 border border-white/10">
+                         <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-gray-100 text-gray-700 border border-gray-300">
                            {person.department || 'None'}
                          </span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-1.5 border-t border-white/5 pt-3 text-xs text-gray-400">
+                  <div className="space-y-1.5 border-t border-gray-200 pt-3 text-xs text-gray-600">
                     <div className="flex justify-between">
-                      <span>Enrolled:</span><span className="text-white truncate max-w-[140px]">{formatDate(person.enrollment_date)}</span>
+                      <span>Enrolled:</span><span className="text-gray-900 truncate max-w-[140px]">{formatDate(person.enrollment_date)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Recognitions:</span><span className="text-success font-mono">{person.recognition_count}</span>
@@ -176,8 +176,8 @@ export const Database: React.FC = () => {
                   </div>
 
                   <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={(e) => handleEditClick(person, e)} className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-white"><Edit2 size={14}/></button>
-                    <button onClick={(e) => handleDeleteClick(person.identity_id, e)} className="p-1 hover:bg-danger/20 rounded text-gray-400 hover:text-danger"><Trash2 size={14}/></button>
+                    <button onClick={(e) => handleEditClick(person, e)} className="p-1 hover:bg-gray-200 rounded text-gray-600 hover:text-gray-900"><Edit2 size={14}/></button>
+                    <button onClick={(e) => handleDeleteClick(person.identity_id, e)} className="p-1 hover:bg-danger/20 rounded text-gray-600 hover:text-danger"><Trash2 size={14}/></button>
                   </div>
                 </Card>
               ))}
@@ -193,11 +193,11 @@ export const Database: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="w-80 border-l border-white/5 flex flex-col relative shrink-0 bg-card rounded-md overflow-hidden"
+            className="w-80 border-l border-gray-200 flex flex-col relative shrink-0 bg-card rounded-md overflow-hidden"
           >
-            <div className="p-4 border-b border-white/5 flex items-center justify-between">
-              <h3 className="font-semibold text-white">Identity Details</h3>
-              <button onClick={() => setSelectedPerson(null)} className="text-gray-400 hover:text-white"><X size={16} /></button>
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900">Identity Details</h3>
+              <button onClick={() => setSelectedPerson(null)} className="text-gray-600 hover:text-gray-900"><X size={16} /></button>
             </div>
             
             <div className="p-6 flex flex-col gap-6 flex-1 overflow-y-auto">
@@ -206,24 +206,24 @@ export const Database: React.FC = () => {
                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedPerson.identity_id}`} className="w-full h-full object-cover" />
                  </div>
                  <div className="text-center">
-                   <h2 className="text-xl font-bold text-white">{selectedPerson.name}</h2>
-                   <p className="text-sm text-gray-400 font-mono">{selectedPerson.identity_id}</p>
+                   <h2 className="text-xl font-bold text-gray-900">{selectedPerson.name}</h2>
+                   <p className="text-sm text-gray-600 font-mono">{selectedPerson.identity_id}</p>
                  </div>
               </div>
 
               {isEditing ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-gray-400">Name</label>
-                    <input type="text" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-black border border-white/10 rounded px-2 py-1 text-sm text-white mt-1" />
+                    <label className="text-xs text-gray-600">Name</label>
+                    <input type="text" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-black border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400">Department</label>
-                    <input type="text" value={editForm.department} onChange={e => setEditForm(f => ({ ...f, department: e.target.value }))} className="w-full bg-black border border-white/10 rounded px-2 py-1 text-sm text-white mt-1" />
+                    <label className="text-xs text-gray-600">Department</label>
+                    <input type="text" value={editForm.department} onChange={e => setEditForm(f => ({ ...f, department: e.target.value }))} className="w-full bg-black border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400">Notes</label>
-                    <textarea value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="w-full bg-black border border-white/10 rounded px-2 py-1 text-sm text-white mt-1 h-20" />
+                    <label className="text-xs text-gray-600">Notes</label>
+                    <textarea value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="w-full bg-black border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1 h-20" />
                   </div>
                   <div className="flex gap-2 pt-2">
                     <Button variant="outline" size="sm" className="flex-1" onClick={() => setIsEditing(false)}>Cancel</Button>
@@ -234,25 +234,25 @@ export const Database: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4 text-sm">
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Department</span>
-                    <span className="text-white">{selectedPerson.department || '-'}</span>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="text-gray-600">Department</span>
+                    <span className="text-gray-900">{selectedPerson.department || '-'}</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Enrolled</span>
-                    <span className="text-white text-right max-w-[140px] truncate">{formatDate(selectedPerson.enrollment_date)}</span>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="text-gray-600">Enrolled</span>
+                    <span className="text-gray-900 text-right max-w-[140px] truncate">{formatDate(selectedPerson.enrollment_date)}</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Total Recognitions</span>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="text-gray-600">Total Recognitions</span>
                     <span className="text-success font-mono">{selectedPerson.recognition_count}</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-gray-400">Last Seen</span>
-                    <span className="text-white text-right max-w-[140px] truncate">{selectedPerson.last_seen ? formatDate(selectedPerson.last_seen) : 'Never'}</span>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="text-gray-600">Last Seen</span>
+                    <span className="text-gray-900 text-right max-w-[140px] truncate">{selectedPerson.last_seen ? formatDate(selectedPerson.last_seen) : 'Never'}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block mb-1">Notes</span>
-                    <p className="text-gray-300 text-xs bg-black/20 p-2 rounded">{selectedPerson.notes || 'No notes available.'}</p>
+                    <span className="text-gray-600 block mb-1">Notes</span>
+                    <p className="text-gray-700 text-xs bg-black/20 p-2 rounded">{selectedPerson.notes || 'No notes available.'}</p>
                   </div>
                   <div className="pt-4 flex gap-2">
                     <Button variant="outline" className="flex-1" onClick={() => setIsEditing(true)}>Edit</Button>
@@ -279,13 +279,13 @@ export const Database: React.FC = () => {
               exit={{ scale: 0.95 }}
             >
               <Card className="w-96 p-6 flex flex-col gap-4 border-danger/20">
-                <h3 className="text-xl font-bold text-white">Delete Identity?</h3>
-                <p className="text-sm text-gray-400">
-                  This will permanently remove the biometric embedding and history for <strong className="text-white">{showDeleteConfirm}</strong>. This cannot be undone.
+                <h3 className="text-xl font-bold text-gray-900">Delete Identity?</h3>
+                <p className="text-sm text-gray-600">
+                  This will permanently remove the biometric embedding and history for <strong className="text-gray-900">{showDeleteConfirm}</strong>. This cannot be undone.
                 </p>
                 <div className="flex gap-2 justify-end mt-2">
                   <Button variant="ghost" onClick={() => setShowDeleteConfirm(null)}>Cancel</Button>
-                  <Button className="bg-danger hover:bg-danger/80 text-white" onClick={confirmDelete} disabled={deleteMutation.isPending}>
+                  <Button className="bg-danger hover:bg-danger/80 text-gray-900" onClick={confirmDelete} disabled={deleteMutation.isPending}>
                     {deleteMutation.isPending ? "Deleting..." : "Delete Permanently"}
                   </Button>
                 </div>

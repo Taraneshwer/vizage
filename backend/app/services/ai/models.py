@@ -37,6 +37,7 @@ class DetectionResult(BaseModel):
     bbox: BoundingBox
     confidence: float
     face_crop: Optional[np.ndarray] = Field(default=None, repr=False)
+    tracking_id: Optional[str] = None
     
     class Config:
         arbitrary_types_allowed = True

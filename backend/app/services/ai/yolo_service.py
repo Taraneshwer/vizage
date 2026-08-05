@@ -31,10 +31,14 @@ class YOLODetectionService:
             raise ImportError("ultralytics package is required for YOLO Detection.")
             
         logger.info(f"Loading YOLO model from {self.model_path}...")
-        self.model = YOLO(self.model_path)
         
-        if getattr(self.gpu_manager, 'is_cuda', False):
+        # YOLO auto-detects .pt, .onnx, and .engine. We specify task to ensure correct inference mode.
+        self.model = YOLO(self.model_path, task='detect')
+        
+        # Only call .to() for PyTorch weights (.pt)
+        if self.model_path.endswith('.pt') and getattr(self.gpu_manager, 'is_cuda', False):
             self.model.to('cuda')
+            
         logger.info("YOLO model loaded successfully.")
         
     def unload_model(self) -> None:

@@ -112,7 +112,7 @@ export const Enrollment: React.FC = () => {
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Identity Enrollment</h2>
-          <p className="text-sm text-gray-400 mt-1">Guided workflow for registering new users into the system.</p>
+          <p className="text-sm text-gray-600 mt-1">Guided workflow for registering new users into the system.</p>
         </div>
         
         {/* Stepper */}
@@ -121,7 +121,7 @@ export const Enrollment: React.FC = () => {
             <React.Fragment key={step}>
               <div className={cn(
                 "flex items-center gap-1.5 px-3 py-1 rounded",
-                idx === currentStep ? "bg-primary text-white" : 
+                idx === currentStep ? "bg-primary text-gray-900" : 
                 idx < currentStep ? "text-success" : "text-gray-500"
               )}>
                 {idx < currentStep && <CheckCircle2 size={16} />}
@@ -141,13 +141,13 @@ export const Enrollment: React.FC = () => {
             <div className="w-full max-w-4xl flex gap-6 h-full">
               <div className="flex-[2] flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-white">Live Capture</h3>
-                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <h3 className="text-lg font-medium text-gray-900">Live Capture</h3>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
                      <span className={cn("w-2 h-2 rounded-full", isCameraConnected ? "bg-success" : "bg-danger")}></span>
                      {isCameraConnected ? "Camera Connected" : "Camera Disconnected"}
                   </div>
                 </div>
-                <div className="flex-1 border border-white/10 bg-black rounded-md overflow-hidden relative">
+                <div className="flex-1 border border-gray-300 bg-black rounded-md overflow-hidden relative">
                   <CameraFeed 
                     className="w-full h-full border-none rounded-none" 
                     isOnline={isCameraConnected} 
@@ -160,18 +160,18 @@ export const Enrollment: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-400">Capture 5 varied angles (Front, Left, Right, Up, Down)</p>
+                  <p className="text-sm text-gray-600">Capture 5 varied angles (Front, Left, Right, Up, Down)</p>
                   <Button onClick={handleCapture} disabled={!isCameraConnected || captures.length >= 5}>
                     <Camera size={16} className="mr-2"/> Capture ({captures.length}/5)
                   </Button>
                 </div>
               </div>
               <div className="flex-1 flex flex-col gap-4">
-                <h3 className="text-lg font-medium text-white">Live Quality</h3>
-                <Card className="p-4 space-y-4 border-white/5 bg-background">
+                <h3 className="text-lg font-medium text-gray-900">Live Quality</h3>
+                <Card className="p-4 space-y-4 border-gray-200 bg-background">
                   <div>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-400">Face Detected</span>
+                      <span className="text-gray-600">Face Detected</span>
                       <span className={quality.faceDetected ? "text-success" : "text-warning"}>
                         {quality.faceDetected ? "Yes" : "No"}
                       </span>
@@ -179,7 +179,7 @@ export const Enrollment: React.FC = () => {
                   </div>
                   <div>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-400">Detection Confidence</span>
+                      <span className="text-gray-600">Detection Confidence</span>
                       <span className="text-success">{(quality.avgConfidence * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-black rounded overflow-hidden">
@@ -188,7 +188,7 @@ export const Enrollment: React.FC = () => {
                   </div>
                   <div>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-400">Mask Status</span>
+                      <span className="text-gray-600">Mask Status</span>
                       <span className={quality.maskDetected ? "text-danger" : "text-success"}>
                         {quality.maskDetected ? "Mask Detected" : "Clear"}
                       </span>
@@ -198,7 +198,7 @@ export const Enrollment: React.FC = () => {
                 
                 <div className="grid grid-cols-2 gap-2 mt-auto">
                   {[0,1,2,3,4].map(i => (
-                    <div key={i} className={`aspect-square rounded border ${i < captures.length ? 'border-primary/50 p-0.5' : 'border-white/10 border-dashed'} bg-secondary flex items-center justify-center overflow-hidden`}>
+                    <div key={i} className={`aspect-square rounded border ${i < captures.length ? 'border-primary/50 p-0.5' : 'border-gray-300 border-dashed'} bg-secondary flex items-center justify-center overflow-hidden`}>
                       {i < captures.length ? (
                         <img src={`data:image/jpeg;base64,${captures[i]}`} className="w-full h-full object-cover bg-black"/>
                       ) : (
@@ -213,18 +213,18 @@ export const Enrollment: React.FC = () => {
 
           {currentStep === 1 && (
              <div className="text-center space-y-6 max-w-md w-full">
-               <h3 className="text-xl text-white">Quality Verification</h3>
-               <div className="space-y-4 text-left bg-background p-6 rounded border border-white/10">
+               <h3 className="text-xl text-gray-900">Quality Verification</h3>
+               <div className="space-y-4 text-left bg-background p-6 rounded border border-gray-300">
                  <div className="flex items-center justify-between">
-                   <span className="text-gray-300">Minimum 5 Captures</span>
+                   <span className="text-gray-700">Minimum 5 Captures</span>
                    {captures.length === 5 ? <Check size={18} className="text-success" /> : <XCircle size={18} className="text-danger" />}
                  </div>
                  <div className="flex items-center justify-between">
-                   <span className="text-gray-300">Face Detected Continuously</span>
+                   <span className="text-gray-700">Face Detected Continuously</span>
                    {quality.faceDetected ? <Check size={18} className="text-success" /> : <XCircle size={18} className="text-danger" />}
                  </div>
                  <div className="flex items-center justify-between">
-                   <span className="text-gray-300">No Mask Detected</span>
+                   <span className="text-gray-700">No Mask Detected</span>
                    {!quality.maskDetected ? <Check size={18} className="text-success" /> : <XCircle size={18} className="text-danger" />}
                  </div>
                </div>
@@ -238,33 +238,33 @@ export const Enrollment: React.FC = () => {
 
           {currentStep === 2 && (
              <div className="w-full max-w-md space-y-4">
-                <h3 className="text-xl text-white mb-6 text-center">Employee Information</h3>
+                <h3 className="text-xl text-gray-900 mb-6 text-center">Employee Information</h3>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Full Name</label>
+                  <label className="block text-xs text-gray-600 mb-1">Full Name</label>
                   <input 
                     type="text" 
                     value={formData.fullName}
                     onChange={e => setFormData(f => ({ ...f, fullName: e.target.value }))}
-                    className="w-full bg-black border border-white/10 rounded px-3 py-2 text-white focus:border-primary focus:outline-none" 
+                    className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none" 
                     placeholder="e.g. Felix Architect"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Employee ID (Unique)</label>
+                  <label className="block text-xs text-gray-600 mb-1">Employee ID (Unique)</label>
                   <input 
                     type="text" 
                     value={formData.employeeId}
                     onChange={e => setFormData(f => ({ ...f, employeeId: e.target.value }))}
-                    className="w-full bg-black border border-white/10 rounded px-3 py-2 text-white focus:border-primary focus:outline-none" 
+                    className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none" 
                     placeholder="e.g. EMP-9482"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Department</label>
+                  <label className="block text-xs text-gray-600 mb-1">Department</label>
                   <select 
                     value={formData.department}
                     onChange={e => setFormData(f => ({ ...f, department: e.target.value }))}
-                    className="w-full bg-black border border-white/10 rounded px-3 py-2 text-white focus:border-primary focus:outline-none"
+                    className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none"
                   >
                      <option>Engineering</option>
                      <option>Security</option>
@@ -277,23 +277,23 @@ export const Enrollment: React.FC = () => {
 
           {currentStep === 3 && (
              <div className="w-full max-w-md space-y-6 text-center">
-               <h3 className="text-xl text-white">Review & Submit</h3>
+               <h3 className="text-xl text-gray-900">Review & Submit</h3>
                <div className="flex gap-4 justify-center">
                   <div className="w-32 h-32 rounded border-2 border-primary overflow-hidden">
                     <img src={`data:image/jpeg;base64,${captures[0]}`} className="w-full h-full object-cover" />
                   </div>
                </div>
-               <div className="bg-background border border-white/10 p-4 rounded text-left space-y-2 text-sm">
-                 <div className="flex justify-between"><span className="text-gray-400">Name:</span><span className="text-white font-medium">{formData.fullName}</span></div>
-                 <div className="flex justify-between"><span className="text-gray-400">ID:</span><span className="text-white font-medium">{formData.employeeId}</span></div>
-                 <div className="flex justify-between"><span className="text-gray-400">Department:</span><span className="text-white font-medium">{formData.department}</span></div>
-                 <div className="flex justify-between"><span className="text-gray-400">Captures:</span><span className="text-success font-medium">5 Images</span></div>
+               <div className="bg-background border border-gray-300 p-4 rounded text-left space-y-2 text-sm">
+                 <div className="flex justify-between"><span className="text-gray-600">Name:</span><span className="text-gray-900 font-medium">{formData.fullName}</span></div>
+                 <div className="flex justify-between"><span className="text-gray-600">ID:</span><span className="text-gray-900 font-medium">{formData.employeeId}</span></div>
+                 <div className="flex justify-between"><span className="text-gray-600">Department:</span><span className="text-gray-900 font-medium">{formData.department}</span></div>
+                 <div className="flex justify-between"><span className="text-gray-600">Captures:</span><span className="text-success font-medium">5 Images</span></div>
                </div>
                
                {enrollMutation.isPending && (
                  <div className="flex flex-col items-center gap-3 pt-4">
                    <RefreshCcw className="animate-spin text-primary" />
-                   <p className="text-sm text-gray-400">Extracting embeddings and saving to database...</p>
+                   <p className="text-sm text-gray-600">Extracting embeddings and saving to database...</p>
                  </div>
                )}
                
@@ -308,9 +308,9 @@ export const Enrollment: React.FC = () => {
           {currentStep === 4 && (
             <div className="text-center space-y-6 max-w-md w-full">
               <CheckCircle2 size={64} className="text-success mx-auto" />
-              <h3 className="text-2xl text-white">Enrollment Successful</h3>
-              <p className="text-sm text-gray-400">
-                Identity <strong className="text-white">{formData.fullName} ({formData.employeeId})</strong> has been successfully enrolled into the FAISS index.
+              <h3 className="text-2xl text-gray-900">Enrollment Successful</h3>
+              <p className="text-sm text-gray-600">
+                Identity <strong className="text-gray-900">{formData.fullName} ({formData.employeeId})</strong> has been successfully enrolled into the FAISS index.
               </p>
               <div className="pt-4 flex gap-4 justify-center">
                 <Button onClick={handleReset}>Enroll Another Person</Button>
@@ -322,7 +322,7 @@ export const Enrollment: React.FC = () => {
 
         {/* Footer Actions */}
         {currentStep < 4 && (
-          <div className="p-4 border-t border-white/5 bg-background flex justify-between">
+          <div className="p-4 border-t border-gray-200 bg-background flex justify-between">
             <Button variant="ghost" onClick={() => setCurrentStep(Math.max(0, currentStep - 1))} disabled={currentStep === 0 || enrollMutation.isPending}>Back</Button>
             <div className="flex gap-2">
               <Button variant="outline" onClick={handleReset} disabled={enrollMutation.isPending}>Reset</Button>

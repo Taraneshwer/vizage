@@ -91,7 +91,7 @@ export const Recognition: React.FC = () => {
       <div className="flex-1 flex gap-4 min-h-0">
         
         {/* Main CCTV Feed (Left) */}
-        <div className="flex-[3] flex flex-col h-full relative border border-white/5 rounded overflow-hidden bg-black">
+        <div className="flex-[3] flex flex-col h-full relative border border-gray-200 rounded overflow-hidden bg-black">
           {/* Status Indicator */}
           <div className="absolute top-4 left-4 z-50">
              <StatusBadge status={isLive ? 'success' : 'warning'} dot>
@@ -143,25 +143,25 @@ export const Recognition: React.FC = () => {
                         animate={{ opacity: 1, x: 0 }}
                         className="absolute -right-48 top-0 bg-black/80 border border-white/20 p-2 w-44 backdrop-blur-sm text-[10px] font-mono space-y-1 shadow-xl"
                       >
-                        <div className={`font-bold text-xs border-b border-white/10 pb-1 mb-1 ${isUnknown ? 'text-warning' : 'text-success'}`}>
+                        <div className={`font-bold text-xs border-b border-gray-300 pb-1 mb-1 ${isUnknown ? 'text-warning' : 'text-success'}`}>
                           {face.identity_id}
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">ID:</span><span className="text-white">{face.tracking_id}</span>
+                          <span className="text-gray-600">ID:</span><span className="text-gray-900">{face.tracking_id}</span>
                         </div>
                         {!isUnknown && (
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Conf:</span><span className="text-white">{(face.verification_score * 100).toFixed(1)}%</span>
+                            <span className="text-gray-600">Conf:</span><span className="text-gray-900">{(face.verification_score * 100).toFixed(1)}%</span>
                           </div>
                         )}
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Mask:</span><span className={face.mask_status ? 'text-warning' : 'text-gray-400'}>{face.mask_status ? 'YES' : 'NO'}</span>
+                          <span className="text-gray-600">Mask:</span><span className={face.mask_status ? 'text-warning' : 'text-gray-600'}>{face.mask_status ? 'YES' : 'NO'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Time:</span><span className="text-white">{face.processing_time_ms.toFixed(0)}ms</span>
+                          <span className="text-gray-600">Time:</span><span className="text-gray-900">{face.processing_time_ms.toFixed(0)}ms</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Mode:</span><span className="text-white truncate max-w-[80px] text-right">{face.recognition_mode}</span>
+                          <span className="text-gray-600">Mode:</span><span className="text-gray-900 truncate max-w-[80px] text-right">{face.recognition_mode}</span>
                         </div>
                       </motion.div>
                     </motion.div>
@@ -176,7 +176,7 @@ export const Recognition: React.FC = () => {
         <div className="w-80 flex flex-col gap-4 h-full overflow-y-auto pr-1">
           <Card className="p-0 border-primary/50 overflow-hidden flex flex-col">
             <div className="bg-primary/20 p-3 border-b border-primary/30 flex items-center justify-between">
-              <h3 className="font-bold text-white text-sm uppercase tracking-wider">Current Match</h3>
+              <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider">Current Match</h3>
               <StatusBadge status={currentMatch ? (currentMatch.identity_id === 'Unknown' ? 'warning' : 'success') : 'neutral'} dot>
                 {currentMatch ? (currentMatch.identity_id === 'Unknown' ? 'Unverified' : 'Verified') : 'Waiting'}
               </StatusBadge>
@@ -189,36 +189,36 @@ export const Recognition: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex-1 flex flex-col"
               >
-                <div className="p-4 flex flex-col items-center border-b border-white/5 bg-secondary/30 text-center">
+                <div className="p-4 flex flex-col items-center border-b border-gray-200 bg-secondary/30 text-center">
                   <div className={`w-24 h-24 rounded border-2 overflow-hidden mb-3 ${currentMatch.identity_id === 'Unknown' ? 'border-warning' : 'border-primary'}`}>
                     <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentMatch.identity_id}`} className="w-full h-full object-cover bg-black" />
                   </div>
-                  <h2 className="text-lg font-bold text-white">{currentMatch.identity_id}</h2>
+                  <h2 className="text-lg font-bold text-gray-900">{currentMatch.identity_id}</h2>
                   <p className="text-xs text-primary font-mono mt-1">{currentMatch.tracking_id}</p>
-                  <span className="mt-2 text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/10 uppercase">
+                  <span className="mt-2 text-[10px] text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-300 uppercase">
                     {new Date(currentMatch.timestamp * 1000).toLocaleTimeString()}
                   </span>
                 </div>
 
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400 flex items-center gap-2"><Target size={14}/> Confidence</span>
+                    <span className="text-gray-600 flex items-center gap-2"><Target size={14}/> Confidence</span>
                     <span className={currentMatch.identity_id === 'Unknown' ? 'text-warning font-mono' : 'text-success font-mono font-bold'}>
                       {(currentMatch.verification_score * 100).toFixed(1)}%
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400 flex items-center gap-2"><ShieldCheck size={14}/> Mask Status</span>
-                    <span className={currentMatch.mask_status ? 'text-warning' : 'text-white'}>
+                    <span className="text-gray-600 flex items-center gap-2"><ShieldCheck size={14}/> Mask Status</span>
+                    <span className={currentMatch.mask_status ? 'text-warning' : 'text-gray-900'}>
                       {currentMatch.mask_status ? 'Wearing Mask' : 'No Mask'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400 flex items-center gap-2"><Clock size={14}/> Inference</span>
-                    <span className="text-white font-mono">{currentMatch.processing_time_ms.toFixed(0)}ms</span>
+                    <span className="text-gray-600 flex items-center gap-2"><Clock size={14}/> Inference</span>
+                    <span className="text-gray-900 font-mono">{currentMatch.processing_time_ms.toFixed(0)}ms</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm border-t border-white/5 pt-3 mt-1">
-                    <span className="text-gray-400">Mode</span>
+                  <div className="flex items-center justify-between text-sm border-t border-gray-200 pt-3 mt-1">
+                    <span className="text-gray-600">Mode</span>
                     <span className="text-[10px] bg-accent/20 text-accent px-1.5 py-0.5 rounded font-mono truncate max-w-[120px]">
                       {currentMatch.recognition_mode}
                     </span>
@@ -238,8 +238,8 @@ export const Recognition: React.FC = () => {
 
       {/* Bottom Timeline */}
       <Card className="h-40 shrink-0 flex flex-col overflow-hidden">
-         <div className="px-4 py-2 bg-secondary border-b border-white/5 flex items-center justify-between">
-           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Recognition Timeline</h3>
+         <div className="px-4 py-2 bg-secondary border-b border-gray-200 flex items-center justify-between">
+           <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Recognition Timeline</h3>
          </div>
          <div className="flex-1 p-4 flex gap-4 overflow-x-auto items-center">
             {timeline.length === 0 ? (
@@ -254,13 +254,13 @@ export const Recognition: React.FC = () => {
                     initial={{ opacity: 0, x: -20, scale: 0.9 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="flex gap-3 items-center min-w-[220px] border-r border-white/5 pr-4 last:border-0"
+                    className="flex gap-3 items-center min-w-[220px] border-r border-gray-200 pr-4 last:border-0"
                   >
                     <div className={`w-10 h-10 rounded border overflow-hidden shrink-0 ${event.identity_id === 'Unknown' ? 'border-warning' : 'border-success'}`}>
                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${event.identity_id}`} className="w-full h-full bg-secondary object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium truncate ${event.identity_id === 'Unknown' ? 'text-warning' : 'text-white'}`}>
+                      <p className={`text-sm font-medium truncate ${event.identity_id === 'Unknown' ? 'text-warning' : 'text-gray-900'}`}>
                         {event.identity_id}
                       </p>
                       <p className="text-[10px] text-gray-500 font-mono">

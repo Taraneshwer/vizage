@@ -16,7 +16,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, children, clas
     warning: 'bg-warning/10 text-warning border-warning/20',
     danger: 'bg-danger/10 text-danger border-danger/20',
     info: 'bg-primary/10 text-primary border-primary/20',
-    neutral: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+    neutral: 'bg-gray-500/10 text-gray-600 border-gray-500/20',
   };
 
   const dotStyles = {

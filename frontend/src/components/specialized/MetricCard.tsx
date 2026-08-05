@@ -33,14 +33,14 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   };
 
   return (
-    <Card className="p-5 flex flex-col gap-4 relative overflow-hidden group hover:border-white/10 transition-colors">
+    <Card className="p-5 flex flex-col gap-4 relative overflow-hidden group hover:border-gray-300 transition-colors">
       <div className="flex justify-between items-start">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-400">{title}</p>
+          <p className="text-sm font-medium text-gray-600">{title}</p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-white tracking-tight">{prefix}</span>
-            <AnimatedCounter value={value} className="text-3xl font-bold text-white tracking-tight" />
-            <span className="text-xl font-medium text-gray-400 ml-1">{suffix}</span>
+            <span className="text-2xl font-bold text-gray-900 tracking-tight">{prefix}</span>
+            <AnimatedCounter value={value} className="text-3xl font-bold text-gray-900 tracking-tight" />
+            <span className="text-xl font-medium text-gray-600 ml-1">{suffix}</span>
           </div>
         </div>
         <div className={`p-3 rounded-xl ${colorStyles[color]}`}>

@@ -16,16 +16,16 @@ export const BottomBar: React.FC = () => {
       err: 'text-danger'
     };
     return (
-      <div className="flex items-center gap-2 text-xs border-r border-white/10 px-4 last:border-0 h-full">
+      <div className="flex items-center gap-2 text-xs border-r border-gray-300 px-4 last:border-0 h-full">
         <Icon size={12} className={colors[status]} />
-        <span className="text-gray-400">{label}:</span>
+        <span className="text-gray-600">{label}:</span>
         <span className="font-mono text-gray-200">{value}</span>
       </div>
     );
   };
 
   return (
-    <footer className="h-8 bg-secondary border-t border-white/5 flex items-center justify-between shrink-0 select-none">
+    <footer className="h-8 bg-secondary border-t border-gray-200 flex items-center justify-between shrink-0 select-none">
       <div className="flex items-center h-full">
         <StatusItem icon={Cpu} label="GPU" value="24%" status="ok" />
         <StatusItem icon={HardDrive} label="CUDA" value="Active" status="ok" />

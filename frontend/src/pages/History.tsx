@@ -112,7 +112,7 @@ export const History = () => {
         <div className="flex justify-between items-end">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Recognition History</h2>
-            <p className="text-sm text-gray-400 mt-1">Live timeline of all system recognitions.</p>
+            <p className="text-sm text-gray-600 mt-1">Live timeline of all system recognitions.</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" className="text-danger border-danger/20 hover:bg-danger/20" onClick={() => setShowClearConfirm(true)}>Clear All</Button>
@@ -125,14 +125,14 @@ export const History = () => {
           <Card className="p-4 flex items-center gap-4">
              <div className="p-3 bg-primary/10 rounded"><CheckCircle className="text-primary"/></div>
              <div>
-               <p className="text-xs text-gray-400 uppercase">Total Records</p>
+               <p className="text-xs text-gray-600 uppercase">Total Records</p>
                <p className="text-xl font-bold">{totalRecords}</p>
              </div>
           </Card>
           <Card className="p-4 flex items-center gap-4">
              <div className="p-3 bg-danger/10 rounded"><AlertTriangle className="text-danger"/></div>
              <div>
-               <p className="text-xs text-gray-400 uppercase">Unknowns (approx)</p>
+               <p className="text-xs text-gray-600 uppercase">Unknowns (approx)</p>
                <p className="text-xl font-bold font-mono">
                  {displayedEvents.filter(e => e.state === 'UNKNOWN').length}
                </p>
@@ -141,7 +141,7 @@ export const History = () => {
           <Card className="p-4 flex items-center gap-4">
              <div className="p-3 bg-accent/10 rounded"><Clock className="text-accent"/></div>
              <div>
-               <p className="text-xs text-gray-400 uppercase">Avg Pipeline Time</p>
+               <p className="text-xs text-gray-600 uppercase">Avg Pipeline Time</p>
                <p className="text-xl font-bold font-mono">
                   {displayedEvents.length > 0 ? (displayedEvents.reduce((acc, curr) => acc + curr.processing_time_ms, 0) / displayedEvents.length).toFixed(1) : 0} ms
                </p>
@@ -157,13 +157,13 @@ export const History = () => {
               placeholder="Search by name, ID, or camera..." 
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-md py-1.5 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-primary/50"
+              className="w-full bg-black/40 border border-gray-300 rounded-md py-1.5 pl-9 pr-4 text-sm text-gray-900 focus:outline-none focus:border-primary/50"
             />
           </div>
           <Button variant="outline" size="sm"><Filter size={14} className="mr-2"/> Filters</Button>
         </Card>
 
-        <Card className="flex-1 overflow-y-auto p-0 border-white/5 relative">
+        <Card className="flex-1 overflow-y-auto p-0 border-gray-200 relative">
           {displayedEvents.length === 0 ? (
              <EmptyState 
                icon={Clock}
@@ -184,22 +184,22 @@ export const History = () => {
                       animate={{ opacity: 1, height: 'auto', scale: 1 }}
                       transition={{ duration: 0.3 }}
                       onClick={() => setSelectedEvent(event)}
-                      className={`flex items-stretch border-b border-white/5 cursor-pointer transition-colors
-                        ${isUnknown ? 'hover:bg-danger/10' : 'hover:bg-white/5'}
+                      className={`flex items-stretch border-b border-gray-200 cursor-pointer transition-colors
+                        ${isUnknown ? 'hover:bg-danger/10' : 'hover:bg-gray-100'}
                         ${isNew ? 'bg-success/5' : ''}
-                        ${selectedEvent?.history_id === event.history_id ? 'bg-white/10' : ''}
+                        ${selectedEvent?.history_id === event.history_id ? 'bg-gray-200' : ''}
                       `}
                     >
                     {/* Timeline Node */}
                     <div className="w-16 flex flex-col items-center py-4 relative shrink-0">
-                        <div className="w-px h-full bg-white/10 absolute top-0" />
+                        <div className="w-px h-full bg-gray-200 absolute top-0" />
                         <div className={`w-3 h-3 rounded-full relative z-10 ${isUnknown ? 'bg-danger shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-primary'}`} />
                     </div>
                     
                     {/* Event Details */}
                     <div className="flex-1 py-4 pr-6 flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded bg-black overflow-hidden border border-white/10 shrink-0">
+                          <div className="w-12 h-12 rounded bg-black overflow-hidden border border-gray-300 shrink-0">
                             {!isUnknown && event.identity_id ? (
                                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${event.identity_id}`} className="w-full h-full object-cover" />
                             ) : (
@@ -208,9 +208,9 @@ export const History = () => {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <h4 className={`text-base font-medium truncate ${isUnknown ? 'text-danger' : 'text-white'}`}>{event.name || 'Unknown Person'}</h4>
+                              <h4 className={`text-base font-medium truncate ${isUnknown ? 'text-danger' : 'text-gray-900'}`}>{event.name || 'Unknown Person'}</h4>
                             </div>
-                            <div className="text-xs text-gray-400 mt-0.5 flex flex-wrap gap-3">
+                            <div className="text-xs text-gray-600 mt-0.5 flex flex-wrap gap-3">
                               <span className="font-mono">{formatDate(event.timestamp)} {formatTime(event.timestamp)}</span>
                               <span>{event.camera_id}</span>
                               <span>{event.has_mask ? 'Face + Mask' : 'Face Detection'}</span>
@@ -235,7 +235,7 @@ export const History = () => {
         </Card>
 
         {/* Pagination */}
-        <div className="flex justify-between items-center text-sm text-gray-400 shrink-0">
+        <div className="flex justify-between items-center text-sm text-gray-600 shrink-0">
           <span>Showing {displayedEvents.length} of {totalRecords} events</span>
           <div className="flex gap-1">
             <Button variant="outline" size="sm" className="px-2" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}><ChevronLeft size={16} /></Button>
@@ -253,11 +253,11 @@ export const History = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="w-80 border-l border-white/5 flex flex-col relative shrink-0 bg-card rounded-md overflow-hidden"
+            className="w-80 border-l border-gray-200 flex flex-col relative shrink-0 bg-card rounded-md overflow-hidden"
           >
-          <div className="p-4 border-b border-white/5 flex items-center justify-between">
-            <h3 className="font-semibold text-white">Event Details</h3>
-            <button onClick={() => setSelectedEvent(null)} className="text-gray-400 hover:text-white"><X size={16} /></button>
+          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 className="font-semibold text-gray-900">Event Details</h3>
+            <button onClick={() => setSelectedEvent(null)} className="text-gray-600 hover:text-gray-900"><X size={16} /></button>
           </div>
           
           <div className="p-6 flex flex-col gap-6 flex-1 overflow-y-auto">
@@ -270,36 +270,36 @@ export const History = () => {
                  )}
                </div>
                <div className="text-center">
-                 <h2 className={`text-xl font-bold ${selectedEvent.state === 'UNKNOWN' ? 'text-danger' : 'text-white'}`}>{selectedEvent.name || 'Unknown Person'}</h2>
-                 {selectedEvent.identity_id && <p className="text-sm text-gray-400 font-mono">{selectedEvent.identity_id}</p>}
+                 <h2 className={`text-xl font-bold ${selectedEvent.state === 'UNKNOWN' ? 'text-danger' : 'text-gray-900'}`}>{selectedEvent.name || 'Unknown Person'}</h2>
+                 {selectedEvent.identity_id && <p className="text-sm text-gray-600 font-mono">{selectedEvent.identity_id}</p>}
                </div>
             </div>
 
             <div className="space-y-4 text-sm">
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-gray-400">Timestamp</span>
-                <span className="text-white text-right font-mono text-xs">{formatDate(selectedEvent.timestamp)}<br/>{formatTime(selectedEvent.timestamp)}</span>
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Timestamp</span>
+                <span className="text-gray-900 text-right font-mono text-xs">{formatDate(selectedEvent.timestamp)}<br/>{formatTime(selectedEvent.timestamp)}</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-gray-400">Verification Score</span>
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Verification Score</span>
                 <span className={selectedEvent.state === 'UNKNOWN' ? 'text-danger font-mono' : 'text-success font-mono'}>
                   {selectedEvent.state === 'UNKNOWN' ? 'N/A' : `${selectedEvent.verification_score}%`}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-gray-400">Camera</span>
-                <span className="text-white">{selectedEvent.camera_id}</span>
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Camera</span>
+                <span className="text-gray-900">{selectedEvent.camera_id}</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-gray-400">Tracking ID</span>
-                <span className="text-white font-mono">{selectedEvent.tracking_id}</span>
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Tracking ID</span>
+                <span className="text-gray-900 font-mono">{selectedEvent.tracking_id}</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-gray-400">Recognition Mode</span>
-                <span className="text-white">{selectedEvent.mode}</span>
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Recognition Mode</span>
+                <span className="text-gray-900">{selectedEvent.mode}</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-gray-400">Pipeline Time</span>
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Pipeline Time</span>
                 <span className="text-accent font-mono">{selectedEvent.processing_time_ms} ms</span>
               </div>
             </div>
@@ -329,13 +329,13 @@ export const History = () => {
               exit={{ scale: 0.95 }}
             >
               <Card className="w-96 p-6 flex flex-col gap-4 border-danger/20">
-                <h3 className="text-xl font-bold text-white">Clear All History?</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="text-xl font-bold text-gray-900">Clear All History?</h3>
+                <p className="text-sm text-gray-600">
                   This will permanently delete all recognition history events. This cannot be undone.
                 </p>
                 <div className="flex gap-2 justify-end mt-2">
                   <Button variant="ghost" onClick={() => setShowClearConfirm(false)}>Cancel</Button>
-                  <Button className="bg-danger hover:bg-danger/80 text-white" onClick={handleClearAll} disabled={clearMutation.isPending}>
+                  <Button className="bg-danger hover:bg-danger/80 text-gray-900" onClick={handleClearAll} disabled={clearMutation.isPending}>
                     {clearMutation.isPending ? "Clearing..." : "Clear All"}
                   </Button>
                 </div>
@@ -359,13 +359,13 @@ export const History = () => {
               exit={{ scale: 0.95 }}
             >
               <Card className="w-96 p-6 flex flex-col gap-4 border-danger/20">
-                <h3 className="text-xl font-bold text-white">Delete Event?</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="text-xl font-bold text-gray-900">Delete Event?</h3>
+                <p className="text-sm text-gray-600">
                   This will permanently delete this recognition event.
                 </p>
                 <div className="flex gap-2 justify-end mt-2">
                   <Button variant="ghost" onClick={() => setShowDeleteConfirm(null)}>Cancel</Button>
-                  <Button className="bg-danger hover:bg-danger/80 text-white" onClick={handleDeleteEvent} disabled={deleteMutation.isPending}>
+                  <Button className="bg-danger hover:bg-danger/80 text-gray-900" onClick={handleDeleteEvent} disabled={deleteMutation.isPending}>
                     {deleteMutation.isPending ? "Deleting..." : "Delete Event"}
                   </Button>
                 </div>

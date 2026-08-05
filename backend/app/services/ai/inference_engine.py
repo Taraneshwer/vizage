@@ -15,6 +15,7 @@ from .mask_service import MaskDetectionService
 from .embedding_service import AdaFaceService
 from .faiss_service import FAISSService
 from .decision.decision_engine import IdentityDecisionEngine
+from .tracker_service import TrackerService
 
 logger = get_logger(__name__)
 
@@ -32,6 +33,7 @@ class InferenceEngine:
             self.mask: MaskDetectionService = self.model_manager.get_service("MaskDetector")
             self.embedding: AdaFaceService = self.model_manager.get_service("AdaFace")
             self.faiss: FAISSService = self.model_manager.get_service("FAISS")
+            self.tracker: TrackerService = self.model_manager.get_service("Tracker")
             self._is_ready = True
         except KeyError as e:
             logger.error(f"Failed to initialize InferenceEngine: {e}")
@@ -57,12 +59,20 @@ class InferenceEngine:
         det_time = self.perf_monitor.stop_timer(timers, "yolo_detection")
         self.model_manager.update_model_metrics("YOLO11", det_time)
         
+        # 1.5 ByteTrack Tracking
+        self.perf_monitor.start_timer(timers, "bytetrack")
+        try:
+            tracked_detections = self.tracker.update(detections, frame.image)
+        except Exception as e:
+            logger.error(f"Tracker failed: {e}")
+            tracked_detections = detections
+        track_time = self.perf_monitor.stop_timer(timers, "bytetrack")
+        self.model_manager.update_model_metrics("Tracker", track_time)
+        
         # 2. Process each detected face
-        for idx, det in enumerate(detections):
-            # Give a pseudo tracking ID based on index for Temporal Memory to work
-            # In a real system, a TrackingService (e.g., SORT/ByteTrack) would assign this.
-            pseudo_tracking_id = f"track_{idx}"
-            result = RecognitionResult(detection=det, is_unknown=True, tracking_id=pseudo_tracking_id)
+        for idx, det in enumerate(tracked_detections):
+            tracking_id = getattr(det, 'tracking_id', f"track_{idx}")
+            result = RecognitionResult(detection=det, is_unknown=True, tracking_id=tracking_id)
             
             # 2.1 Landmark Alignment
             if det.face_crop is not None and det.face_crop.size > 0:

@@ -35,20 +35,20 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   const progress = Math.min(((stepIndex) / loadingSteps.length) * 100, 100);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center text-white">
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center text-gray-900">
       <div className="w-80 flex flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-primary text-white flex items-center justify-center text-3xl font-bold rounded-md shadow-lg shadow-primary/20">
+          <div className="w-16 h-16 bg-primary text-gray-900 flex items-center justify-center text-3xl font-bold rounded-md shadow-lg shadow-primary/20">
             M
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold tracking-tight">MaskShield AI</h1>
-            <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">Enterprise Security System</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Vizage</h1>
+            <p className="text-xs text-gray-600 mt-1 uppercase tracking-widest">Enterprise Security System</p>
           </div>
         </div>
 
         <div className="w-full space-y-3">
-          <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
             <motion.div 
               className="h-full bg-primary"
               initial={{ width: 0 }}
@@ -64,7 +64,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="text-xs text-gray-400 font-mono"
+                className="text-xs text-gray-600 font-mono"
               >
                 {loadingSteps[stepIndex] || "Ready."}
               </motion.span>

@@ -1,0 +1,28 @@
+{
+    "datasets": {
+        "IMFD": {
+            "status": "present",
+            "image_count": 33553,
+            "identity_count": 35
+        },
+        "CMFD": {
+            "status": "present",
+            "image_count": 33686,
+            "identity_count": 35
+        },
+        "lfw": {
+            "status": "present",
+            "image_count": 4117,
+            "identity_count": 2
+        },
+        "mask": {
+            "status": "present",
+            "image_count": 20624,
+            "identity_count": 2
+        }
+    },
+    "totals": {
+        "images": 91980,
+        "identities": 74
+    }
+}

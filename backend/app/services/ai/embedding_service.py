@@ -4,6 +4,7 @@ Generates facial embeddings from aligned face crops.
 """
 import numpy as np
 from typing import Optional
+import cv2
 from app.core.logger import get_logger
 from .models import Embedding
 from .gpu_manager import GPUManager
@@ -14,6 +15,11 @@ try:
     import torchvision.transforms as transforms
 except ImportError:
     torch = None
+
+try:
+    import onnxruntime as ort
+except ImportError:
+    ort = None
 
 logger = get_logger(__name__)
 
@@ -31,27 +37,35 @@ class AdaFaceService:
             ])
             
     def load_model(self) -> None:
+        logger.info(f"Loading AdaFace from {self.model_path}...")
+        
+        if self.model_path.endswith('.onnx'):
+            if ort is None:
+                raise ImportError("onnxruntime is required for ONNX model inference.")
+            providers = ['CUDAExecutionProvider'] if getattr(self.gpu_manager, 'is_cuda', False) else ['CPUExecutionProvider']
+            self.model = ort.InferenceSession(self.model_path, providers=providers)
+            self.is_onnx = True
+            logger.info("AdaFace ONNX model loaded successfully.")
+            return
+
         if torch is None:
             raise ImportError("PyTorch is required for AdaFaceService.")
             
-        logger.info(f"Loading AdaFace from {self.model_path}...")
-        
-        # Load the architecture (Mocked with a simple ResNet for architectural milestone if exact AdaFace repo isn't cloned, 
-        # but in production this would import the AdaFace IR100 architecture).
-        # We will use a standard ResNet50 as a placeholder to ensure the pipeline is strongly typed and runs.
+        # PyTorch fallback
         import torchvision.models as models
         self.model = models.resnet50(pretrained=False)
-        self.model.fc = nn.Linear(self.model.fc.in_features, 512) # 512-d embedding
+        self.model.fc = nn.Linear(self.model.fc.in_features, 512)
         
         try:
             self.model.load_state_dict(torch.load(self.model_path, map_location='cpu'))
         except FileNotFoundError:
-            logger.warning(f"AdaFace weights not found at {self.model_path}. Using uninitialized ResNet50 for architectural testing.")
+            logger.warning(f"AdaFace weights not found at {self.model_path}. Using uninitialized ResNet50.")
             
         self.model.eval()
         if getattr(self.gpu_manager, 'is_cuda', False):
             self.model.to('cuda')
-        logger.info("AdaFace model loaded successfully.")
+        self.is_onnx = False
+        logger.info("AdaFace PyTorch model loaded successfully.")
         
     def unload_model(self) -> None:
         if self.model is not None:
@@ -64,18 +78,28 @@ class AdaFaceService:
             raise RuntimeError("AdaFace model is not loaded.")
             
         # Apply transform directly
-        input_tensor = self.transform(aligned_face).unsqueeze(0)
-        
-        if getattr(self.gpu_manager, 'is_cuda', False):
-            input_tensor = input_tensor.to('cuda')
+        if getattr(self, 'is_onnx', False):
+            # ONNX preprocessing
+            img = cv2.cvtColor(aligned_face, cv2.COLOR_BGR2RGB)
+            img = cv2.resize(img, (112, 112))
+            img = (img.astype(np.float32) / 255.0 - 0.5) / 0.5
+            img = np.transpose(img, (2, 0, 1))
+            input_tensor = np.expand_dims(img, axis=0)
             
-        with torch.no_grad():
-            with self.gpu_manager.autocast():
-                features = self.model(input_tensor)
-                # Normalize embedding
-                features = torch.nn.functional.normalize(features, p=2, dim=1)
+            input_name = self.model.get_inputs()[0].name
+            features = self.model.run(None, {input_name: input_tensor})[0]
+            # Normalize embedding
+            emb_array = features[0] / np.linalg.norm(features[0])
+        else:
+            input_tensor = self.transform(aligned_face).unsqueeze(0)
+            if getattr(self.gpu_manager, 'is_cuda', False):
+                input_tensor = input_tensor.to('cuda')
                 
-        emb_array = features.cpu().numpy()[0]
+            with torch.no_grad():
+                with self.gpu_manager.autocast():
+                    features = self.model(input_tensor)
+                    features = torch.nn.functional.normalize(features, p=2, dim=1)
+            emb_array = features.cpu().numpy()[0]
         
         return Embedding(
             vector=emb_array,

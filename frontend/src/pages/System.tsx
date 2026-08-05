@@ -4,19 +4,19 @@ import { Cpu, HardDrive, Database as DatabaseIcon, Activity, Camera, Box, Server
 import { StatusBadge } from '../components/common/StatusBadge';
 
 const ServiceCard = ({ title, icon: Icon, status, metrics }: any) => (
-  <Card className="p-5 flex flex-col gap-4 border-white/5">
+  <Card className="p-5 flex flex-col gap-4 border-gray-200">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <Icon size={18} className="text-gray-400" />
-        <h3 className="font-semibold text-white">{title}</h3>
+        <Icon size={18} className="text-gray-600" />
+        <h3 className="font-semibold text-gray-900">{title}</h3>
       </div>
       <StatusBadge status={status === 'Online' ? 'success' : 'danger'} dot>{status}</StatusBadge>
     </div>
-    <div className="space-y-2 border-t border-white/5 pt-3">
+    <div className="space-y-2 border-t border-gray-200 pt-3">
       {metrics.map((m: any, i: number) => (
         <div key={i} className="flex justify-between text-xs">
-          <span className="text-gray-400">{m.label}</span>
-          <span className="text-white font-mono">{m.value}</span>
+          <span className="text-gray-600">{m.label}</span>
+          <span className="text-gray-900 font-mono">{m.value}</span>
         </div>
       ))}
     </div>
@@ -28,7 +28,7 @@ export const System: React.FC = () => {
     <div className="h-full flex flex-col gap-4 overflow-y-auto pb-4">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Diagnostics Dashboard</h2>
-        <p className="text-sm text-gray-400 mt-1">Live service health and hardware metrics.</p>
+        <p className="text-sm text-gray-600 mt-1">Live service health and hardware metrics.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

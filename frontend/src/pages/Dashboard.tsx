@@ -80,7 +80,7 @@ export const Dashboard: React.FC = () => {
           </div>
           
           <CameraFeed 
-            className="flex-1 border-white/10" 
+            className="flex-1 border-gray-300" 
             isOnline={isCameraConnected} 
             streamUrl={cameraStream ? `data:image/jpeg;base64,${cameraStream.image_base64}` : undefined}
             latencyMs={latencyMs}
@@ -88,11 +88,11 @@ export const Dashboard: React.FC = () => {
                <div className="w-full h-full p-4 relative pointer-events-none">
                  {/* Raw bounding boxes are hard to map without resolution, so we just show latest recognition info */}
                  {recognitionStream && (
-                   <div className="absolute top-4 left-4 bg-black/60 backdrop-blur border border-white/10 p-3 rounded shadow-xl">
-                     <p className="text-xs text-gray-400 mb-1">Latest Detection</p>
+                   <div className="absolute top-4 left-4 bg-black/60 backdrop-blur border border-gray-300 p-3 rounded shadow-xl">
+                     <p className="text-xs text-gray-600 mb-1">Latest Detection</p>
                      <p className="text-sm font-bold text-success">
                        {recognitionStream.identity_id !== 'Unknown' ? recognitionStream.identity_id : 'Unknown Face'} 
-                       <span className="ml-2 text-white/70 font-mono text-xs">{(recognitionStream.verification_score * 100).toFixed(1)}%</span>
+                       <span className="ml-2 text-gray-900/70 font-mono text-xs">{(recognitionStream.verification_score * 100).toFixed(1)}%</span>
                      </p>
                      {recognitionStream.mask_status && (
                        <span className="inline-block mt-1 bg-warning text-black text-[10px] px-1.5 py-0.5 font-bold rounded">MASK</span>
@@ -108,26 +108,26 @@ export const Dashboard: React.FC = () => {
         <div className="flex-[2] flex flex-col gap-4 h-full min-w-0">
           
           <Card className="p-4">
-            <h3 className="text-sm font-semibold text-gray-300 mb-4 border-b border-white/5 pb-2 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4 border-b border-gray-200 pb-2 flex items-center justify-between">
               Recognition Session
               <span className="text-[10px] font-mono text-gray-500">{runtimeData?.state || 'OFFLINE'}</span>
             </h3>
             <div className="grid grid-cols-2 gap-y-4 gap-x-2">
                <div>
                   <p className="text-xs text-gray-500">Live FPS</p>
-                  <p className="text-sm font-mono text-white mt-1">{runtimeData?.average_fps?.toFixed(1) || '0.0'}</p>
+                  <p className="text-sm font-mono text-gray-900 mt-1">{runtimeData?.average_fps?.toFixed(1) || '0.0'}</p>
                </div>
                <div>
                   <p className="text-xs text-gray-500">Runtime</p>
-                  <p className="text-sm font-mono text-white mt-1">{formatSeconds(runtimeData?.uptime_seconds)}</p>
+                  <p className="text-sm font-mono text-gray-900 mt-1">{formatSeconds(runtimeData?.uptime_seconds)}</p>
                </div>
                <div>
                   <p className="text-xs text-gray-500">Frames Processed</p>
-                  <p className="text-sm font-mono text-white mt-1">{runtimeData?.total_frames_processed?.toLocaleString() || 0}</p>
+                  <p className="text-sm font-mono text-gray-900 mt-1">{runtimeData?.total_frames_processed?.toLocaleString() || 0}</p>
                </div>
                <div>
                   <p className="text-xs text-gray-500">Recognitions</p>
-                  <p className="text-sm font-mono text-white mt-1">{runtimeData?.total_recognitions?.toLocaleString() || 0}</p>
+                  <p className="text-sm font-mono text-gray-900 mt-1">{runtimeData?.total_recognitions?.toLocaleString() || 0}</p>
                </div>
                <div>
                   <p className="text-xs text-gray-500">Unknown Faces</p>
@@ -142,14 +142,14 @@ export const Dashboard: React.FC = () => {
 
           {/* System Health Widget */}
           <Card className="p-4">
-            <h3 className="text-sm font-semibold text-gray-300 mb-4 border-b border-white/5 pb-2 flex items-center">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4 border-b border-gray-200 pb-2 flex items-center">
               <Server size={14} className="mr-2"/> System Health
             </h3>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-400 flex items-center"><Cpu size={12} className="mr-1"/> GPU VRAM</span>
-                  <span className="text-white font-mono">
+                  <span className="text-gray-600 flex items-center"><Cpu size={12} className="mr-1"/> GPU VRAM</span>
+                  <span className="text-gray-900 font-mono">
                     {systemData?.gpu?.vram_used_mb || 0} / {systemData?.gpu?.vram_total_mb || 0} MB
                   </span>
                 </div>
@@ -163,11 +163,11 @@ export const Dashboard: React.FC = () => {
               
               <div className="pt-2 grid grid-cols-2 gap-2">
                 {systemData?.models?.map((model: any, i: number) => (
-                  <div key={i} className="bg-secondary/50 rounded p-2 border border-white/5">
+                  <div key={i} className="bg-secondary/50 rounded p-2 border border-gray-200">
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">{model.name}</p>
                     <div className="flex justify-between items-end mt-1">
                       <span className="text-xs text-success font-medium">{model.status}</span>
-                      <span className="text-[10px] text-gray-400 font-mono">{model.latency_ms}ms</span>
+                      <span className="text-[10px] text-gray-600 font-mono">{model.latency_ms}ms</span>
                     </div>
                   </div>
                 ))}
@@ -177,12 +177,12 @@ export const Dashboard: React.FC = () => {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 gap-2">
-             <Button variant="secondary" className="h-12" onClick={() => navigate('/enrollment')}><UserPlus size={16} className="mr-2 text-gray-400"/> Enroll</Button>
-             <Button variant="secondary" className="h-12" onClick={() => navigate('/logs')}><FileText size={16} className="mr-2 text-gray-400"/> Logs</Button>
+             <Button variant="secondary" className="h-12" onClick={() => navigate('/enrollment')}><UserPlus size={16} className="mr-2 text-gray-600"/> Enroll</Button>
+             <Button variant="secondary" className="h-12" onClick={() => navigate('/logs')}><FileText size={16} className="mr-2 text-gray-600"/> Logs</Button>
           </div>
 
           <Card className="flex-1 flex flex-col p-4 min-h-0">
-            <h3 className="text-sm font-semibold text-gray-300 mb-4 border-b border-white/5 pb-2">Recent Timeline</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-4 border-b border-gray-200 pb-2">Recent Timeline</h3>
             <div className="flex-1 overflow-y-auto space-y-3 pr-2">
               {recognitions.length === 0 ? (
                 <EmptyState 
@@ -198,18 +198,18 @@ export const Dashboard: React.FC = () => {
                       initial={{ opacity: 0, height: 0, scale: 0.95 }}
                       animate={{ opacity: 1, height: 'auto', scale: 1 }}
                       transition={{ duration: 0.3 }}
-                      className="flex gap-3 items-start relative pb-4 border-l border-white/10 ml-3 pl-4"
+                      className="flex gap-3 items-start relative pb-4 border-l border-gray-300 ml-3 pl-4"
                     >
                       <div className={`absolute -left-1.5 top-1 w-3 h-3 rounded-full ring-4 ring-card ${rec.identity_id === 'Unknown' ? 'bg-warning' : 'bg-success'}`} />
                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${rec.identity_id}`} className="w-8 h-8 rounded bg-secondary shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline">
-                          <p className="text-sm font-medium text-white truncate">{rec.identity_id}</p>
+                          <p className="text-sm font-medium text-gray-900 truncate">{rec.identity_id}</p>
                           <span className="text-[10px] text-gray-500 font-mono">
                             {new Date(rec.timestamp * 1000).toLocaleTimeString([], { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-400">Match: {(rec.verification_score * 100).toFixed(1)}% • Latency: {rec.processing_time_ms.toFixed(0)}ms</p>
+                        <p className="text-xs text-gray-600">Match: {(rec.verification_score * 100).toFixed(1)}% • Latency: {rec.processing_time_ms.toFixed(0)}ms</p>
                       </div>
                     </motion.div>
                   ))}

@@ -1,0 +1,14 @@
+{
+    "hardware": {
+        "python_version": "3.11.13",
+        "pytorch_version": "2.3.0+cpu",
+        "cuda_available": false,
+        "cuda_version": "N/A",
+        "cudnn_version": "N/A",
+        "gpu_name": "N/A",
+        "gpu_memory_gb": "N/A",
+        "ram_gb": 15.29,
+        "cpu_cores": 16
+    },
+    "datasets": {}
+}

@@ -21,15 +21,15 @@ const navItems = [
 
 export const Sidebar: React.FC = () => {
   return (
-    <aside className="w-64 h-full bg-secondary border-r border-white/5 flex flex-col justify-between overflow-hidden shrink-0">
+    <aside className="w-64 h-full bg-secondary border-r border-gray-200 flex flex-col justify-between overflow-hidden shrink-0">
       <div>
-        <div className="p-5 flex items-center gap-3 border-b border-white/5 bg-background/50">
-          <div className="w-8 h-8 bg-primary text-white flex items-center justify-center font-bold rounded-sm shadow-md">
-            M
+        <div className="p-5 flex items-center gap-3 border-b border-gray-200 bg-background/50">
+          <div className="w-8 h-8 rounded bg-primary text-gray-900 flex items-center justify-center font-bold text-sm">
+            V
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight text-white leading-tight">MaskShield AI</h1>
-            <p className="text-[10px] text-gray-400 tracking-wider">Enterprise Security</p>
+            <h1 className="text-base font-bold tracking-tight text-gray-900 leading-tight">Vizage</h1>
+            <p className="text-[10px] text-gray-600 tracking-wider">Enterprise Security</p>
           </div>
         </div>
         
@@ -42,12 +42,12 @@ export const Sidebar: React.FC = () => {
                 "flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors group",
                 isActive 
                   ? "bg-primary/10 text-primary font-medium" 
-                  : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+                  : "text-gray-600 hover:text-gray-200 hover:bg-gray-100"
               )}
             >
               {({ isActive }) => (
                 <>
-                  <item.icon size={16} className={cn("transition-colors", isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-400")} />
+                  <item.icon size={16} className={cn("transition-colors", isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-600")} />
                   {item.label}
                 </>
               )}

@@ -26,3 +26,4 @@ vizage.db
 # Project
 logs/
 models/
+datasets/

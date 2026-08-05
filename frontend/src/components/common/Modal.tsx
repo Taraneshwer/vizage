@@ -33,11 +33,11 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
           >
             <Card className="flex flex-col max-h-[85vh]">
               {title && (
-                <div className="flex items-center justify-between p-4 border-b border-white/10">
-                  <h2 className="text-lg font-semibold text-white">{title}</h2>
+                <div className="flex items-center justify-between p-4 border-b border-gray-300">
+                  <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
                   <button 
                     onClick={onClose}
-                    className="p-1 rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                    className="p-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-colors"
                   >
                     <X size={20} />
                   </button>

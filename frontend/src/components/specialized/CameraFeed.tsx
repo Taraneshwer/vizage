@@ -28,10 +28,10 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
           {isOnline ? 'LIVE' : 'OFFLINE'}
         </StatusBadge>
         <div className="flex gap-2">
-          <button className="p-1.5 rounded bg-black/50 hover:bg-white/20 text-white backdrop-blur transition-colors">
+          <button className="p-1.5 rounded bg-black/50 hover:bg-white/20 text-gray-900 backdrop-blur transition-colors">
             <Settings2 size={16} />
           </button>
-          <button className="p-1.5 rounded bg-black/50 hover:bg-white/20 text-white backdrop-blur transition-colors">
+          <button className="p-1.5 rounded bg-black/50 hover:bg-white/20 text-gray-900 backdrop-blur transition-colors">
             <Maximize2 size={16} />
           </button>
         </div>
@@ -70,7 +70,7 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
       </div>
       
       {/* Bottom overlay bar */}
-      <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10 flex justify-between text-[10px] uppercase tracking-wider font-mono text-gray-300">
+      <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10 flex justify-between text-[10px] uppercase tracking-wider font-mono text-gray-700">
         <span>Res: {resolution}</span>
         <span>Delay: {latencyMs !== undefined ? `${latencyMs.toFixed(0)}ms` : '-- ms'}</span>
       </div>

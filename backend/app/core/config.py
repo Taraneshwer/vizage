@@ -24,6 +24,17 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_DIR: str = "logs"
+    
+    # AI Models
+    YOLO_MODEL_PATH: str = "best_yolo.onnx"
+    ADAFACE_MODEL_PATH: str = "best_adaface.onnx"
+    EXECUTION_PROVIDER: str = "CUDA" # CPU, CUDA, TensorRT
+    
+    # Tracking
+    TRACK_THRESH: float = 0.5
+    MATCH_THRESH: float = 0.8
+    TRACK_BUFFER: int = 30
+    MIN_BOX_AREA: int = 100
 
     model_config = SettingsConfigDict(
         env_file=".env",

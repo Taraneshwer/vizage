@@ -19,7 +19,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon: Icon, title, descr
       <div className="mb-4 opacity-20">
         <Icon size={64} strokeWidth={1.5} />
       </div>
-      <h3 className="text-lg font-semibold text-gray-300 mb-2">{title}</h3>
+      <h3 className="text-lg font-semibold text-gray-700 mb-2">{title}</h3>
       <p className="text-sm mb-6">{description}</p>
       {action && <div>{action}</div>}
     </motion.div>

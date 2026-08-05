@@ -14,7 +14,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <motion.div
         ref={ref}
       className={cn(
-        "rounded-md overflow-hidden bg-card border border-white/5",
+        "rounded-md overflow-hidden bg-card border border-gray-200",
         className
       )}
       {...props}

@@ -23,8 +23,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       <div className="w-16 h-16 rounded-full bg-danger/10 text-danger flex items-center justify-center mb-4">
         <AlertTriangle size={32} />
       </div>
-      <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-      <p className="text-gray-400 text-sm mb-6">{message}</p>
+      <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
+      <p className="text-gray-600 text-sm mb-6">{message}</p>
       {onRetry && (
         <Button variant="outline" className="border-danger/20 text-danger hover:bg-danger/10 hover:text-danger" onClick={onRetry}>
           Try Again

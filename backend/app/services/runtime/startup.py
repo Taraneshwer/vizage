@@ -3,6 +3,7 @@ Runtime Startup Sequence.
 Enforces the exact order of initialization: Configuration -> GPU -> Models -> DB -> Runtime.
 """
 from app.core.logger import get_logger
+from app.core.config import settings
 from app.services.ai.gpu_manager import GPUManager
 from app.services.ai.model_manager import ModelManager
 
@@ -28,11 +29,13 @@ def initialize_runtime():
     from app.services.ai.mask_service import MaskDetectionService
     from app.services.ai.embedding_service import AdaFaceService
     from app.services.ai.faiss_service import FAISSService
+    from app.services.ai.tracker_service import TrackerService
     
-    model_manager.register_service("YOLO11", YOLODetectionService())
+    model_manager.register_service("YOLO11", YOLODetectionService(model_path=settings.YOLO_MODEL_PATH))
+    model_manager.register_service("Tracker", TrackerService(track_thresh=settings.TRACK_THRESH, track_buffer=settings.TRACK_BUFFER, match_thresh=settings.MATCH_THRESH, min_box_area=settings.MIN_BOX_AREA))
     model_manager.register_service("MediaPipe", MediaPipeService())
     model_manager.register_service("MaskDetector", MaskDetectionService())
-    model_manager.register_service("AdaFace", AdaFaceService())
+    model_manager.register_service("AdaFace", AdaFaceService(model_path=settings.ADAFACE_MODEL_PATH))
     model_manager.register_service("FAISS", FAISSService())
     
     # model_manager.load_models() # Tests/Runtime can decide when to load, but typically we load on startup

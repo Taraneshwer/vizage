@@ -7,7 +7,7 @@ import { ErrorBoundary } from '../common/ErrorBoundary';
 
 export const DesktopLayout: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen w-full bg-background overflow-hidden text-gray-100 font-sans selection:bg-primary/30">
+    <div className="flex flex-col h-screen w-full bg-background overflow-hidden text-gray-800 font-sans selection:bg-primary/30">
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         <div className="flex-1 flex flex-col h-full relative w-full overflow-hidden bg-background">
