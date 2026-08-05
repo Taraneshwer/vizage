@@ -1,0 +1,48 @@
+"""
+Database session management for SQLAlchemy async operations.
+"""
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from app.core.config import settings
+from loguru import logger
+
+# Create the async engine
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    echo=(settings.ENVIRONMENT == "development" and settings.DEBUG),
+    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {}
+)
+
+# Create the async session factory
+AsyncSessionLocal = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autoflush=False
+)
+
+async def init_db() -> None:
+    """
+    Initializes the database by creating all tables.
+    """
+    from app.db.base import Base
+    import app.db.models  # Register models with Base.metadata
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database initialized successfully.")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        raise
+
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+    """
+    Dependency generator for FastAPI routes to obtain a database session.
+    """
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise

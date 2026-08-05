@@ -1,0 +1,3 @@
+"""
+Vizage Backend Application Package.
+"""

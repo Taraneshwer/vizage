@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "vizage-backend"
+version = "0.1.0"
+description = "Vizage Backend Foundation"
+authors = ["Chief Architect"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+asyncio_mode = "auto"

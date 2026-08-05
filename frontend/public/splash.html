@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #111827;
+      color: #E5E7EB;
+      font-family: 'Inter', -apple-system, sans-serif;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      overflow: hidden;
+      user-select: none;
+      -webkit-app-region: drag;
+    }
+    .container {
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+    p {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #9CA3AF;
+    }
+    .spinner {
+      margin: 20px auto 0;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #374151;
+      border-top-color: #3B82F6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MaskShield AI</h1>
+    <p>Starting AI Engine...</p>
+    <div class="spinner"></div>
+  </div>
+</body>
+</html>
