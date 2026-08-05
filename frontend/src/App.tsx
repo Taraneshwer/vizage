@@ -21,25 +21,25 @@ function App() {
   return (
     <>
       {!isReady && <SplashScreen onComplete={() => React_useState(true)} />}
-      
+
       {isReady && (
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<DesktopLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="recognition" element={<Recognition />} />
-              <Route path="enrollment" element={<Enrollment />} />
-              <Route path="history" element={<History />} />
-              <Route path="database" element={<Database />} />
-              <Route path="cameras" element={<Cameras />} />
-              <Route path="system" element={<System />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="logs" element={<Logs />} />
-              <Route path="about" element={<About />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Route>
-          </Routes>
+            <Routes>
+              <Route path="/" element={<DesktopLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="recognition" element={<Recognition />} />
+                <Route path="enrollment" element={<Enrollment />} />
+                <Route path="history" element={<History />} />
+                <Route path="database" element={<Database />} />
+                <Route path="cameras" element={<Cameras />} />
+                <Route path="system" element={<System />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="logs" element={<Logs />} />
+                <Route path="about" element={<About />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Route>
+            </Routes>
           </BrowserRouter>
         </QueryClientProvider>
       )}

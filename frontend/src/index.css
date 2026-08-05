@@ -10,11 +10,12 @@
 }
 
 @layer components {
+
   /* Flat enterprise aesthetic */
   .flat-card {
     @apply bg-card border border-white/5 rounded-md shadow-none;
   }
-  
+
   .flat-panel {
     @apply bg-secondary border-r border-white/5;
   }
@@ -25,13 +26,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #ffffff1a;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff33;
 }
