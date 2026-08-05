@@ -1,0 +1,6 @@
+{
+  "name": "Masked Facial Recognition Security System",
+  "description": "Enterprise-grade surveillance and masked facial recognition system featuring live detection, subject enrollment, identity gallery, security logs, and AI incident analytics.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
