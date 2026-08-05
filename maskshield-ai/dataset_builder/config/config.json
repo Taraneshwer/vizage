@@ -1,0 +1,209 @@
+{
+  "project": {
+    "name": "MaskShield AI Dataset Builder",
+    "version": "1.0.0",
+    "log_level": "DEBUG"
+  },
+
+  "paths": {
+    "datasets_root": "datasets",
+    "download_cache": "datasets/.cache/downloads",
+    "log_dir": "logs",
+    "reports_dir": "reports",
+    "plots_dir": "reports/plots",
+    "checksums_file": "datasets/.cache/checksums.json",
+    "temp_dir": "datasets/.cache/temp"
+  },
+
+  "downloader": {
+    "chunk_size_bytes": 8388608,
+    "max_retries": 5,
+    "retry_backoff_seconds": 2.0,
+    "timeout_seconds": 60,
+    "verify_ssl": true,
+    "resume_enabled": true,
+    "max_concurrent_downloads": 2
+  },
+
+  "validation": {
+    "min_image_size_px": 32,
+    "min_aspect_ratio": 0.25,
+    "max_aspect_ratio": 4.0,
+    "blur_threshold": 80.0,
+    "brightness_min": 20.0,
+    "brightness_max": 235.0,
+    "supported_formats": ["jpg", "jpeg", "png", "bmp", "webp", "tiff"],
+    "duplicate_hash_algorithm": "phash",
+    "duplicate_hash_bits": 8,
+    "max_duplicate_distance": 10
+  },
+
+  "preprocessing": {
+    "target_size": [112, 112],
+    "padding_color": [0, 0, 0],
+    "normalize_mean": [0.5, 0.5, 0.5],
+    "normalize_std": [0.5, 0.5, 0.5],
+    "apply_histogram_equalization": false,
+    "interpolation": "LANCZOS"
+  },
+
+  "augmentation": {
+    "enabled": true,
+    "copies_per_image": 3,
+    "output_format": "jpg",
+    "jpeg_quality": 95,
+    "seed": 42,
+    "transforms": {
+      "rotation": {
+        "enabled": true,
+        "limit_degrees": 15,
+        "probability": 0.5
+      },
+      "brightness_contrast": {
+        "enabled": true,
+        "brightness_limit": 0.2,
+        "contrast_limit": 0.2,
+        "probability": 0.5
+      },
+      "gaussian_noise": {
+        "enabled": true,
+        "var_limit": [10.0, 50.0],
+        "probability": 0.3
+      },
+      "gaussian_blur": {
+        "enabled": true,
+        "blur_limit": [3, 7],
+        "probability": 0.3
+      },
+      "motion_blur": {
+        "enabled": true,
+        "blur_limit": 7,
+        "probability": 0.2
+      },
+      "jpeg_compression": {
+        "enabled": true,
+        "quality_lower": 60,
+        "quality_upper": 95,
+        "probability": 0.3
+      },
+      "horizontal_flip": {
+        "enabled": true,
+        "probability": 0.5
+      },
+      "random_shadow": {
+        "enabled": true,
+        "num_shadows_lower": 1,
+        "num_shadows_upper": 2,
+        "shadow_dimension": 5,
+        "probability": 0.2
+      },
+      "random_mask_simulation": {
+        "enabled": true,
+        "probability": 0.4,
+        "mask_color_range": [[180, 210], [180, 210], [180, 210]],
+        "mask_height_ratio": [0.35, 0.55],
+        "mask_width_ratio": [0.70, 0.95]
+      },
+      "random_sunglasses": {
+        "enabled": true,
+        "probability": 0.2,
+        "tint_color": [20, 20, 20],
+        "alpha": 0.7
+      },
+      "partial_occlusion": {
+        "enabled": true,
+        "probability": 0.3,
+        "max_holes": 3,
+        "max_height_ratio": 0.25,
+        "max_width_ratio": 0.25
+      }
+    }
+  },
+
+  "datasets": {
+    "lfw": {
+      "enabled": true,
+      "url": "http://vis-www.cs.umass.edu/lfw/lfw.tgz",
+      "checksum_sha256": "a17d05bd522c52d84eca14327a23d494d5ff77be22218b3e54f8b3c4ef5d4e68",
+      "archive_type": "tar.gz",
+      "identity_pattern": "lfw/{person_name}/{image_file}",
+      "category": "unmasked"
+    },
+    "celeba": {
+      "enabled": false,
+      "note": "Requires manual download from https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html",
+      "manual_archive_path": "",
+      "identity_attr_file": "identity_CelebA.txt",
+      "category": "unmasked"
+    },
+    "casia_webface": {
+      "enabled": false,
+      "note": "Requires academic licence — place extracted folder path below",
+      "manual_root_path": "",
+      "category": "unmasked"
+    },
+    "vggface2": {
+      "enabled": false,
+      "note": "Requires registration at https://www.robots.ox.ac.uk/~vgg/data/vgg_face2/",
+      "manual_root_path": "",
+      "category": "unmasked"
+    },
+    "rmfd": {
+      "enabled": true,
+      "url": "https://github.com/X-zhangyang/Real-World-Masked-Face-Dataset/archive/refs/heads/master.zip",
+      "checksum_sha256": null,
+      "archive_type": "zip",
+      "category": "masked"
+    },
+    "smfd": {
+      "enabled": false,
+      "note": "Simulated Masked Face Dataset — provide local path",
+      "manual_root_path": "",
+      "category": "masked"
+    },
+    "mafa": {
+      "enabled": false,
+      "note": "Requires academic request — provide extracted path",
+      "manual_root_path": "",
+      "category": "masked"
+    },
+    "wider_face": {
+      "enabled": true,
+      "train_url": "https://huggingface.co/datasets/wider_face/resolve/main/data/WIDER_train.zip",
+      "val_url": "https://huggingface.co/datasets/wider_face/resolve/main/data/WIDER_val.zip",
+      "annotation_url": "http://shuoyang1213.me/WIDERFACE/support/bbx_gt/wider_face_split.zip",
+      "checksum_sha256": null,
+      "archive_type": "zip",
+      "category": "detection"
+    },
+    "maskedface_net": {
+      "enabled": false,
+      "note": "Download CMFD and IMFD zips from https://github.com/cabani/MaskedFace-Net",
+      "cmfd_path": "",
+      "imfd_path": "",
+      "category": "masked"
+    },
+    "custom": {
+      "enabled": false,
+      "root_path": "",
+      "category": "unmasked",
+      "note": "Point root_path to a folder of subfolders named by identity"
+    }
+  },
+
+  "statistics": {
+    "generate_csv": true,
+    "generate_json": true,
+    "generate_plots": true,
+    "min_images_per_identity": 5,
+    "top_identities_for_plot": 30
+  },
+
+  "splits": {
+    "train_ratio": 0.80,
+    "val_ratio": 0.10,
+    "test_ratio": 0.10,
+    "stratify": true,
+    "random_seed": 42
+  }
+}
