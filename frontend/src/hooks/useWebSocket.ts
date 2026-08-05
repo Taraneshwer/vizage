@@ -25,9 +25,10 @@ export interface WSSystemMessage extends WSMessageBase {
 }
 
 export interface WSCameraMessage extends WSMessageBase {
-  frame_id: number;
+  frame_id: string;
   camera_id: string;
   image_base64: string;
+  capture_timestamp?: number;
 }
 
 export interface WSRecognitionMessage extends WSMessageBase {
@@ -38,6 +39,7 @@ export interface WSRecognitionMessage extends WSMessageBase {
   mask_status: boolean;
   recognition_mode: string;
   processing_time_ms: number;
+  capture_timestamp?: number;
 }
 
 export interface WSHistoryMessage extends WSMessageBase {

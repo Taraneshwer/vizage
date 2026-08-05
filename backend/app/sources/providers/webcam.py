@@ -30,18 +30,34 @@ class WebcamSource(StreamingSource):
 
     async def connect(self) -> bool:
         """Synchronous cv2 operations wrapped for async contexts."""
-        # Run cv2 blocking call in a thread pool to avoid blocking the event loop
-        self.cap = await asyncio.to_thread(cv2.VideoCapture, self.config.camera_index)
+        # Use platform-native backends for lower capture overhead
+        import sys
+        api_preference = cv2.CAP_ANY
+        if sys.platform.startswith('win'):
+            api_preference = cv2.CAP_DSHOW
+        elif sys.platform.startswith('linux'):
+            api_preference = cv2.CAP_V4L2
+
+        self.cap = await asyncio.to_thread(cv2.VideoCapture, self.config.camera_index, api_preference)
         
         if self.cap and self.cap.isOpened():
+            # Enforce 1-frame driver-level buffer to ensure real-time retrieval
+            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+            
+            # Explicit FPS
+            fps = self.config.target_fps or 30
+            self.cap.set(cv2.CAP_PROP_FPS, fps)
+            
+            # Explicit Resolution (Defaulting to 640x480)
+            res = self.config.preferred_resolution or (640, 480)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
+
             if self.config.fourcc:
                 self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*self.config.fourcc))
-            if self.config.preferred_resolution:
-                self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.config.preferred_resolution[0])
-                self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.preferred_resolution[1])
                 
             self.health.is_connected = True
-            logger.info(f"Webcam {self.config.camera_index} connected successfully.")
+            logger.info(f"Webcam {self.config.camera_index} connected successfully (API={api_preference}, FPS={fps}, Res={res[0]}x{res[1]}).")
             return True
             
         self.health.last_error = f"Failed to open webcam {self.config.camera_index}"

@@ -24,6 +24,12 @@ export const Recognition: React.FC = () => {
   const FRAME_WIDTH = 640;
   const FRAME_HEIGHT = 480;
 
+  const latencyMs = useMemo(() => {
+    if (!cameraStream || !cameraStream.capture_timestamp) return undefined;
+    const diff = (Date.now() / 1000) - cameraStream.capture_timestamp;
+    return Math.max(0, diff * 1000);
+  }, [cameraStream]);
+
   useEffect(() => {
     if (recognitionStream) {
       const now = Date.now();
@@ -49,17 +55,17 @@ export const Recognition: React.FC = () => {
   // Clean up stale tracking boxes (older than 1.5 seconds)
   useEffect(() => {
     const interval = setInterval(() => {
+      const now = Date.now() / 1000;
       setTrackedFaces(prev => {
         let changed = false;
-        const newMap = new Map(prev);
-        const now = Date.now() / 1000;
-        
-        for (const [id, face] of newMap.entries()) {
-          if (now - face.timestamp > 1.5) {
-            newMap.delete(id);
+        const newMap = new Map();
+        prev.forEach((value, key) => {
+          if (now - value.timestamp < 1.5) {
+            newMap.set(key, value);
+          } else {
             changed = true;
           }
-        }
+        });
         return changed ? newMap : prev;
       });
     }, 500);
@@ -76,7 +82,7 @@ export const Recognition: React.FC = () => {
         <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
           <ErrorState 
             title="Backend Offline"
-            message="Cannot connect to the AI Engine. Recognition paused."
+            message="Cannot connect to the AI Engine. Please check if the Python backend is running."
           />
         </div>
       )}
@@ -85,7 +91,7 @@ export const Recognition: React.FC = () => {
       <div className="flex-1 flex gap-4 min-h-0">
         
         {/* Main CCTV Feed (Left) */}
-        <div className="flex-[3] flex flex-col h-full bg-black border border-white/10 rounded-md relative overflow-hidden">
+        <div className="flex-[3] flex flex-col h-full relative border border-white/5 rounded overflow-hidden bg-black">
           {/* Status Indicator */}
           <div className="absolute top-4 left-4 z-50">
              <StatusBadge status={isLive ? 'success' : 'warning'} dot>
@@ -97,6 +103,7 @@ export const Recognition: React.FC = () => {
             className="w-full h-full border-none rounded-none" 
             isOnline={isCameraConnected} 
             streamUrl={cameraStream ? `data:image/jpeg;base64,${cameraStream.image_base64}` : undefined}
+            latencyMs={latencyMs}
             overlays={
               <div className="absolute inset-0 pointer-events-none">
                 {Array.from(trackedFaces.values()).map(face => {

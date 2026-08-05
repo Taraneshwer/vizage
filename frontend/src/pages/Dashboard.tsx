@@ -44,6 +44,12 @@ export const Dashboard: React.FC = () => {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  const latencyMs = useMemo(() => {
+    if (!cameraStream || !cameraStream.capture_timestamp) return undefined;
+    const diff = (Date.now() / 1000) - cameraStream.capture_timestamp;
+    return Math.max(0, diff * 1000);
+  }, [cameraStream]);
+
   const isLive = isRuntimeConnected && isSystemConnected;
 
   return (
@@ -77,6 +83,7 @@ export const Dashboard: React.FC = () => {
             className="flex-1 border-white/10" 
             isOnline={isCameraConnected} 
             streamUrl={cameraStream ? `data:image/jpeg;base64,${cameraStream.image_base64}` : undefined}
+            latencyMs={latencyMs}
             overlays={
                <div className="w-full h-full p-4 relative pointer-events-none">
                  {/* Raw bounding boxes are hard to map without resolution, so we just show latest recognition info */}

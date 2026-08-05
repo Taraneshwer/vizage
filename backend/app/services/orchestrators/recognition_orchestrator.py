@@ -61,14 +61,39 @@ class RecognitionOrchestrator:
     def _on_frame_received(self, frame: Frame) -> None:
         """Called by CameraRuntime when a frame is ready."""
         try:
+            import time
+            t_dequeue = time.time()
+            t_preprocess_start = time.time()
+            
             # 1. Pipeline Before
             frame = self.pipeline.run_before(frame)
+            t_preprocess_end = time.time()
             
             # 2. Inference Engine (Detection -> Alignment -> AdaFace -> FAISS -> Decision)
+            t_inference_start = time.time()
             context = self.inference_engine.process_frame(frame)
+            t_inference_end = time.time()
             
             # 3. Pipeline After
+            t_postprocess_start = time.time()
             context = self.pipeline.run_after(context)
+            t_postprocess_end = time.time()
+            
+            # Log full latency metrics
+            latency_queue = (t_dequeue - frame.timestamp) * 1000
+            latency_preprocess = (t_preprocess_end - t_preprocess_start) * 1000
+            latency_inference = (t_inference_end - t_inference_start) * 1000
+            latency_postprocess = (t_postprocess_end - t_postprocess_start) * 1000
+            latency_total = (t_postprocess_end - frame.timestamp) * 1000
+            
+            logger.info(
+                f"[Latency Tracker] Frame={frame.frame_id} | "
+                f"Queue={latency_queue:.1f}ms | "
+                f"Pre={latency_preprocess:.1f}ms | "
+                f"Inf={latency_inference:.1f}ms | "
+                f"Post={latency_postprocess:.1f}ms | "
+                f"Backend E2E={latency_total:.1f}ms"
+            )
             
             # 4. Handle Results and Events
             for res in context.detections:
@@ -97,7 +122,8 @@ class RecognitionOrchestrator:
                         tracking_id=res.tracking_id or "untracked",
                         mask_status=res.mask.has_mask if res.mask else False,
                         recognition_mode="Upper" if (res.embedding and getattr(res.embedding, 'is_upper_face', False)) else "Full",
-                        processing_time_ms=context.timers.get("yolo_detection_duration", 0) + context.timers.get("adaface_embedding_duration", 0)
+                        processing_time_ms=context.timers.get("yolo_detection_duration", 0) + context.timers.get("adaface_embedding_duration", 0),
+                        capture_timestamp=frame.timestamp
                     ))
                     
             # 5. Log Session Frame

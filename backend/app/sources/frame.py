@@ -26,6 +26,11 @@ class Frame(BaseModel):
     metadata: Dict[str, Any] = {}
     capture_latency_ms: float = 0.0
     processing_metadata: Dict[str, Any] = {}
+
+    @property
+    def data(self) -> np.ndarray:
+        """Alias for compatibility with legacy components expecting raw image data."""
+        return self.image
     
     @classmethod
     def create(cls, source_id: str, image: np.ndarray, frame_number: int, timestamp: float, metadata: Optional[Dict[str, Any]] = None) -> "Frame":

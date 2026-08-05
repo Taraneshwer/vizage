@@ -16,11 +16,13 @@ class RecognitionStreamMessage(WSMessageBase):
     mask_status: bool
     recognition_mode: str
     processing_time_ms: float
+    capture_timestamp: float
 
 class CameraFrameMessage(WSMessageBase):
     frame_id: str
     camera_id: str
     image_base64: str
+    capture_timestamp: float
 
 class HistoryStreamMessage(WSMessageBase):
     history_id: str

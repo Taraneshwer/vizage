@@ -8,13 +8,17 @@ interface CameraFeedProps {
   isOnline?: boolean;
   className?: string;
   overlays?: React.ReactNode;
+  latencyMs?: number;
+  resolution?: string;
 }
 
 export const CameraFeed: React.FC<CameraFeedProps> = ({ 
   streamUrl, 
   isOnline = true, 
   className,
-  overlays
+  overlays,
+  latencyMs,
+  resolution = "640x480"
 }) => {
   return (
     <Card className={`relative overflow-hidden group flex flex-col ${className || ''}`}>
@@ -67,8 +71,8 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
       
       {/* Bottom overlay bar */}
       <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10 flex justify-between text-[10px] uppercase tracking-wider font-mono text-gray-300">
-        <span>Res: 1920x1080</span>
-        <span>Delay: 12ms</span>
+        <span>Res: {resolution}</span>
+        <span>Delay: {latencyMs !== undefined ? `${latencyMs.toFixed(0)}ms` : '-- ms'}</span>
       </div>
     </Card>
   );

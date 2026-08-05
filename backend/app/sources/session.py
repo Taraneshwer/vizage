@@ -66,9 +66,24 @@ class SourceSession:
 
     async def get_next_frame(self) -> Frame:
         """
-        Asynchronously retrieves the next available frame from the buffer.
+        Asynchronously retrieves the latest available frame from the buffer,
+        discarding older intermediate frames to eliminate pipeline backlog.
         """
+        # Wait until at least one frame is available
         frame = await self.buffer.dequeue()
+        
+        # Drain all remaining queued frames to get the absolute newest frame
+        discarded_count = 0
+        while True:
+            next_frame = self.buffer.dequeue_nowait()
+            if next_frame is None:
+                break
+            discarded_count += 1
+            frame = next_frame
+            
+        if discarded_count > 0:
+            self.buffer.dropped_frames += discarded_count
+            
         self.source.health.total_frames_processed += 1
         return frame
 

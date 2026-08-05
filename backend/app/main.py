@@ -129,7 +129,8 @@ async def lifespan(app: FastAPI):
         asyncio.get_event_loop().create_task(event_bridge.broadcast_camera_frame(
             camera_id=camera_runtime.camera_id,
             frame_id=frame.frame_id,
-            image_matrix=frame.image
+            image_matrix=frame.image,
+            capture_timestamp=frame.timestamp
         ))
         # Run the synchronous orchestrator callback
         _orig_frame_callback(frame)

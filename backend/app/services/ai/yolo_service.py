@@ -51,7 +51,7 @@ class YOLODetectionService:
         if self.model is None:
             raise RuntimeError("YOLO model is not loaded. Call load_model() first.")
             
-        img_array = frame.data
+        img_array = frame.image
         results = []
         
         with self.gpu_manager.autocast():

@@ -51,7 +51,7 @@ class BaseSourceConfig(BaseModel):
     retry_policy: Literal["exponential", "fixed"] = "fixed"
     
     # Buffering
-    frame_buffer_size: int = 30
+    frame_buffer_size: int = 2
     drop_strategy: Literal["oldest", "newest"] = "oldest"
     
     # Target Metrics

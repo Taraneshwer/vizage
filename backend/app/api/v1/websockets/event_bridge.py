@@ -34,7 +34,8 @@ class EventBridge:
             tracking_id=event.tracking_id,
             mask_status=event.mask_status,
             recognition_mode=event.recognition_mode,
-            processing_time_ms=event.processing_time_ms
+            processing_time_ms=event.processing_time_ms,
+            capture_timestamp=event.capture_timestamp
         )
         
         await self.manager.broadcast("recognition", msg.model_dump_json())
@@ -58,7 +59,7 @@ class EventBridge:
         )
         await self.manager.broadcast("history", msg.model_dump_json())
 
-    async def broadcast_camera_frame(self, camera_id: str, frame_id: str, image_matrix):
+    async def broadcast_camera_frame(self, camera_id: str, frame_id: str, image_matrix, capture_timestamp: float = 0.0):
         """Called directly by CameraRuntime or Orchestrator to avoid EventBus memory bloat."""
         # Encode to JPEG
         # Optimization: only encode if there are active connections
@@ -76,7 +77,8 @@ class EventBridge:
             timestamp=time.time(),
             frame_id=frame_id,
             camera_id=camera_id,
-            image_base64=jpg_as_text
+            image_base64=jpg_as_text,
+            capture_timestamp=capture_timestamp
         )
         
         await self.manager.broadcast("camera", msg.model_dump_json())

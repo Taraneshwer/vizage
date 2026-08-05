@@ -29,6 +29,7 @@ class RecognitionEvent(AppEvent):
     mask_status: bool
     recognition_mode: str # 'Upper' or 'Full'
     processing_time_ms: float
+    capture_timestamp: float
 
 class UnknownDetectedEvent(AppEvent):
     camera_id: str
