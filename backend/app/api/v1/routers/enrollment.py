@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from fastapi.responses import StreamingResponse
 from typing import List
 import numpy as np
 import cv2
+import io
+import csv
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.schemas.api_schemas import (
     EnrollmentResponse, 
@@ -39,10 +42,8 @@ async def list_identities(session: AsyncSession = Depends(get_db_session)):
         for ident in identities
     ]
 
-from fastapi.responses import StreamingResponse
-import io
-import csv
-
+# IMPORTANT: /export must be declared BEFORE /{person_id} so FastAPI doesn't
+# interpret the literal string "export" as a person_id path parameter.
 @router.get("/export", summary="Export Identities to CSV")
 async def export_identities(session: AsyncSession = Depends(get_db_session)):
     repo = IdentityRepository(session)
@@ -86,7 +87,7 @@ async def enroll_person(
         nparr = np.frombuffer(contents, np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if image is not None:
-            frames.append(Frame(source_id="api_enrollment", frame_id=i, image=image))
+            frames.append(Frame(source_id="api_enrollment", frame_id=str(i), image=image))
             
     if not frames:
         raise EnrollmentException("No valid images provided for enrollment.")

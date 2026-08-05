@@ -20,8 +20,13 @@ class BackendManager {
         }
         try {
             if (env_1.ENV.isDev) {
-                this.backendProcess = (0, child_process_1.spawn)(env_1.ENV.pythonDevExecutable, [env_1.ENV.pythonDevScript], {
-                    cwd: process.cwd(),
+                const backendDir = require('path').join(__dirname, '..', '..', '..', 'backend');
+                this.backendProcess = (0, child_process_1.spawn)(env_1.ENV.pythonDevExecutable, [
+                    '-m', 'uvicorn', 'app.main:app',
+                    '--host', '127.0.0.1',
+                    '--port', '8000'
+                ], {
+                    cwd: backendDir,
                     env: process.env,
                 });
             }

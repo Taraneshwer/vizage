@@ -18,8 +18,13 @@ export class BackendManager {
 
     try {
       if (ENV.isDev) {
-        this.backendProcess = spawn(ENV.pythonDevExecutable, [ENV.pythonDevScript], {
-          cwd: process.cwd(),
+        const backendDir = require('path').join(__dirname, '..', '..', '..', 'backend');
+        this.backendProcess = spawn(ENV.pythonDevExecutable, [
+          '-m', 'uvicorn', 'app.main:app',
+          '--host', '127.0.0.1',
+          '--port', '8000'
+        ], {
+          cwd: backendDir,
           env: process.env,
         });
       } else {

@@ -17,14 +17,14 @@ class AppEvent(BaseModel):
 # Specific Event Types
 class FrameCapturedEvent(AppEvent):
     camera_id: str
-    frame_id: int
+    frame_id: str
 
 class RecognitionEvent(AppEvent):
     identity_id: str
     verification_score: float
     bbox: tuple # (x1, y1, x2, y2)
     camera_id: str
-    frame_id: int
+    frame_id: str
     tracking_id: str
     mask_status: bool
     recognition_mode: str # 'Upper' or 'Full'
@@ -32,7 +32,7 @@ class RecognitionEvent(AppEvent):
 
 class UnknownDetectedEvent(AppEvent):
     camera_id: str
-    frame_id: int
+    frame_id: str
     tracking_id: str
 
 class HistoryEvent(AppEvent):

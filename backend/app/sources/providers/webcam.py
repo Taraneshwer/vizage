@@ -36,10 +36,9 @@ class WebcamSource(StreamingSource):
         if self.cap and self.cap.isOpened():
             if self.config.fourcc:
                 self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*self.config.fourcc))
-            if self.config.width:
-                self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.config.width)
-            if self.config.height:
-                self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.height)
+            if self.config.preferred_resolution:
+                self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.config.preferred_resolution[0])
+                self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.preferred_resolution[1])
                 
             self.health.is_connected = True
             logger.info(f"Webcam {self.config.camera_index} connected successfully.")

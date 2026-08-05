@@ -28,6 +28,7 @@ class RecognitionOrchestrator:
         self.event_bus = EventBus()
         self.session_manager = RuntimeSessionManager(camera_runtime.camera_id)
         self.recovery_manager = ErrorRecoveryManager()
+        self._camera_task: asyncio.Task = None
         
         self.pipeline = RuntimePipeline()
         self.pipeline.add_middleware(LoggingMiddleware())
@@ -37,12 +38,25 @@ class RecognitionOrchestrator:
         self.camera_runtime.set_callback(self._on_frame_received)
         
     async def start_session(self) -> None:
+        if self._camera_task and not self._camera_task.done():
+            logger.warning("Session already running.")
+            return
         self.session_manager.set_state("RUNNING")
-        await self.camera_runtime.start()
+        # Run the infinite camera loop as a background task so the event loop stays free
+        self._camera_task = asyncio.create_task(self.camera_runtime.start())
+        logger.info("Camera runtime task started in background.")
         
     async def stop_session(self) -> None:
         self.session_manager.set_state("STOPPED")
         await self.camera_runtime.stop()
+        if self._camera_task and not self._camera_task.done():
+            self._camera_task.cancel()
+            try:
+                await self._camera_task
+            except asyncio.CancelledError:
+                pass
+            self._camera_task = None
+        logger.info("Camera runtime task stopped.")
         
     def _on_frame_received(self, frame: Frame) -> None:
         """Called by CameraRuntime when a frame is ready."""

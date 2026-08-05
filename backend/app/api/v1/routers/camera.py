@@ -55,41 +55,9 @@ async def add_camera(data: CameraSourceCreateRequest, session: AsyncSession = De
         created_at=camera.created_at.isoformat()
     )
 
-@router.put("/{camera_id}", response_model=BaseResponse, summary="Update Camera")
-async def update_camera(camera_id: str, data: CameraSourceUpdateRequest, session: AsyncSession = Depends(get_db_session)):
-    repo = CameraRepository(session)
-    camera = await repo.get(camera_id)
-    if not camera:
-        raise HTTPException(status_code=404, detail="Camera not found")
-        
-    if data.name is not None:
-        camera.name = data.name
-    if data.source_type is not None:
-        camera.source_type = data.source_type
-    if data.connection_url is not None:
-        camera.connection_url = data.connection_url
-    
-    return BaseResponse(success=True, message="Camera updated successfully")
-
-@router.post("/{camera_id}/activate", response_model=BaseResponse, summary="Set Active Camera")
-async def activate_camera(camera_id: str, session: AsyncSession = Depends(get_db_session)):
-    repo = CameraRepository(session)
-    camera = await repo.get(camera_id)
-    if not camera:
-        raise HTTPException(status_code=404, detail="Camera not found")
-    
-    await repo.set_active(camera_id)
-    return BaseResponse(success=True, message=f"Camera {camera.name} set as active")
-
-@router.delete("/{camera_id}", response_model=BaseResponse, summary="Delete Camera")
-async def delete_camera(camera_id: str, session: AsyncSession = Depends(get_db_session)):
-    repo = CameraRepository(session)
-    camera = await repo.get(camera_id)
-    if not camera:
-        raise HTTPException(status_code=404, detail="Camera not found")
-        
-    await repo.delete(camera)
-    return BaseResponse(success=True, message="Camera deleted successfully")
+# IMPORTANT: Literal path segments must come BEFORE path parameter routes.
+# These routes (/available, /start, /stop, /status) must be declared before /{camera_id}
+# to prevent FastAPI from matching them as camera_id parameters.
 
 @router.get("/available", response_model=Dict[str, Any], summary="List Available Sources")
 async def get_available_sources():
@@ -140,3 +108,39 @@ async def get_camera_status(runtime: CameraRuntime = Depends(get_camera_runtime)
         fps=stats.get("average_fps", 0.0),
         dropped_frames=stats.get("dropped_frames", 0)
     )
+
+@router.put("/{camera_id}", response_model=BaseResponse, summary="Update Camera")
+async def update_camera(camera_id: str, data: CameraSourceUpdateRequest, session: AsyncSession = Depends(get_db_session)):
+    repo = CameraRepository(session)
+    camera = await repo.get(camera_id)
+    if not camera:
+        raise HTTPException(status_code=404, detail="Camera not found")
+        
+    if data.name is not None:
+        camera.name = data.name
+    if data.source_type is not None:
+        camera.source_type = data.source_type
+    if data.connection_url is not None:
+        camera.connection_url = data.connection_url
+    
+    return BaseResponse(success=True, message="Camera updated successfully")
+
+@router.post("/{camera_id}/activate", response_model=BaseResponse, summary="Set Active Camera")
+async def activate_camera(camera_id: str, session: AsyncSession = Depends(get_db_session)):
+    repo = CameraRepository(session)
+    camera = await repo.get(camera_id)
+    if not camera:
+        raise HTTPException(status_code=404, detail="Camera not found")
+    
+    await repo.set_active(camera_id)
+    return BaseResponse(success=True, message=f"Camera {camera.name} set as active")
+
+@router.delete("/{camera_id}", response_model=BaseResponse, summary="Delete Camera")
+async def delete_camera(camera_id: str, session: AsyncSession = Depends(get_db_session)):
+    repo = CameraRepository(session)
+    camera = await repo.get(camera_id)
+    if not camera:
+        raise HTTPException(status_code=404, detail="Camera not found")
+        
+    await repo.delete(camera)
+    return BaseResponse(success=True, message="Camera deleted successfully")

@@ -18,7 +18,7 @@ class RecognitionStreamMessage(WSMessageBase):
     processing_time_ms: float
 
 class CameraFrameMessage(WSMessageBase):
-    frame_id: int
+    frame_id: str
     camera_id: str
     image_base64: str
 

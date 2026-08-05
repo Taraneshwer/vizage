@@ -33,6 +33,11 @@ from app.core.events import EventBus
 import asyncio
 import time
 
+# Import source providers at module level to trigger @SourceFactory.register decorators
+import app.sources.providers.webcam   # noqa: F401
+import app.sources.providers.rtsp     # noqa: F401
+import app.sources.providers.ip_camera  # noqa: F401
+
 class MockSource(StreamingSource):
     # Fallback mock source if no specific source is injected
     def __init__(self):
@@ -113,6 +118,23 @@ async def lifespan(app: FastAPI):
     streaming_manager = StreamingManager()
     event_bus = EventBus()
     event_bridge = EventBridge(event_bus, streaming_manager)
+    
+    # Wire the camera frame broadcaster into the recognition orchestrator
+    # so every frame received is broadcast to WS /ws/camera clients.
+    # CameraRuntime calls callbacks synchronously, so we schedule async work via create_task.
+    _orig_frame_callback = recognition_orchestrator._on_frame_received
+    def _combined_frame_callback(frame):
+        """Calls the orchestrator pipeline AND schedules a camera frame broadcast."""
+        # Schedule the async broadcast (non-blocking)
+        asyncio.get_event_loop().create_task(event_bridge.broadcast_camera_frame(
+            camera_id=camera_runtime.camera_id,
+            frame_id=frame.frame_id,
+            image_matrix=frame.image
+        ))
+        # Run the synchronous orchestrator callback
+        _orig_frame_callback(frame)
+    
+    camera_runtime.set_callback(_combined_frame_callback)
     
     # Log sink
     loop = asyncio.get_running_loop()

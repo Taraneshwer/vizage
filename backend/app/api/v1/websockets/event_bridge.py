@@ -58,7 +58,7 @@ class EventBridge:
         )
         await self.manager.broadcast("history", msg.model_dump_json())
 
-    async def broadcast_camera_frame(self, camera_id: str, frame_id: int, image_matrix):
+    async def broadcast_camera_frame(self, camera_id: str, frame_id: str, image_matrix):
         """Called directly by CameraRuntime or Orchestrator to avoid EventBus memory bloat."""
         # Encode to JPEG
         # Optimization: only encode if there are active connections

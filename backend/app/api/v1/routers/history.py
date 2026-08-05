@@ -53,28 +53,16 @@ async def clear_history(session: AsyncSession = Depends(get_db_session)):
     await repo.clear_all()
     return BaseResponse(success=True, message="History cleared.")
 
-@router.delete("/{history_id}", response_model=BaseResponse, summary="Delete History Event")
-async def delete_history_event(history_id: str, session: AsyncSession = Depends(get_db_session)):
-    repo = HistoryRepository(session)
-    # wait, HistoryRepository uses BaseModel which has `id` string (uuid)
-    # let's write a quick method or use generic get
-    event = await repo.get(history_id)
-    if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
-    await repo.delete(event)
-    return BaseResponse(success=True, message=f"Event {history_id} deleted.")
-
+# IMPORTANT: /export must be declared BEFORE /{history_id} so FastAPI doesn't
+# interpret the literal string "export" as a history_id path parameter.
 @router.get("/export", summary="Export History to CSV")
 async def export_history(session: AsyncSession = Depends(get_db_session)):
     """Exports history to CSV."""
     repo = HistoryRepository(session)
-    # get all history for export (limit high)
     records, _ = await repo.get_history(limit=100000, offset=0, search=None)
     
     output = io.StringIO()
     writer = csv.writer(output)
-    
-    # Header
     writer.writerow(["Timestamp", "Identity ID", "Name", "Department", "Verification Score", "Mode", "Camera ID", "Tracking ID", "Processing Time (ms)", "State", "Has Mask"])
     
     for r in records:
@@ -93,9 +81,17 @@ async def export_history(session: AsyncSession = Depends(get_db_session)):
         ])
         
     output.seek(0)
-    
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=recognition_history.csv"}
     )
+
+@router.delete("/{history_id}", response_model=BaseResponse, summary="Delete History Event")
+async def delete_history_event(history_id: str, session: AsyncSession = Depends(get_db_session)):
+    repo = HistoryRepository(session)
+    event = await repo.get(history_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    await repo.delete(event)
+    return BaseResponse(success=True, message=f"Event {history_id} deleted.")

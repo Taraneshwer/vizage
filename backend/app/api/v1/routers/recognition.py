@@ -18,7 +18,7 @@ async def process_image_upload(file: UploadFile, engine: InferenceEngine) -> Rec
     if image is None:
         raise RecognitionException(f"Invalid image file: {file.filename}")
         
-    frame = Frame(source_id="api_upload", frame_id=0, image=image)
+    frame = Frame(source_id="api_upload", frame_id="0", image=image)
     context = engine.process_frame(frame)
     
     if not context.detections:

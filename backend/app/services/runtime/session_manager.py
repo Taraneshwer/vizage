@@ -44,7 +44,7 @@ class RuntimeSessionManager:
     def set_state(self, state: str):
         self.state = state
         
-    def log_frame(self):
+    def log_frame(self, *args, **kwargs):
         self.frames_processed += 1
         now = time.time()
         self._frame_times.append(now - self._last_time)
@@ -58,7 +58,7 @@ class RuntimeSessionManager:
     def log_error(self):
         self.error_count += 1
         
-    def log_recognition(self, is_unknown: bool):
+    def log_recognition(self, is_unknown: bool, *args, **kwargs):
         if is_unknown:
             self.unknowns_count += 1
         else:
@@ -85,3 +85,13 @@ class RuntimeSessionManager:
             error_count=self.error_count,
             gpu_memory_mb=gpu_stat.allocated_memory_mb if gpu_stat.is_available else 0
         )
+        
+    def get_session_stats(self) -> dict:
+        return {
+            "state": self.state,
+            "total_frames_processed": self.frames_processed,
+            "average_fps": self.get_fps(),
+            "total_recognitions": self.recognitions_count,
+            "total_unknowns": self.unknowns_count,
+            "dropped_frames": self.dropped_frames
+        }
