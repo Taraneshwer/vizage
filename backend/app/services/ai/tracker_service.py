@@ -38,7 +38,18 @@ class TrackerService:
                 self.gmc_method = 'sparseOptFlow'
                 
         args = TrackerArgs(self.track_thresh, self.track_buffer, self.match_thresh)
-        self.tracker = BYTETracker(args, frame_rate=30)
+        
+        import inspect
+        try:
+            sig = inspect.signature(BYTETracker.__init__)
+            if 'frame_rate' in sig.parameters:
+                self.tracker = BYTETracker(args, frame_rate=30)
+            else:
+                self.tracker = BYTETracker(args)
+        except Exception:
+            # Fallback for unexpected signatures
+            self.tracker = BYTETracker(args)
+            
         logger.info("ByteTrack loaded successfully.")
         
     def unload_model(self) -> None:

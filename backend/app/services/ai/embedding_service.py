@@ -27,6 +27,7 @@ class AdaFaceService:
     def __init__(self, model_path: str = "adaface_ir100.pth"):
         self.model_path = model_path
         self.model = None
+        self.is_loaded = False
         self.gpu_manager = GPUManager()
         if torch:
             self.transform = transforms.Compose([
@@ -39,43 +40,54 @@ class AdaFaceService:
     def load_model(self) -> None:
         logger.info(f"Loading AdaFace from {self.model_path}...")
         
-        if self.model_path.endswith('.onnx'):
-            if ort is None:
-                raise ImportError("onnxruntime is required for ONNX model inference.")
-            providers = ['CUDAExecutionProvider'] if getattr(self.gpu_manager, 'is_cuda', False) else ['CPUExecutionProvider']
-            self.model = ort.InferenceSession(self.model_path, providers=providers)
-            self.is_onnx = True
-            logger.info("AdaFace ONNX model loaded successfully.")
-            return
-
-        if torch is None:
-            raise ImportError("PyTorch is required for AdaFaceService.")
-            
-        # PyTorch fallback
-        import torchvision.models as models
-        self.model = models.resnet50(pretrained=False)
-        self.model.fc = nn.Linear(self.model.fc.in_features, 512)
-        
         try:
-            self.model.load_state_dict(torch.load(self.model_path, map_location='cpu'))
-        except FileNotFoundError:
-            logger.warning(f"AdaFace weights not found at {self.model_path}. Using uninitialized ResNet50.")
+            if self.model_path.endswith('.onnx'):
+                if ort is None:
+                    logger.error("onnxruntime is required for ONNX model inference.")
+                    self.is_loaded = False
+                    return
+                providers = ['CUDAExecutionProvider'] if getattr(self.gpu_manager, 'is_cuda', False) else ['CPUExecutionProvider']
+                self.model = ort.InferenceSession(self.model_path, providers=providers)
+                self.is_onnx = True
+                self.is_loaded = True
+                logger.info("AdaFace ONNX model loaded successfully.")
+                return
+
+            if torch is None:
+                logger.error("PyTorch is required for AdaFaceService.")
+                self.is_loaded = False
+                return
+                
+            # PyTorch fallback
+            import torchvision.models as models
+            self.model = models.resnet50(pretrained=False)
+            self.model.fc = nn.Linear(self.model.fc.in_features, 512)
             
-        self.model.eval()
-        if getattr(self.gpu_manager, 'is_cuda', False):
-            self.model.to('cuda')
-        self.is_onnx = False
-        logger.info("AdaFace PyTorch model loaded successfully.")
+            try:
+                self.model.load_state_dict(torch.load(self.model_path, map_location='cpu'))
+            except FileNotFoundError:
+                logger.warning(f"AdaFace weights not found at {self.model_path}. Using uninitialized ResNet50.")
+                
+            self.model.eval()
+            if getattr(self.gpu_manager, 'is_cuda', False):
+                self.model.to('cuda')
+            self.is_onnx = False
+            self.is_loaded = True
+            logger.info("AdaFace PyTorch model loaded successfully.")
+        except Exception as e:
+            logger.error(f"Failed to load AdaFace model: {e}")
+            self.is_loaded = False
         
     def unload_model(self) -> None:
         if self.model is not None:
             del self.model
             self.model = None
+            self.is_loaded = False
             logger.info("AdaFace model unloaded.")
             
-    def generate_embedding(self, aligned_face: np.ndarray) -> Embedding:
-        if self.model is None:
-            raise RuntimeError("AdaFace model is not loaded.")
+    def generate_embedding(self, aligned_face: np.ndarray) -> Optional[Embedding]:
+        if not getattr(self, 'is_loaded', False) or self.model is None:
+            return None
             
         # Apply transform directly
         if getattr(self, 'is_onnx', False):

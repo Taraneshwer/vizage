@@ -21,25 +21,47 @@ class MediaPipeService:
         self.max_num_faces = max_num_faces
         self.min_detection_confidence = min_detection_confidence
         self.face_mesh = None
+        self.is_loaded = False
         
     def load_model(self) -> None:
+        global mp
         if mp is None:
-            raise ImportError("mediapipe package is required for MediaPipeService.")
+            logger.error("mediapipe package is required for MediaPipeService.")
+            self.is_loaded = False
+            return
             
         logger.info("Loading MediaPipe FaceMesh...")
-        self.mp_face_mesh = mp.solutions.face_mesh
-        self.face_mesh = self.mp_face_mesh.FaceMesh(
-            static_image_mode=True, # We crop images first, so static mode is better
-            max_num_faces=self.max_num_faces,
-            refine_landmarks=True,
-            min_detection_confidence=self.min_detection_confidence
-        )
-        logger.info("MediaPipe FaceMesh loaded successfully.")
+        
+        if not hasattr(mp, 'solutions'):
+            try:
+                import mediapipe.python.solutions
+            except ImportError:
+                pass
+                
+        if not hasattr(mp, 'solutions'):
+            logger.warning("MediaPipe 'solutions' attribute is missing. Running in degraded mode without detailed landmarks.")
+            self.is_loaded = False
+            return
+            
+        try:
+            self.mp_face_mesh = mp.solutions.face_mesh
+            self.face_mesh = self.mp_face_mesh.FaceMesh(
+                static_image_mode=True, # We crop images first, so static mode is better
+                max_num_faces=self.max_num_faces,
+                refine_landmarks=True,
+                min_detection_confidence=self.min_detection_confidence
+            )
+            self.is_loaded = True
+            logger.info("MediaPipe FaceMesh loaded successfully.")
+        except Exception as e:
+            logger.error(f"Failed to initialize MediaPipe FaceMesh: {e}")
+            self.is_loaded = False
         
     def unload_model(self) -> None:
         if self.face_mesh is not None:
             self.face_mesh.close()
             self.face_mesh = None
+            self.is_loaded = False
             logger.info("MediaPipe FaceMesh unloaded.")
             
     def _align_face(self, image: np.ndarray, left_eye: tuple, right_eye: tuple, desired_size: tuple = (112, 112)) -> np.ndarray:
@@ -74,8 +96,14 @@ class MediaPipeService:
         """
         Extracts landmarks from a face crop and returns an aligned image.
         """
-        if self.face_mesh is None:
-            raise RuntimeError("MediaPipe FaceMesh is not loaded.")
+        if not getattr(self, 'is_loaded', False) or self.face_mesh is None:
+            # Degraded fallback mode without detailed landmarks
+            aligned_face = cv2.resize(face_crop, (112, 112))
+            return LandmarkResult(
+                landmarks=np.array([]),
+                aligned_face_crop=aligned_face,
+                upper_face_crop=aligned_face
+            )
             
         # MediaPipe requires RGB
         try:

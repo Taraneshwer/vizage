@@ -21,6 +21,7 @@ class MaskDetectionService:
     def __init__(self, model_path: str = "mask_detector.pth"):
         self.model_path = model_path
         self.model = None
+        self.is_loaded = False
         self.gpu_manager = GPUManager()
         if torch:
             self.transform = transforms.Compose([
@@ -33,34 +34,43 @@ class MaskDetectionService:
             
     def load_model(self) -> None:
         if torch is None:
-            raise ImportError("PyTorch is required for MaskDetectionService.")
+            logger.error("PyTorch is required for MaskDetectionService.")
+            self.is_loaded = False
+            return
             
         logger.info(f"Loading Mask Detector from {self.model_path}...")
-        # For this architectural milestone, we define a dummy architecture 
-        # that would load the actual weights if present.
-        import torchvision.models as models
-        self.model = models.mobilenet_v2(pretrained=False)
-        self.model.classifier[1] = nn.Linear(self.model.last_channel, 2)
         
         try:
-            self.model.load_state_dict(torch.load(self.model_path, map_location='cpu'))
-        except FileNotFoundError:
-            logger.warning(f"Mask model weights not found at {self.model_path}. Using uninitialized weights for architectural testing.")
+            import torchvision.models as models
+            self.model = models.mobilenet_v2(pretrained=False)
+            self.model.classifier[1] = nn.Linear(self.model.last_channel, 2)
             
-        self.model.eval()
-        if getattr(self.gpu_manager, 'is_cuda', False):
-            self.model.to('cuda')
-        logger.info("Mask Detector loaded successfully.")
+            try:
+                self.model.load_state_dict(torch.load(self.model_path, map_location='cpu'))
+                self.model.eval()
+                if getattr(self.gpu_manager, 'is_cuda', False):
+                    self.model.to('cuda')
+                self.is_loaded = True
+                logger.info("Mask Detector loaded successfully.")
+            except FileNotFoundError:
+                logger.warning(f"Mask model weights not found at {self.model_path}. Running in degraded mode (no mask detection).")
+                self.model = None
+                self.is_loaded = False
+        except Exception as e:
+            logger.error(f"Failed to load Mask Detector: {e}")
+            self.model = None
+            self.is_loaded = False
         
     def unload_model(self) -> None:
         if self.model is not None:
             del self.model
             self.model = None
+            self.is_loaded = False
             logger.info("Mask Detector unloaded.")
             
     def detect_mask(self, face_crop: np.ndarray) -> MaskResult:
-        if self.model is None:
-            raise RuntimeError("Mask Detector is not loaded.")
+        if not getattr(self, 'is_loaded', False) or self.model is None:
+            return MaskResult(has_mask=False, confidence=0.0)
             
         # Preprocess
         input_tensor = self.transform(face_crop).unsqueeze(0)

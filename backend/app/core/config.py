@@ -3,9 +3,12 @@ Configuration management using Pydantic Settings.
 Environment variables override these default values.
 """
 
-from typing import Optional
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from app.core.constants import PROJECT_NAME, API_V1_STR, DEFAULT_DB_URL
+
+BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+MODELS_DIR = BACKEND_DIR / "models"
 
 class Settings(BaseSettings):
     """
@@ -26,8 +29,9 @@ class Settings(BaseSettings):
     LOG_DIR: str = "logs"
     
     # AI Models
-    YOLO_MODEL_PATH: str = "best_yolo.onnx"
-    ADAFACE_MODEL_PATH: str = "best_adaface.onnx"
+    YOLO_MODEL_PATH: str = str(MODELS_DIR / "best_yolo.onnx")
+    ADAFACE_MODEL_PATH: str = str(MODELS_DIR / "best_adaface.onnx")
+    MASK_MODEL_PATH: str = str(MODELS_DIR / "mask_detector.pth")
     EXECUTION_PROVIDER: str = "CUDA" # CPU, CUDA, TensorRT
     
     # Tracking

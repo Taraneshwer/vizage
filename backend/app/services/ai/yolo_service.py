@@ -23,37 +23,46 @@ class YOLODetectionService:
         self.model_path = model_path
         self.conf_threshold = conf_threshold
         self.model = None
+        self.is_loaded = False
         self.gpu_manager = GPUManager()
         
     def load_model(self) -> None:
         """Loads the YOLO model into the allocated GPU/CPU."""
         if YOLO is None:
-            raise ImportError("ultralytics package is required for YOLO Detection.")
+            logger.error("ultralytics package is required for YOLO Detection.")
+            self.is_loaded = False
+            return
             
         logger.info(f"Loading YOLO model from {self.model_path}...")
         
-        # YOLO auto-detects .pt, .onnx, and .engine. We specify task to ensure correct inference mode.
-        self.model = YOLO(self.model_path, task='detect')
-        
-        # Only call .to() for PyTorch weights (.pt)
-        if self.model_path.endswith('.pt') and getattr(self.gpu_manager, 'is_cuda', False):
-            self.model.to('cuda')
+        try:
+            # YOLO auto-detects .pt, .onnx, and .engine. We specify task to ensure correct inference mode.
+            self.model = YOLO(self.model_path, task='detect')
             
-        logger.info("YOLO model loaded successfully.")
+            # Only call .to() for PyTorch weights (.pt)
+            if self.model_path.endswith('.pt') and getattr(self.gpu_manager, 'is_cuda', False):
+                self.model.to('cuda')
+                
+            self.is_loaded = True
+            logger.info("YOLO model loaded successfully.")
+        except Exception as e:
+            logger.error(f"Failed to load YOLO model: {e}")
+            self.is_loaded = False
         
     def unload_model(self) -> None:
         """Unloads the YOLO model."""
         if self.model is not None:
             del self.model
             self.model = None
+            self.is_loaded = False
             logger.info("YOLO model unloaded.")
             
     def detect(self, frame: Frame) -> List[DetectionResult]:
         """
         Runs inference on the frame and returns bounding boxes and face crops.
         """
-        if self.model is None:
-            raise RuntimeError("YOLO model is not loaded. Call load_model() first.")
+        if not getattr(self, 'is_loaded', False) or self.model is None:
+            return []
             
         img_array = frame.image
         results = []
