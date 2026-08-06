@@ -8,9 +8,11 @@ from app.services.runtime.recovery import ErrorRecoveryManager
 from app.services.ai.models import RecognitionContext
 from app.services.runtime.inspector import RuntimeInspector
 
+import time
+
 @pytest.fixture
 def mock_frame():
-    return Frame(source_id="test_cam", frame_id=1, image=np.zeros((480, 640, 3), dtype=np.uint8))
+    return Frame.create(source_id="test_cam", image=np.zeros((480, 640, 3), dtype=np.uint8), frame_number=1, timestamp=time.time())
 
 @pytest.fixture
 def mock_context(mock_frame):
@@ -27,12 +29,12 @@ def test_event_bus_publish():
     bus.subscribe(FrameCapturedEvent, handler)
     
     async def run():
-        await bus.publish(FrameCapturedEvent(camera_id="cam_1", frame_id=100))
+        await bus.publish(FrameCapturedEvent(camera_id="cam_1", frame_id="100"))
         
     asyncio.run(run())
     
     assert len(events_received) == 1
-    assert events_received[0].frame_id == 100
+    assert events_received[0].frame_id == "100"
 
 def test_pipeline_middleware(mock_frame, mock_context):
     pipeline = RuntimePipeline()

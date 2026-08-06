@@ -213,6 +213,7 @@ setup_exception_handlers(app)
                  
 api_v1_prefix = "/api/v1"
 app.include_router(health.router)
+app.include_router(health.router, prefix=api_v1_prefix)
 app.include_router(system.router, prefix=api_v1_prefix)
 app.include_router(camera.router, prefix=api_v1_prefix)
 app.include_router(runtime.router, prefix=api_v1_prefix)

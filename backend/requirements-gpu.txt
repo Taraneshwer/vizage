@@ -1,3 +1,11 @@
+# GPU requirements for MaskShield AI Backend
+#
+# Recommended installation steps:
+# 1. Install CUDA-enabled PyTorch & Torchvision:
+#    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# 2. Install these requirements:
+#    pip install -r requirements-gpu.txt
+
 fastapi>=0.103.1
 uvicorn[standard]>=0.23.2
 sqlalchemy>=2.0.20
@@ -17,4 +25,4 @@ lap>=0.4.0
 torch>=2.0.0
 torchvision>=0.15.0
 python-multipart>=0.0.6
-onnxruntime>=1.15.0
+onnxruntime-gpu>=1.15.0
