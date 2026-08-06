@@ -38,8 +38,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center text-gray-900">
       <div className="w-80 flex flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-primary text-gray-900 flex items-center justify-center text-3xl font-bold rounded-md shadow-lg shadow-primary/20">
-            M
+          <div className="w-16 h-16 bg-white flex items-center justify-center rounded-md shadow-lg shadow-primary/20 overflow-hidden">
+            <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">Vizage</h1>

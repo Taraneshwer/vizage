@@ -24,8 +24,8 @@ export const Sidebar: React.FC = () => {
     <aside className="w-64 h-full bg-secondary border-r border-gray-200 flex flex-col justify-between overflow-hidden shrink-0">
       <div>
         <div className="p-5 flex items-center gap-3 border-b border-gray-200 bg-background/50">
-          <div className="w-8 h-8 rounded bg-primary text-gray-900 flex items-center justify-center font-bold text-sm">
-            V
+          <div className="w-8 h-8 rounded bg-white flex items-center justify-center overflow-hidden shrink-0">
+            <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight text-gray-900 leading-tight">Vizage</h1>

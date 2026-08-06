@@ -51,8 +51,8 @@ export const Login = () => {
         className="sm:mx-auto sm:w-full sm:max-w-md z-10"
       >
         <div className="flex justify-center mb-6">
-          <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-sm">
-            <ShieldCheck className="h-8 w-8 text-primary" />
+          <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center border border-primary/20 shadow-sm overflow-hidden">
+            <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
           </div>
         </div>
         <h2 className="text-center text-3xl font-extrabold text-gray-900 tracking-tight">
