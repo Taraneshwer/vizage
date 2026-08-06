@@ -10,11 +10,11 @@ from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Base Event Type
+                 
 class AppEvent(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-# Specific Event Types
+                      
 class FrameCapturedEvent(AppEvent):
     camera_id: str
     frame_id: str
@@ -22,12 +22,12 @@ class FrameCapturedEvent(AppEvent):
 class RecognitionEvent(AppEvent):
     identity_id: str
     verification_score: float
-    bbox: tuple # (x1, y1, x2, y2)
+    bbox: tuple                   
     camera_id: str
     frame_id: str
     tracking_id: str
     mask_status: bool
-    recognition_mode: str # 'Upper' or 'Full'
+    recognition_mode: str                    
     processing_time_ms: float
     capture_timestamp: float
 
@@ -64,7 +64,7 @@ class ErrorEvent(AppEvent):
 
 import threading
 
-# Event Bus Singleton
+                     
 class EventBus:
     _instance = None
     _lock = threading.Lock()
@@ -90,7 +90,7 @@ class EventBus:
             if event_type not in self._subscribers:
                 self._subscribers[event_type] = []
             
-            # Prevent duplicate subscriptions
+                                             
             if callback not in self._subscribers[event_type]:
                 self._subscribers[event_type].append(callback)
                 logger.debug(f"Subscribed {callback.__name__} to {event_type.__name__}")
@@ -100,7 +100,7 @@ class EventBus:
         callbacks = []
         with self._lock:
             if event_type in self._subscribers:
-                callbacks = list(self._subscribers[event_type]) # Copy to avoid mutation issues
+                callbacks = list(self._subscribers[event_type])                                
                 
         if callbacks:
             tasks = [cb(event) for cb in callbacks]
@@ -113,5 +113,5 @@ class EventBus:
         if loop and loop.is_running():
             asyncio.run_coroutine_threadsafe(self.publish(event), loop)
         else:
-            # Fallback if no loop is running, just warn.
+                                                        
             logger.warning(f"Cannot publish {type(event).__name__}: No running event loop found.")

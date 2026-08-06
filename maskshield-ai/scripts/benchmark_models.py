@@ -18,17 +18,17 @@ def benchmark_pytorch(model_path: str, input_tensor: torch.Tensor, warmup=100, i
         print(f"Failed to load PyTorch model {model_path}: {e}")
         return None
         
-    # Warmup
+            
     for _ in range(warmup):
         _ = model(input_tensor)
         
-    # Benchmark
+               
     start_time = time.time()
     for _ in range(iters):
         _ = model(input_tensor)
     end_time = time.time()
     
-    latency = (end_time - start_time) / iters * 1000  # ms
+    latency = (end_time - start_time) / iters * 1000      
     fps = 1000 / latency if latency > 0 else 0
     return {"latency_ms": latency, "fps": fps}
 
@@ -40,17 +40,17 @@ def benchmark_onnx(model_path: str, input_array, warmup=100, iters=500):
         print(f"Failed to load ONNX model {model_path}: {e}")
         return None
         
-    # Warmup
+            
     for _ in range(warmup):
         _ = session.run(None, {input_name: input_array})
         
-    # Benchmark
+               
     start_time = time.time()
     for _ in range(iters):
         _ = session.run(None, {input_name: input_array})
     end_time = time.time()
     
-    latency = (end_time - start_time) / iters * 1000  # ms
+    latency = (end_time - start_time) / iters * 1000      
     fps = 1000 / latency if latency > 0 else 0
     return {"latency_ms": latency, "fps": fps}
 
@@ -59,10 +59,10 @@ def run_benchmarks():
     process = psutil.Process(os.getpid())
     print(f"Initial RAM usage: {process.memory_info().rss / 1024**2:.2f} MB")
     
-    yolo_pt = "yolo11n.pt"  # PyTorch
+    yolo_pt = "yolo11n.pt"           
     yolo_onnx = str(backend_dir / "models" / "production" / "best_yolo.onnx")
     
-    # 1x3x640x640 random tensor for YOLO
+                                        
     dummy_input_pt = torch.rand(1, 3, 640, 640)
     dummy_input_np = dummy_input_pt.numpy()
     

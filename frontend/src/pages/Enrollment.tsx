@@ -14,7 +14,7 @@ const steps = [
   "Review & Save"
 ];
 
-// Helper to convert base64 to Blob
+
 const base64ToBlob = (base64: string, mimeType: string = 'image/jpeg'): Blob => {
   const byteCharacters = atob(base64);
   const byteArrays = [];
@@ -33,11 +33,11 @@ const base64ToBlob = (base64: string, mimeType: string = 'image/jpeg'): Blob => 
 export const Enrollment: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   
-  // Camera & Recognition live streams
+  
   const { data: cameraStream, isConnected: isCameraConnected } = useCameraStream();
   const { data: recognitionStream } = useRecognitionStream();
 
-  // State
+  
   const [captures, setCaptures] = useState<string[]>([]);
   const [quality, setQuality] = useState({
     faceDetected: false,
@@ -45,17 +45,17 @@ export const Enrollment: React.FC = () => {
     avgConfidence: 0
   });
 
-  // Form Data
+  
   const [formData, setFormData] = useState({
     fullName: '',
     employeeId: '',
     department: 'Engineering'
   });
 
-  // Mutation
+  
   const enrollMutation = useEnrollPerson();
 
-  // Real-time quality extraction while capturing
+  
   useEffect(() => {
     if (currentStep === 0 && recognitionStream) {
        setQuality({
@@ -115,7 +115,7 @@ export const Enrollment: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">Guided workflow for registering new users into the system.</p>
         </div>
         
-        {/* Stepper */}
+        {}
         <div className="flex items-center gap-2 text-sm font-medium">
           {steps.map((step, idx) => (
             <React.Fragment key={step}>
@@ -134,7 +134,7 @@ export const Enrollment: React.FC = () => {
       </div>
 
       <Card className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Step Content */}
+        {}
         <div className="flex-1 p-6 flex items-center justify-center bg-secondary/30">
           
           {currentStep === 0 && (
@@ -320,7 +320,7 @@ export const Enrollment: React.FC = () => {
 
         </div>
 
-        {/* Footer Actions */}
+        {}
         {currentStep < 4 && (
           <div className="p-4 border-t border-gray-200 bg-background flex justify-between">
             <Button variant="ghost" onClick={() => setCurrentStep(Math.max(0, currentStep - 1))} disabled={currentStep === 0 || enrollMutation.isPending}>Back</Button>

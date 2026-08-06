@@ -57,7 +57,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         </div>
       )}
       
-      {/* Decorative gradient blob */}
+      {}
       <div className={`absolute -bottom-12 -right-12 w-32 h-32 blur-3xl opacity-20 rounded-full bg-${color} group-hover:opacity-30 transition-opacity pointer-events-none`} />
     </Card>
   );

@@ -33,16 +33,16 @@ from pydantic import ValidationError
 
 from config.models import AppConfig
 
-# ---------------------------------------------------------------------------
-# Sentinel: default config file path
-# ---------------------------------------------------------------------------
+                                                                             
+                                    
+                                                                             
 
 _DEFAULT_CONFIG_PATH: Final[Path] = Path(__file__).parent / "config.json"
 
 
-# ---------------------------------------------------------------------------
-# Public exception
-# ---------------------------------------------------------------------------
+                                                                             
+                  
+                                                                             
 
 
 class ConfigLoadError(RuntimeError):
@@ -59,9 +59,9 @@ class ConfigLoadError(RuntimeError):
         super().__init__(f"Failed to load config from '{path}': {reason}")
 
 
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
+                                                                             
+            
+                                                                             
 
 
 def load_config(config_path: str | Path | None = None) -> AppConfig:
@@ -88,22 +88,21 @@ def load_config(config_path: str | Path | None = None) -> AppConfig:
 
         cfg = load_config()
         print(cfg.project.name)
-        # → 'MaskShield AI Dataset Builder'
     """
     path = Path(config_path) if config_path is not None else _DEFAULT_CONFIG_PATH
 
-    # ------------------------------------------------------------------ #
-    # 1. File existence check
-    # ------------------------------------------------------------------ #
+                                                                          
+                             
+                                                                          
     if not path.exists():
         raise ConfigLoadError(path, "File does not exist.")
 
     if not path.is_file():
         raise ConfigLoadError(path, "Path exists but is not a regular file.")
 
-    # ------------------------------------------------------------------ #
-    # 2. JSON parsing
-    # ------------------------------------------------------------------ #
+                                                                          
+                     
+                                                                          
     try:
         raw_text = path.read_text(encoding="utf-8")
     except OSError as exc:
@@ -120,13 +119,13 @@ def load_config(config_path: str | Path | None = None) -> AppConfig:
     if not isinstance(raw_dict, dict):
         raise ConfigLoadError(path, "Top-level JSON value must be an object.")
 
-    # ------------------------------------------------------------------ #
-    # 3. Pydantic validation
-    # ------------------------------------------------------------------ #
+                                                                          
+                            
+                                                                          
     try:
         return AppConfig.model_validate(raw_dict)
     except ValidationError as exc:
-        # Format pydantic errors into a readable multi-line message.
+                                                                    
         error_lines = [
             f"  [{' → '.join(str(loc) for loc in err['loc'])}] "
             f"{err['msg']} (type={err['type']})"
@@ -154,6 +153,6 @@ def load_config_or_exit(config_path: str | Path | None = None) -> AppConfig:
     try:
         return load_config(config_path)
     except ConfigLoadError as exc:
-        # Print to stderr so it's visible even if stdout is redirected.
+                                                                       
         print(f"\n[FATAL] {exc}\n", file=sys.stderr)
         sys.exit(1)

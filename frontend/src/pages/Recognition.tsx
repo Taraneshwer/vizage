@@ -15,12 +15,12 @@ export const Recognition: React.FC = () => {
   const { data: recognitionStream, isConnected: isRecognitionConnected } = useRecognitionStream();
   const { data: health } = useBackendHealth();
 
-  // Track active faces on screen
+  
   const [trackedFaces, setTrackedFaces] = useState<Map<string, WSRecognitionMessage>>(new Map());
-  // Track all recognitions for the timeline
+  
   const [timeline, setTimeline] = useState<WSRecognitionMessage[]>([]);
   
-  // Ref for the camera container to compute relative bbox if needed (assuming 640x480 for now)
+  
   const FRAME_WIDTH = 640;
   const FRAME_HEIGHT = 480;
 
@@ -41,7 +41,7 @@ export const Recognition: React.FC = () => {
       });
 
       setTimeline(prev => {
-        // Prevent duplicate spam in timeline by same person
+        
         const isDuplicate = prev.length > 0 && 
                             prev[0].identity_id === recognitionStream.identity_id && 
                             (now/1000 - prev[0].timestamp) < 2.0;
@@ -52,7 +52,7 @@ export const Recognition: React.FC = () => {
     }
   }, [recognitionStream]);
 
-  // Clean up stale tracking boxes (older than 1.5 seconds)
+  
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now() / 1000;
@@ -87,12 +87,12 @@ export const Recognition: React.FC = () => {
         </div>
       )}
 
-      {/* Top Main Section */}
+      {}
       <div className="flex-1 flex gap-4 min-h-0">
         
-        {/* Main CCTV Feed (Left) */}
+        {}
         <div className="flex-[3] flex flex-col h-full relative border border-gray-200 rounded overflow-hidden bg-black">
-          {/* Status Indicator */}
+          {}
           <div className="absolute top-4 left-4 z-50">
              <StatusBadge status={isLive ? 'success' : 'warning'} dot>
                 {isLive ? 'LIVE' : 'CONNECTING...'}
@@ -111,9 +111,9 @@ export const Recognition: React.FC = () => {
                   const color = isUnknown ? 'border-warning text-warning' : 'border-success text-success';
                   const bg = isUnknown ? 'bg-warning/20' : 'bg-success/20';
                   
-                  // Map [x, y, w, h] to percentages based on assumed 640x480. 
-                  // If backend sends [x1, y1, x2, y2], width = x2 - x1.
-                  // Most systems send [x, y, w, h]. Let's assume [x, y, w, h].
+                  
+                  
+                  
                   const [x, y, w, h] = face.bbox;
                   const left = `${(x / FRAME_WIDTH) * 100}%`;
                   const top = `${(y / FRAME_HEIGHT) * 100}%`;
@@ -130,14 +130,14 @@ export const Recognition: React.FC = () => {
                       className={`absolute border-[2px] ${color}`}
                       style={{ left, top, width, height }}
                     >
-                      {/* Bounding Box inner highlight */}
+                      {}
                       <motion.div 
                         animate={isUnknown ? { opacity: [0.1, 0.4, 0.1] } : { opacity: 0.2 }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                         className={`w-full h-full ${bg} pointer-events-none`} 
                       />
 
-                      {/* Floating Metadata Panel */}
+                      {}
                       <motion.div 
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -172,7 +172,7 @@ export const Recognition: React.FC = () => {
           />
         </div>
 
-        {/* Right Panel: Current Match */}
+        {}
         <div className="w-80 flex flex-col gap-4 h-full overflow-y-auto pr-1">
           <Card className="p-0 border-primary/50 overflow-hidden flex flex-col">
             <div className="bg-primary/20 p-3 border-b border-primary/30 flex items-center justify-between">
@@ -236,7 +236,7 @@ export const Recognition: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Timeline */}
+      {}
       <Card className="h-40 shrink-0 flex flex-col overflow-hidden">
          <div className="px-4 py-2 bg-secondary border-b border-gray-200 flex items-center justify-between">
            <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Recognition Timeline</h3>

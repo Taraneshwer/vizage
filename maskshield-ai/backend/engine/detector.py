@@ -22,7 +22,7 @@ class FaceDetectorTracker:
         Runs detection and tracking on a single frame.
         Returns a list of tracked faces with bounding boxes and IDs.
         """
-        # YOLO's track method includes ByteTrack if tracker is specified.
+                                                                         
         results = self.model.track(frame, tracker="bytetrack.yaml", persist=True, conf=self.conf_thresh, verbose=False)
         tracked_faces = []
         

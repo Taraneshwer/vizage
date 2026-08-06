@@ -9,11 +9,11 @@ logger = get_logger(__name__)
 
 class ThresholdManager:
     def __init__(self):
-        # Default thresholds
+                            
         self._thresholds: Dict[str, float] = {
-            "masked_verification_min": 0.55, # Stricter for upper-face only
+            "masked_verification_min": 0.55,                               
             "unmasked_verification_min": 0.60,
-            "unknown_max": 0.45,             # Below this is strictly unknown
+            "unknown_max": 0.45,                                             
             "quality_min": 0.50,
             "temporal_stability_min": 0.70
         }

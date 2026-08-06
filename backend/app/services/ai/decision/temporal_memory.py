@@ -23,7 +23,7 @@ class TrackHistory:
     def dominant_identity(self) -> str:
         if not self.candidates:
             return "UNKNOWN"
-        # Find most frequent candidate ID in window
+                                                   
         counts = {}
         for c in self.candidates:
             counts[c] = counts.get(c, 0) + 1

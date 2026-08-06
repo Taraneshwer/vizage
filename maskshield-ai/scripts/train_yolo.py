@@ -21,7 +21,7 @@ def train_yolo(data_yaml: str, epochs: int = 100, batch_size: int = 16, imgsz: i
 
     logger.info(f"Starting YOLO training. Model: {model_path}, Data: {data_yaml}, Epochs: {epochs}")
     
-    # Check for existing checkpoint for auto-resume
+                                                   
     project_dir = Path('runs/train').absolute()
     last_pt = project_dir / 'yolo_mask_face' / 'weights' / 'last.pt'
     if last_pt.exists():
@@ -29,10 +29,10 @@ def train_yolo(data_yaml: str, epochs: int = 100, batch_size: int = 16, imgsz: i
         model_path = str(last_pt)
         resume = True
     
-    # Load a model
+                  
     model = YOLO(model_path) 
         
-    # Train the model
+                     
     try:
         results = model.train(
             data=data_yaml,
@@ -44,10 +44,10 @@ def train_yolo(data_yaml: str, epochs: int = 100, batch_size: int = 16, imgsz: i
             project=str(project_dir),
             name='yolo_mask_face',
             exist_ok=True,
-            patience=15,          # Early stopping
-            amp=True,             # Mixed precision
+            patience=15,                          
+            amp=True,                              
             workers=8,
-            save_period=1         # Save checkpoint every epoch
+            save_period=1                                      
         )
     except KeyboardInterrupt:
         logger.warning("Training interrupted by user. YOLO automatically saves last.pt gracefully.")
@@ -55,7 +55,7 @@ def train_yolo(data_yaml: str, epochs: int = 100, batch_size: int = 16, imgsz: i
     
     logger.info(f"Training completed. Results saved to {results.save_dir}")
     
-    # Export the model
+                      
     logger.info("Exporting to ONNX and Engine...")
     try:
         model.export(format='onnx', dynamic=True)

@@ -33,7 +33,7 @@ class ESP32Source(StreamingSource):
     async def connect(self) -> bool:
         self.client = httpx.AsyncClient(timeout=self.config.connection_timeout_sec)
         try:
-            # Set resolution if endpoint is available
+                                                     
             base_url = self.config.stream_url.rsplit("/", 1)[0]
             await self.client.get(f"{base_url}/control?var=framesize&val={self.config.resolution_mode}")
             self.health.is_connected = True
@@ -69,7 +69,7 @@ class ESP32Source(StreamingSource):
             return None
             
         try:
-            # Grabbing single frame snapshot
+                                            
             response = await self.client.get(self.config.stream_url)
             if response.status_code == 200:
                 np_arr = np.frombuffer(response.content, np.uint8)

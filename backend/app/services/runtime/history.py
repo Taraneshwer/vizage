@@ -15,4 +15,4 @@ class RecognitionHistoryEntry(BaseModel):
     tracking_id: str
     similarity: float
     recognition_mode: str
-    image_reference: Optional[str] = None # Path to saved image crop
+    image_reference: Optional[str] = None                           

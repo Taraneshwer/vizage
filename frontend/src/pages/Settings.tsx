@@ -33,7 +33,7 @@ export const Settings = () => {
     updateSettings.mutate(localSettings, {
       onSuccess: () => {
         refetch();
-        // Optional: show toast notification
+        
       }
     });
   };

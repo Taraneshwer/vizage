@@ -14,7 +14,7 @@ try:
 except ImportError:
     mp = None
 
-# Configure logging
+                   
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class DatasetPreparer:
         self.yolo_dir = self.output_root / "yolo"
         self.arcface_dir = self.output_root / "arcface"
         
-        # Initialize MediaPipe for alignment
+                                            
         if mp:
             self.mp_face_mesh = mp.solutions.face_mesh
             self.face_mesh = self.mp_face_mesh.FaceMesh(
@@ -91,7 +91,7 @@ class DatasetPreparer:
         """Processes images, removes duplicates/blurry, splits and saves in YOLO and ArcFace formats."""
         logger.info("Starting dataset preparation...")
         
-        # Setup directories
+                           
         for split in ['train', 'val', 'test']:
             (self.yolo_dir / 'images' / split).mkdir(parents=True, exist_ok=True)
             (self.yolo_dir / 'labels' / split).mkdir(parents=True, exist_ok=True)
@@ -100,7 +100,7 @@ class DatasetPreparer:
         seen_hashes = set()
         metadata = {'processed': 0, 'corrupt': 0, 'blurry': 0, 'duplicates': 0, 'valid': 0}
         
-        # Class 0: Face, Class 1: Masked Face
+                                             
         classes = {'lfw': 0, 'mask': 1, 'IMFD': 0, 'CMFD': 1}
         
         all_images = []
@@ -118,7 +118,7 @@ class DatasetPreparer:
         random.seed(42)
         random.shuffle(all_images)
         
-        # Train/Val/Test split (70/20/10)
+                                         
         n = len(all_images)
         train_end = int(0.7 * n)
         val_end = int(0.9 * n)
@@ -126,28 +126,28 @@ class DatasetPreparer:
         for idx, (img_path, class_id) in enumerate(tqdm(all_images, desc="Processing Images")):
             metadata['processed'] += 1
             
-            # 1. Duplicate check
+                                
             img_hash = self._hash_image(str(img_path))
             if img_hash in seen_hashes:
                 metadata['duplicates'] += 1
                 continue
             seen_hashes.add(img_hash)
             
-            # 2. Corrupt check
+                              
             img = cv2.imread(str(img_path))
             if img is None or img.size == 0:
                 metadata['corrupt'] += 1
                 continue
                 
-            # 3. Blurry check
+                             
             if self._is_blurry(img):
                 metadata['blurry'] += 1
                 continue
                 
-            # 4. Align face (for ArcFace)
+                                         
             aligned_img = self._align_face(img)
             
-            # Assign split
+                          
             if idx < train_end:
                 split = 'train'
             elif idx < val_end:
@@ -157,19 +157,19 @@ class DatasetPreparer:
                 
             out_name = f"{img_hash}.jpg"
             
-            # Save YOLO format (just copy the original image or resized image, here we save aligned for face tasks)
-            # For YOLO detection, we assume the whole image is the face if it's already cropped in the dataset
+                                                                                                                   
+                                                                                                              
             yolo_img_path = self.yolo_dir / 'images' / split / out_name
-            cv2.imwrite(str(yolo_img_path), img) # Save unaligned for YOLO
+            cv2.imwrite(str(yolo_img_path), img)                          
             
             yolo_lbl_path = self.yolo_dir / 'labels' / split / f"{img_hash}.txt"
             h, w = img.shape[:2]
-            # Bounding box is the whole image since these are cropped datasets
+                                                                              
             with open(yolo_lbl_path, 'w') as f:
                 f.write(f"{class_id} 0.5 0.5 1.0 1.0\n")
                 
-            # Save ArcFace format (aligned) - group by identity if available (LFW has folders)
-            # Mask dataset might not have identities, so we use dummy identity or use it just for robust training
+                                                                                              
+                                                                                                                 
             identity = img_path.parent.name
             arcface_id_dir = self.arcface_dir / split / identity
             arcface_id_dir.mkdir(parents=True, exist_ok=True)
@@ -177,7 +177,7 @@ class DatasetPreparer:
             
             metadata['valid'] += 1
 
-        # Generate YAML for YOLO
+                                
         yolo_yaml = {
             'path': str(self.yolo_dir.absolute()).replace("\\", "/"),
             'train': 'images/train',
@@ -195,7 +195,7 @@ class DatasetPreparer:
                 else:
                     f.write(f"{k}: '{v}'\n")
                     
-        # Save Metadata
+                       
         with open(self.output_root / 'metadata.json', 'w') as f:
             json.dump(metadata, f, indent=4)
             

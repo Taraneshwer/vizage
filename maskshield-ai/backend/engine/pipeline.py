@@ -10,13 +10,13 @@ from embedder import AdaFaceEmbedder
 def main():
     logger.info("Initializing MaskShield AI Core Engine (Milestone 1)...")
     
-    # Ensure models directory exists for future downloads
+                                                         
     os.makedirs("../../models", exist_ok=True)
     
-    # Initialize Pipeline Components
+                                    
     try:
         capture = VideoCaptureThread(source=0).start()
-        # Fallback to standard yolov8n.pt if a dedicated face model isn't provided yet
+                                                                                      
         detector = FaceDetectorTracker(model_path="yolov8n.pt") 
         aligner = FaceAligner()
         embedder = AdaFaceEmbedder(model_path="../../models/adaface.pt")

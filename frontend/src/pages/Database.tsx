@@ -19,11 +19,11 @@ export const Database: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<IdentityModel | null>(null);
   
-  // Edit State
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', department: '', notes: '' });
 
-  // Delete State
+  
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const filteredPeople = useMemo(() => {
@@ -186,7 +186,7 @@ export const Database: React.FC = () => {
         )}
       </div>
 
-      {/* Side Panel */}
+      {}
       <AnimatePresence>
         {selectedPerson && (
           <motion.div
@@ -264,7 +264,7 @@ export const Database: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation Modal */}
+      {}
       <AnimatePresence>
         {showDeleteConfirm && (
           <motion.div 

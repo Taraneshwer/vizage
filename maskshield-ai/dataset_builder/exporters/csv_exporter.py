@@ -45,9 +45,9 @@ from config.models import AppConfig
 from exporters.stats_collector import DatasetStats
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class CsvExportPaths(BaseModel):
@@ -66,9 +66,9 @@ class CsvExportPaths(BaseModel):
     resolution_csv: Path
 
 
-# ---------------------------------------------------------------------------
-# Exporter
-# ---------------------------------------------------------------------------
+                                                                             
+          
+                                                                             
 
 
 class CsvExporter:
@@ -82,9 +82,9 @@ class CsvExporter:
         self._cfg = cfg
         self._reports_dir = Path(cfg.paths.reports_dir)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def export(
         self,
@@ -121,9 +121,9 @@ class CsvExporter:
             resolution_csv=resolution_path,
         )
 
-    # ------------------------------------------------------------------
-    # Private: individual report writers
-    # ------------------------------------------------------------------
+                                                                        
+                                        
+                                                                        
 
     def _write_summary(self, stats: DatasetStats, dest: Path) -> Path:
         """Write dataset-level summary as a single-row CSV.
@@ -208,9 +208,9 @@ class CsvExporter:
         return out_path
 
 
-# ---------------------------------------------------------------------------
-# Module-level helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 def _atomic_write_csv(

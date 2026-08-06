@@ -17,12 +17,12 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Mock IR50 (ResNet50 based for demonstration) 
-# In a full implementation, you would use the exact AdaFace IR50/IR100 architecture
+                                               
+                                                                                   
 class FaceModel(nn.Module):
     def __init__(self, embedding_size=512):
         super(FaceModel, self).__init__()
-        # Use standard resnet50 as a backbone
+                                             
         self.backbone = models.resnet50(pretrained=True)
         self.backbone.fc = nn.Linear(self.backbone.fc.in_features, embedding_size)
         self.bn = nn.BatchNorm1d(embedding_size)
@@ -32,7 +32,7 @@ class FaceModel(nn.Module):
         x = self.bn(x)
         return x
 
-# ArcFace / AdaFace Margin Loss (Simplified ArcFace implementation)
+                                                                   
 class ArcFaceMargin(nn.Module):
     def __init__(self, in_features, out_features, s=64.0, m=0.50):
         super(ArcFaceMargin, self).__init__()
@@ -93,7 +93,7 @@ def train_adaface(data_dir: str, epochs: int = 20, batch_size: int = 64, lr: flo
     margin = ArcFaceMargin(in_features=512, out_features=num_classes).to(device)
     
     criterion = nn.CrossEntropyLoss()
-    # Optimizer includes both model and margin parameters
+                                                         
     optimizer = optim.SGD([{'params': model.parameters()}, {'params': margin.parameters()}], lr=lr, momentum=0.9, weight_decay=5e-4)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
     
@@ -102,7 +102,7 @@ def train_adaface(data_dir: str, epochs: int = 20, batch_size: int = 64, lr: flo
     start_epoch = 0
     best_loss = float('inf')
     
-    # Auto-resume
+                 
     last_ckpt = Path(save_dir) / 'last_adaface.pth'
     if last_ckpt.exists():
         logger.info(f"Found checkpoint at {last_ckpt}. Resuming...")
@@ -152,13 +152,13 @@ def train_adaface(data_dir: str, epochs: int = 20, batch_size: int = 64, lr: flo
             avg_loss = total_loss / len(train_loader)
             logger.info(f"Epoch {epoch+1} Average Loss: {avg_loss:.4f}")
             
-            # Save best model
+                             
             if avg_loss < best_loss:
                 best_loss = avg_loss
                 torch.save(model.state_dict(), Path(save_dir) / 'best_adaface.pth')
                 logger.info("Saved best model.")
                 
-            # Save last model (checkpoint)
+                                          
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -170,7 +170,7 @@ def train_adaface(data_dir: str, epochs: int = 20, batch_size: int = 64, lr: flo
     except KeyboardInterrupt:
         logger.warning("Training interrupted by user. Gracefully shutting down...")
         
-    # Export to ONNX
+                    
     logger.info("Exporting to ONNX...")
     model.eval()
     dummy_input = torch.randn(1, 3, 112, 112, device=device)

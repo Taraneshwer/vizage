@@ -26,7 +26,7 @@ class InferenceEngine:
         self.decision_engine = IdentityDecisionEngine()
         self._is_ready = False
         
-        # We fetch the instantiated services from the ModelManager
+                                                                  
         try:
             self.yolo: YOLODetectionService = self.model_manager.get_service("YOLO11")
             self.mediapipe: MediaPipeService = self.model_manager.get_service("MediaPipe")
@@ -49,7 +49,7 @@ class InferenceEngine:
             
         timers = context.timers
         
-        # 1. Face Detection
+                           
         self.perf_monitor.start_timer(timers, "yolo_detection")
         try:
             detections = self.yolo.detect(frame)
@@ -59,7 +59,7 @@ class InferenceEngine:
         det_time = self.perf_monitor.stop_timer(timers, "yolo_detection")
         self.model_manager.update_model_metrics("YOLO11", det_time)
         
-        # 1.5 ByteTrack Tracking
+                                
         self.perf_monitor.start_timer(timers, "bytetrack")
         try:
             tracked_detections = self.tracker.update(detections, frame.image)
@@ -69,12 +69,12 @@ class InferenceEngine:
         track_time = self.perf_monitor.stop_timer(timers, "bytetrack")
         self.model_manager.update_model_metrics("Tracker", track_time)
         
-        # 2. Process each detected face
+                                       
         for idx, det in enumerate(tracked_detections):
             tracking_id = getattr(det, 'tracking_id', f"track_{idx}")
             result = RecognitionResult(detection=det, is_unknown=True, tracking_id=tracking_id)
             
-            # 2.1 Landmark Alignment
+                                    
             if det.face_crop is not None and det.face_crop.size > 0:
                 self.perf_monitor.start_timer(timers, "mediapipe_landmarks")
                 try:
@@ -85,7 +85,7 @@ class InferenceEngine:
                 mp_time = self.perf_monitor.stop_timer(timers, "mediapipe_landmarks")
                 self.model_manager.update_model_metrics("MediaPipe", mp_time)
                 
-                # 2.2 Mask Detection
+                                    
                 self.perf_monitor.start_timer(timers, "mask_detection")
                 try:
                     mask_res = self.mask.detect_mask(det.face_crop)
@@ -95,9 +95,9 @@ class InferenceEngine:
                 mask_time = self.perf_monitor.stop_timer(timers, "mask_detection")
                 self.model_manager.update_model_metrics("MaskDetector", mask_time)
                 
-                # 2.3 AdaFace Embedding (Adaptive)
+                                                  
                 if result.landmarks and result.landmarks.aligned_face_crop is not None:
-                    # Adaptive Embedding Strategy
+                                                 
                     is_masked = result.mask.has_mask if result.mask else False
                     if is_masked and result.landmarks.upper_face_crop is not None:
                         face_for_embedding = result.landmarks.upper_face_crop
@@ -116,14 +116,14 @@ class InferenceEngine:
                     ada_time = self.perf_monitor.stop_timer(timers, "adaface_embedding")
                     self.model_manager.update_model_metrics("AdaFace", ada_time)
                     
-                    # 2.4 FAISS Search & Decision Engine
+                                                        
                     if result.embedding:
                         self.perf_monitor.start_timer(timers, "faiss_search")
                         try:
-                            # Fetch top 5 for Candidate Ranker
+                                                              
                             raw_candidates = self.faiss.search(result.embedding, k=5)
                             
-                            # Push through Identity Decision Engine
+                                                                   
                             result = self.decision_engine.process(result, raw_candidates)
                         except Exception as e:
                             logger.error(f"FAISS Search or Decision Engine failed: {e}")

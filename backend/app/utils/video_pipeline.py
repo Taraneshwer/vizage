@@ -15,7 +15,7 @@ class VideoPipelineUtils:
         Downsamples a list of frames to meet a target FPS.
         (Implementation left for future milestones)
         """
-        # Placeholder for complex temporal sampling
+                                                   
         return frames
 
     @staticmethod
@@ -23,7 +23,7 @@ class VideoPipelineUtils:
         """
         Removes identical consecutive frames.
         """
-        # Placeholder for structural similarity checks
+                                                      
         return frames
 
     @staticmethod
@@ -31,7 +31,7 @@ class VideoPipelineUtils:
         """
         Filters out blurry frames using variance of Laplacian.
         """
-        # Placeholder for CV2 laplacian checks
+                                              
         return frames
 
     @staticmethod

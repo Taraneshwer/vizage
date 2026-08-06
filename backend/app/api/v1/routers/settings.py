@@ -13,7 +13,7 @@ async def get_current_settings(config: RuntimeConfig = Depends(get_settings)):
 @router.put("", response_model=BaseResponse, summary="Update Runtime Settings")
 async def update_settings(updates: Dict[str, Any], config: RuntimeConfig = Depends(get_settings)):
     """Update settings (requires application restart for some to take effect)."""
-    # Just update the pydantic model in memory for now
+                                                      
     for k, v in updates.items():
         if hasattr(config, k):
             setattr(config, k, v)

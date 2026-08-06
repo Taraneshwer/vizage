@@ -24,7 +24,7 @@ class PerformanceMonitor:
         if start_key not in context_timers:
             return 0.0
             
-        duration = (time.perf_counter() - context_timers[start_key]) * 1000 # to ms
+        duration = (time.perf_counter() - context_timers[start_key]) * 1000        
         context_timers[f"{operation}_duration"] = duration
         
         self._record_metric(operation, duration)

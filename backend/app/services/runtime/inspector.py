@@ -22,16 +22,16 @@ class RuntimeInspector:
             "gpu": self.gpu_manager.get_status().model_dump(),
             "models": [m.model_dump() for m in self.model_manager.get_all_status()],
             "system": {
-                "active_sessions": 0, # Could link to a global session registry if implemented
+                "active_sessions": 0,                                                         
             }
         }
         
-        # Check if any model is in Error state
+                                              
         for m in report["models"]:
             if m["status"] == "Error":
                 report["health"] = "DEGRADED"
                 
-        # Check GPU memory
+                          
         if report["gpu"]["is_available"]:
             if report["gpu"]["free_memory_mb"] < 500:
                 report["health"] = "CRITICAL_MEMORY"

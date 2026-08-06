@@ -27,7 +27,7 @@ class TrackerService:
             logger.warning("ultralytics trackers not found. We will use a mock tracker.")
             return
             
-        # We need to construct arguments for BYTETracker
+                                                        
         class TrackerArgs:
             def __init__(self, track_thresh, track_buffer, match_thresh):
                 self.track_high_thresh = track_thresh
@@ -47,7 +47,7 @@ class TrackerService:
             else:
                 self.tracker = BYTETracker(args)
         except Exception:
-            # Fallback for unexpected signatures
+                                                
             self.tracker = BYTETracker(args)
             
         logger.info("ByteTrack loaded successfully.")
@@ -64,42 +64,42 @@ class TrackerService:
             return []
             
         if self.tracker is None:
-            # Fallback mock tracker if not installed
+                                                    
             for idx, det in enumerate(detections):
                 det.tracking_id = f"mock_{idx}"
             return detections
             
-        # Format detections for ByteTrack: [x1, y1, x2, y2, conf, class]
+                                                                        
         dets_array = []
         for det in detections:
             dets_array.append([
                 det.bbox.x1, det.bbox.y1, det.bbox.x2, det.bbox.y2, 
-                det.confidence, 0 # Class 0 for face
+                det.confidence, 0                   
             ])
             
         dets_tensor = np.array(dets_array)
         
-        # ByteTrack requires torch tensors if using ultralytics internals in some versions, 
-        # but the tracker update usually takes numpy arrays or tensors.
+                                                                                            
+                                                                       
         import torch
         dets_tensor = torch.tensor(dets_tensor)
         
-        # Update tracker
+                        
         tracks = self.tracker.update(dets_tensor, frame_img)
         
         tracked_results = []
-        # Match tracks back to original detections (simplified via IOU or just taking tracker outputs)
-        # Tracks format: [x1, y1, x2, y2, track_id, conf, class]
+                                                                                                      
+                                                                
         
         for track in tracks:
             x1, y1, x2, y2, track_id, conf, cls = track
             
-            # Check min area
+                            
             area = (x2 - x1) * (y2 - y1)
             if area < self.min_box_area:
                 continue
                 
-            # Extract new crop based on smoothed bounding box
+                                                             
             h, w = frame_img.shape[:2]
             cx1, cy1 = max(0, int(x1)), max(0, int(y1))
             cx2, cy2 = min(w, int(x2)), min(h, int(y2))
@@ -109,8 +109,8 @@ class TrackerService:
             if face_crop.size == 0:
                 continue
                 
-            # Find the original detection to preserve landmarks/mask if already computed (though they shouldn't be yet)
-            # In our pipeline, Tracker comes AFTER YOLO, BEFORE MediaPipe
+                                                                                                                       
+                                                                         
             
             from .models import DetectionResult, BoundingBox
             tracked_results.append(DetectionResult(

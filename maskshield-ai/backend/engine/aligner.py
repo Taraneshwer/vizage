@@ -35,9 +35,9 @@ class FaceAligner:
         rgb_crop = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
         results = self.face_mesh.process(rgb_crop)
         
-        # In a full production setup with full landmarks, we calculate an affine transform.
-        # For Milestone 1, verifying the pipeline, standard resizing of the accurate crop suffices
-        # if landmarks validate the presence of a face.
+                                                                                           
+                                                                                                  
+                                                       
         if results.multi_face_landmarks:
             aligned_face = cv2.resize(face_crop, self.output_size)
             return aligned_face

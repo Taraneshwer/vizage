@@ -56,5 +56,5 @@ class EnrollmentImportService:
             logger.error(f"Cannot import from unknown static source {source_id}")
             return []
             
-        frame = await source.read_image() # type: ignore
+        frame = await source.read_image()               
         return [frame] if frame else []

@@ -8,10 +8,10 @@ class RuntimeConfig(BaseModel):
     target_fps: int = 15
     max_frame_queue_size: int = 10
     camera_reconnect_delay_sec: float = 5.0
-    batch_size: int = 1 # Future proofing
-    runtime_mode: str = "PRODUCTION" # Or DEBUG, PROFILING
+    batch_size: int = 1                  
+    runtime_mode: str = "PRODUCTION"                      
     
-    # UI Settings
+                 
     theme: str = "Dark (Enterprise)"
     language: str = "English"
     confidence_threshold: float = 98.0
@@ -23,5 +23,5 @@ class RuntimeConfig(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-# Global config instance (could be loaded from DB/YAML later)
+                                                             
 app_runtime_config = RuntimeConfig()

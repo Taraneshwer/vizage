@@ -25,18 +25,18 @@ import tempfile
 from collections.abc import Iterator
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Supported image extensions (lowercase, without leading dot)
-# ---------------------------------------------------------------------------
+                                                                             
+                                                             
+                                                                             
 
 IMAGE_EXTENSIONS: frozenset[str] = frozenset(
     {"jpg", "jpeg", "png", "bmp", "webp", "tiff", "tif"}
 )
 
 
-# ---------------------------------------------------------------------------
-# Directory helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 def ensure_dir(path: Path) -> Path:
@@ -103,9 +103,9 @@ def remove_empty_dirs(root: Path) -> int:
     return removed
 
 
-# ---------------------------------------------------------------------------
-# File operations
-# ---------------------------------------------------------------------------
+                                                                             
+                 
+                                                                             
 
 
 def safe_move(src: Path, dst: Path) -> Path:
@@ -172,7 +172,7 @@ def atomic_write_text(path: Path, content: str, encoding: str = "utf-8") -> None
             fh.write(content)
         os.replace(tmp_path, path)
     except Exception:
-        # Best-effort cleanup of temp file on failure.
+                                                      
         try:
             os.unlink(tmp_path)
         except OSError:
@@ -180,9 +180,9 @@ def atomic_write_text(path: Path, content: str, encoding: str = "utf-8") -> None
         raise
 
 
-# ---------------------------------------------------------------------------
-# Image iteration
-# ---------------------------------------------------------------------------
+                                                                             
+                 
+                                                                             
 
 
 def iter_images(
@@ -231,9 +231,9 @@ def count_files(root: Path, pattern: str = "**/*") -> int:
     return sum(1 for p in root.glob(pattern) if p.is_file())
 
 
-# ---------------------------------------------------------------------------
-# String / metadata helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                           
+                                                                             
 
 
 def extension_of(path: Path) -> str:
@@ -270,7 +270,7 @@ def human_size(num_bytes: int) -> str:
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if abs(num_bytes) < 1024.0:
             return f"{num_bytes:.2f} {unit}"
-        num_bytes = int(num_bytes / 1024.0)  # type: ignore[assignment]
+        num_bytes = int(num_bytes / 1024.0)                            
     return f"{num_bytes:.2f} PB"
 
 

@@ -24,9 +24,9 @@ async def process_image_upload(file: UploadFile, engine: InferenceEngine) -> Rec
     if not context.detections:
         raise RecognitionException("No faces detected in image.")
         
-    # For single image REST API, we return the primary (largest) face or all faces.
-    # The requirement says Return RecognitionResult for single image.
-    det = context.detections[0] # Taking the first one for simplicity
+                                                                                   
+                                                                     
+    det = context.detections[0]                                      
     
     candidate_model = None
     if det.candidate:
@@ -76,7 +76,7 @@ async def recognize_batch(
             res = await process_image_upload(file, engine)
             results.append(res)
         except Exception as e:
-            # We skip failed images in batch or log them
+                                                        
             pass
             
     return BatchRecognitionResultModel(success=True, results=results)

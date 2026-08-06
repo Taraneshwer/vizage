@@ -41,7 +41,7 @@ class EnrollmentOrchestrator:
         for frame in frames:
             context = self.inference.process_frame(frame)
             
-            # We assume for enrollment, there should be exactly ONE face per frame
+                                                                                  
             if len(context.detections) != 1:
                 return self._fail(identity_id, f"Frame must contain exactly 1 face. Found {len(context.detections)}.")
                 
@@ -50,7 +50,7 @@ class EnrollmentOrchestrator:
             if det.detection.confidence < 0.70:
                 return self._fail(identity_id, "Face detection quality too low for enrollment.")
                 
-            # Disallow masks during enrollment for best quality
+                                                               
             if det.mask and det.mask.has_mask:
                 return self._fail(identity_id, "Cannot enroll while wearing a mask.")
                 
@@ -62,16 +62,16 @@ class EnrollmentOrchestrator:
         if not valid_embeddings:
             return self._fail(identity_id, "No valid frames provided.")
             
-        # Insert into FAISS
+                           
         try:
-            # Here we just insert the best/first one for simplicity, or we could aggregate
+                                                                                          
             self.faiss.add_embedding(identity_id=identity_id, embedding=valid_embeddings[0])
-            self.faiss.save_index() # Persist
+            self.faiss.save_index()          
         except Exception as e:
             logger.error(f"Failed to save FAISS during enrollment: {e}")
             return self._fail(identity_id, f"Database insertion failed: {e}")
             
-        # Future: Persist to SQLite using SQLAlchemy repository here
+                                                                    
         
         self.event_bus.publish_sync(EnrollmentCompletedEvent(identity_id=identity_id, success=True))
         return EnrollmentResult(success=True, identity_id=identity_id)

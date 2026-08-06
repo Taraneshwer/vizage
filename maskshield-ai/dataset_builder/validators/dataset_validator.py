@@ -62,9 +62,9 @@ from validators.image_validator import (
 )
 
 
-# ---------------------------------------------------------------------------
-# Report models
-# ---------------------------------------------------------------------------
+                                                                             
+               
+                                                                             
 
 
 class DuplicateGroup(BaseModel):
@@ -135,7 +135,7 @@ class DatasetValidationReport(BaseModel):
             Dict representation of the report.
         """
         data = self.model_dump()
-        # Convert Path objects to strings for JSON serialisation.
+                                                                 
         data["root"] = str(self.root)
         data["invalid_paths"] = [str(p) for p in self.invalid_paths]
         data["duplicate_paths"] = [str(p) for p in self.duplicate_paths]
@@ -150,9 +150,9 @@ class DatasetValidationReport(BaseModel):
         return data
 
 
-# ---------------------------------------------------------------------------
-# Validator service
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class DatasetValidator:
@@ -172,9 +172,9 @@ class DatasetValidator:
         self._cfg = config
         self._image_validator = ImageValidator(config)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def validate_directory(
         self,
@@ -210,26 +210,26 @@ class DatasetValidator:
             dry_run=dry_run,
         )
 
-        # ----------------------------------------------------------------
-        # Phase 1 — Per-image validation
-        # ----------------------------------------------------------------
+                                                                          
+                                        
+                                                                          
         results: list[ImageValidationResult] = self._run_image_validation(root)
 
-        # ----------------------------------------------------------------
-        # Phase 2 — Duplicate detection (only on images that passed phase 1)
-        # ----------------------------------------------------------------
+                                                                          
+                                                                            
+                                                                          
         valid_results = [r for r in results if r.is_valid]
         duplicate_groups = self._detect_duplicates(valid_results)
 
-        # ----------------------------------------------------------------
-        # Phase 3 — Compile report
-        # ----------------------------------------------------------------
+                                                                          
+                                  
+                                                                          
         report = self._compile_report(root, results, duplicate_groups)
         logger.info("Validation complete.\n{summary}", summary=report.summary())
 
-        # ----------------------------------------------------------------
-        # Phase 4 — Optional cleanup
-        # ----------------------------------------------------------------
+                                                                          
+                                    
+                                                                          
         if not dry_run:
             if remove_invalid:
                 self._remove_files(report.invalid_paths, label="invalid")
@@ -273,9 +273,9 @@ class DatasetValidator:
         )
         logger.info("Validation report saved: {path}", path=output_path)
 
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
+                                                                        
+                     
+                                                                        
 
     def _run_image_validation(self, root: Path) -> list[ImageValidationResult]:
         """Walk *root* and validate each image.
@@ -327,7 +327,7 @@ class DatasetValidator:
             dist=max_dist,
         )
 
-        # Step A — compute hashes
+                                 
         path_to_hash: dict[Path, imagehash.ImageHash] = {}
         for result in valid_results:
             try:
@@ -338,16 +338,16 @@ class DatasetValidator:
                     "Cannot hash {path}: {exc}", path=result.path, exc=exc
                 )
 
-        # Step B — bucket by exact hash string (fast exact-duplicate pass)
+                                                                          
         buckets: dict[str, list[Path]] = defaultdict(list)
         for path, h in path_to_hash.items():
             buckets[str(h)].append(path)
 
-        # Step C — within each bucket, near-duplicate pass
-        # Also check across neighbouring buckets for near-duplicates.
-        # For simplicity (and correctness for typical dataset sizes up to ~500k
-        # images), we do a pairwise scan across all hashes in a sliding window
-        # sorted by hash string.
+                                                          
+                                                                     
+                                                                               
+                                                                              
+                                
         duplicate_groups: list[DuplicateGroup] = []
         assigned: set[Path] = set()
 

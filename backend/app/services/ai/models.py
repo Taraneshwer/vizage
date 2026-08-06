@@ -47,7 +47,7 @@ class MaskResult(BaseModel):
     confidence: float
 
 class LandmarkResult(BaseModel):
-    landmarks: np.ndarray = Field(repr=False) # shape (N, 2) or (N, 3)
+    landmarks: np.ndarray = Field(repr=False)                         
     aligned_face_crop: Optional[np.ndarray] = Field(default=None, repr=False)
     upper_face_crop: Optional[np.ndarray] = Field(default=None, repr=False)
     
@@ -55,7 +55,7 @@ class LandmarkResult(BaseModel):
         arbitrary_types_allowed = True
 
 class Embedding(BaseModel):
-    vector: np.ndarray = Field(repr=False) # shape (512,)
+    vector: np.ndarray = Field(repr=False)               
     model_version: str = "adaface_ir100"
     is_upper_face: bool = False
     
@@ -64,7 +64,7 @@ class Embedding(BaseModel):
 
 class RecognitionCandidate(BaseModel):
     identity_id: str
-    similarity_score: float # Distance or cosine similarity
+    similarity_score: float                                
     name: Optional[str] = None
     department: Optional[str] = None
 
@@ -74,7 +74,7 @@ class DecisionExplanation(BaseModel):
     temporal_stability: float = 0.0
     tracking_score: float = 0.0
     is_accepted: bool = False
-    decision_type: str = "Unknown" # Known, Possible Match, Unknown, Reject
+    decision_type: str = "Unknown"                                         
 
 class RecognitionResult(BaseModel):
     detection: DetectionResult
@@ -85,14 +85,14 @@ class RecognitionResult(BaseModel):
     tracking_id: Optional[str] = None
     is_unknown: bool = True
     
-    # New Decision Engine fields
+                                
     verification_score: float = 0.0
     decision_explanation: Optional[DecisionExplanation] = None
     state: RecognitionState = RecognitionState.SEARCHING
 
 class ModelStatus(BaseModel):
     name: str
-    status: str # "Online", "Offline", "Error", "Loading"
+    status: str                                          
     device: str
     backend: str
     vram_usage_mb: Optional[int] = None
@@ -116,7 +116,7 @@ class RecognitionContext(BaseModel):
     detections: List[RecognitionResult] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
-    # Timing metrics
+                    
     timers: Dict[str, float] = Field(default_factory=dict)
     
     class Config:

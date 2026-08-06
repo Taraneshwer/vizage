@@ -55,9 +55,9 @@ async def add_camera(data: CameraSourceCreateRequest, session: AsyncSession = De
         created_at=camera.created_at.isoformat()
     )
 
-# IMPORTANT: Literal path segments must come BEFORE path parameter routes.
-# These routes (/available, /start, /stop, /status) must be declared before /{camera_id}
-# to prevent FastAPI from matching them as camera_id parameters.
+                                                                          
+                                                                                        
+                                                                
 
 @router.get("/available", response_model=Dict[str, Any], summary="List Available Sources")
 async def get_available_sources():

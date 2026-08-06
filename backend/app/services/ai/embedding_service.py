@@ -58,7 +58,7 @@ class AdaFaceService:
                 self.is_loaded = False
                 return
                 
-            # PyTorch fallback
+                              
             import torchvision.models as models
             self.model = models.resnet50(pretrained=False)
             self.model.fc = nn.Linear(self.model.fc.in_features, 512)
@@ -89,9 +89,9 @@ class AdaFaceService:
         if not getattr(self, 'is_loaded', False) or self.model is None:
             return None
             
-        # Apply transform directly
+                                  
         if getattr(self, 'is_onnx', False):
-            # ONNX preprocessing
+                                
             img = cv2.cvtColor(aligned_face, cv2.COLOR_BGR2RGB)
             img = cv2.resize(img, (112, 112))
             img = (img.astype(np.float32) / 255.0 - 0.5) / 0.5
@@ -100,7 +100,7 @@ class AdaFaceService:
             
             input_name = self.model.get_inputs()[0].name
             features = self.model.run(None, {input_name: input_tensor})[0]
-            # Normalize embedding
+                                 
             emb_array = features[0] / np.linalg.norm(features[0])
         else:
             input_tensor = self.transform(aligned_face).unsqueeze(0)

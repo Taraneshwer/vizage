@@ -5,7 +5,7 @@ export const Topbar: React.FC = () => {
   return (
     <header className="h-16 border-b border-gray-200 bg-background/50 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-10">
       
-      {/* Left side: Context/Status */}
+      {}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 border border-gray-200">
           <Camera size={14} className="text-primary" />
@@ -18,7 +18,7 @@ export const Topbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Right side: Actions */}
+      {}
       <div className="flex items-center gap-3">
         <div className="relative group">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors" />

@@ -49,9 +49,9 @@ from config.models import AppConfig
 from utils.file_ops import IMAGE_EXTENSIONS, count_files, iter_images, list_subdirs
 
 
-# ---------------------------------------------------------------------------
-# Per-identity stats
-# ---------------------------------------------------------------------------
+                                                                             
+                    
+                                                                             
 
 
 class IdentityStats(BaseModel):
@@ -76,9 +76,9 @@ class IdentityStats(BaseModel):
     resolutions: dict[str, int] = Field(default_factory=dict)
 
 
-# ---------------------------------------------------------------------------
-# Resolution bucket
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class ResolutionBucket(BaseModel):
@@ -95,9 +95,9 @@ class ResolutionBucket(BaseModel):
     count: int
 
 
-# ---------------------------------------------------------------------------
-# Top-level dataset stats
-# ---------------------------------------------------------------------------
+                                                                             
+                         
+                                                                             
 
 
 class DatasetStats(BaseModel):
@@ -205,9 +205,9 @@ class DatasetStats(BaseModel):
         }
 
 
-# ---------------------------------------------------------------------------
-# Collector service
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class StatsCollector:
@@ -226,9 +226,9 @@ class StatsCollector:
         self._cfg = cfg
         self._root = Path(cfg.paths.datasets_root)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def collect(
         self,
@@ -251,16 +251,16 @@ class StatsCollector:
         """
         logger.info("Collecting dataset statistics from: {root}", root=self._root)
 
-        # ----------------------------------------------------------------
-        # Per-category counts (flat dirs)
-        # ----------------------------------------------------------------
+                                                                          
+                                         
+                                                                          
         masked_count = self._count_images(self._root / "masked")
         unmasked_count = self._count_images(self._root / "unmasked")
         unknown_count = self._count_images(self._root / "unknown")
 
-        # ----------------------------------------------------------------
-        # Identity directories (train / val / test)
-        # ----------------------------------------------------------------
+                                                                          
+                                                   
+                                                                          
         train_stats = self._collect_identity_dir(
             self._root / "identities", split="train"
         )
@@ -273,9 +273,9 @@ class StatsCollector:
 
         all_identity_stats = train_stats + val_stats + test_stats
 
-        # ----------------------------------------------------------------
-        # Aggregate identity image counts
-        # ----------------------------------------------------------------
+                                                                          
+                                         
+                                                                          
         images_per_identity: dict[str, int] = {
             s.identity_id: s.total_images for s in all_identity_stats
         }
@@ -284,14 +284,14 @@ class StatsCollector:
         augmented_count = sum(s.augmented_images for s in all_identity_stats)
         original_count = sum(s.original_images for s in all_identity_stats)
 
-        # ----------------------------------------------------------------
-        # Resolution distribution (across identity images only — fast count)
-        # ----------------------------------------------------------------
+                                                                          
+                                                                            
+                                                                          
         resolution_dist = self._build_resolution_distribution(all_identity_stats)
 
-        # ----------------------------------------------------------------
-        # Summary scalars
-        # ----------------------------------------------------------------
+                                                                          
+                         
+                                                                          
         counts = list(images_per_identity.values())
         total_identities = len(counts)
         min_img = min(counts) if counts else 0
@@ -300,9 +300,9 @@ class StatsCollector:
 
         total_images = masked_count + unmasked_count + unknown_count + identity_images
 
-        # ----------------------------------------------------------------
-        # Integrate validation report
-        # ----------------------------------------------------------------
+                                                                          
+                                     
+                                                                          
         duplicates_removed = 0
         corrupted_removed = 0
         rejection_breakdown: dict[str, int] = {}
@@ -316,9 +316,9 @@ class StatsCollector:
                 getattr(validation_report, "rejection_breakdown", {})
             )
 
-        # ----------------------------------------------------------------
-        # Integrate augmentation results
-        # ----------------------------------------------------------------
+                                                                          
+                                        
+                                                                          
         if augmentation_results is not None:
             aug_total = sum(
                 getattr(r, "copies_created", 0) for r in augmentation_results
@@ -358,9 +358,9 @@ class StatsCollector:
         logger.info("\n{summary}", summary=stats.summary())
         return stats
 
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
+                                                                        
+                     
+                                                                        
 
     def _collect_identity_dir(
         self, identity_root: Path, split: str
@@ -387,7 +387,7 @@ class StatsCollector:
             original = [p for p in all_imgs if "_aug_" not in p.stem]
 
             res_counts: dict[str, int] = defaultdict(int)
-            # Sample up to 200 images for resolution counting (performance).
+                                                                            
             sample = all_imgs[:200]
             for img_path in sample:
                 label = _fast_resolution_label(img_path)
@@ -451,9 +451,9 @@ class StatsCollector:
         ]
 
 
-# ---------------------------------------------------------------------------
-# Module-level helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 def _fast_resolution_label(img_path: Path) -> str | None:
@@ -471,5 +471,5 @@ def _fast_resolution_label(img_path: Path) -> str | None:
         with Image.open(img_path) as img:
             w, h = img.size
         return f"{w}x{h}"
-    except Exception:  # noqa: BLE001
+    except Exception:                
         return None

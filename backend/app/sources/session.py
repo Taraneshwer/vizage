@@ -31,7 +31,7 @@ class SourceSession:
         self.start_time = time.time()
         await self.source.start()
         
-        # Launch the asynchronous capture loop
+                                              
         self._capture_task = asyncio.create_task(self._capture_loop())
         logger.info(f"SourceSession started for {self.source.config.source_id}")
 
@@ -54,7 +54,7 @@ class SourceSession:
                 if frame:
                     await self.buffer.enqueue(frame)
                     
-                    # Update real-time health stats
+                                                   
                     self.source.health.last_frame_timestamp = frame.timestamp
                     self.source.health.total_frames_received += 1
                 else:
@@ -70,10 +70,10 @@ class SourceSession:
         Asynchronously retrieves the latest available frame from the buffer,
         discarding older intermediate frames to eliminate pipeline backlog.
         """
-        # Wait until at least one frame is available
+                                                    
         frame = await self.buffer.dequeue()
         
-        # Drain all remaining queued frames to get the absolute newest frame
+                                                                            
         discarded_count = 0
         while True:
             next_frame = self.buffer.dequeue_nowait()

@@ -42,27 +42,27 @@ def test_pipeline_middleware(mock_frame, mock_context):
     result_frame = pipeline.run_before(mock_frame)
     assert result_frame.frame_id == mock_frame.frame_id
     
-    # Check memory optimization
+                               
     assert mock_context.frame.image is not None
     result_context = pipeline.run_after(mock_context)
     assert result_context.frame.image is None
 
 def test_error_recovery():
     recovery = ErrorRecoveryManager()
-    # It should catch OOM and trigger cache clear
+                                                 
     try:
         raise Exception("CUDA out of memory in test")
     except Exception as e:
         recovery.handle_exception(e, source="test")
         
-    # Check Camera error
+                        
     try:
         raise Exception("Camera disconnected unexpectedly")
     except Exception as e:
         recovery.handle_exception(e, source="test")
         
 def test_runtime_inspector():
-    # Mock model manager for inspector
+                                      
     class MockModelManager:
         def get_all_status(self):
             return []

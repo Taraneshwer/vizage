@@ -33,7 +33,7 @@ class RTSPSource(StreamingSource):
 
     async def connect(self) -> bool:
         if self.config.use_tcp:
-            # Force FFMPEG TCP mode for more stable RTSP
+                                                        
             import os
             os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
             
@@ -87,11 +87,11 @@ class RTSPSource(StreamingSource):
         if not self.health.is_streaming:
             return None
             
-        # Wait up to 500ms for a new frame
+                                          
         for _ in range(50):
             image = self.latest_frame
             if image is not None:
-                self.latest_frame = None  # Consume frame
+                self.latest_frame = None                 
                 self.frame_counter += 1
                 return Frame.create(
                     source_id=self.config.source_id,

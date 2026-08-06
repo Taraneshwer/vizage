@@ -30,19 +30,19 @@ class CandidateRankingEngine:
         tracking_id = result.tracking_id or "untracked"
         ranked = []
         
-        # We need to temporarily evaluate each candidate as if it was the chosen one
+                                                                                    
         for candidate in candidates:
-            # Shallow copy the result to modify its candidate for fusion calculation
+                                                                                    
             temp_result = result.copy(deep=False)
             temp_result.candidate = candidate
             
-            # Get temporal stability for THIS specific candidate
+                                                                
             stability = self.temporal_memory.get_stability(tracking_id, candidate.identity_id)
             
-            # Generate fused score
+                                  
             fused_score = self.fusion_engine.fuse_score(temp_result, stability)
             ranked.append((candidate, fused_score))
             
-        # Sort descending by fused score
+                                        
         ranked.sort(key=lambda x: x[1], reverse=True)
         return ranked

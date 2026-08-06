@@ -6,14 +6,14 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from app.core.config import settings
 from loguru import logger
 
-# Create the async engine
+                         
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=(settings.ENVIRONMENT == "development" and settings.DEBUG),
     connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {}
 )
 
-# Create the async session factory
+                                  
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
@@ -26,7 +26,7 @@ async def init_db() -> None:
     Initializes the database by creating all tables.
     """
     from app.db.base import Base
-    import app.db.models  # Register models with Base.metadata
+    import app.db.models                                      
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)

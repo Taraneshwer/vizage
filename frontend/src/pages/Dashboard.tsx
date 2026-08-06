@@ -54,7 +54,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col gap-4">
-      {/* Top Health Indicator */}
+      {}
       {!health && (
         <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
           <ErrorState 
@@ -66,7 +66,7 @@ export const Dashboard: React.FC = () => {
 
       <div className="flex-1 flex gap-4 min-h-0">
         
-        {/* Left Column: Camera (60%) */}
+        {}
         <div className="flex-[3] flex flex-col gap-4 h-full">
           <div className="flex items-center justify-between">
              <h2 className="text-lg font-bold">Live Recognition</h2>
@@ -86,7 +86,7 @@ export const Dashboard: React.FC = () => {
             latencyMs={latencyMs}
             overlays={
                <div className="w-full h-full p-4 relative pointer-events-none">
-                 {/* Raw bounding boxes are hard to map without resolution, so we just show latest recognition info */}
+                 {}
                  {recognitionStream && (
                    <div className="absolute top-4 left-4 bg-black/60 backdrop-blur border border-gray-300 p-3 rounded shadow-xl">
                      <p className="text-xs text-gray-600 mb-1">Latest Detection</p>
@@ -104,7 +104,7 @@ export const Dashboard: React.FC = () => {
           />
         </div>
 
-        {/* Right Column: Status & Timeline (40%) */}
+        {}
         <div className="flex-[2] flex flex-col gap-4 h-full min-w-0">
           
           <Card className="p-4">
@@ -140,7 +140,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </Card>
 
-          {/* System Health Widget */}
+          {}
           <Card className="p-4">
             <h3 className="text-sm font-semibold text-gray-700 mb-4 border-b border-gray-200 pb-2 flex items-center">
               <Server size={14} className="mr-2"/> System Health
@@ -175,7 +175,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </Card>
 
-          {/* Quick Actions */}
+          {}
           <div className="grid grid-cols-2 gap-2">
              <Button variant="secondary" className="h-12" onClick={() => navigate('/enrollment')}><UserPlus size={16} className="mr-2 text-gray-600"/> Enroll</Button>
              <Button variant="secondary" className="h-12" onClick={() => navigate('/logs')}><FileText size={16} className="mr-2 text-gray-600"/> Logs</Button>

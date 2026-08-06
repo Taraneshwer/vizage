@@ -59,7 +59,7 @@ class ImageSource(StaticImageSource):
         if self._cached_image is not None:
             return self._cached_image
             
-        # Re-read if not cached
+                               
         image = await asyncio.to_thread(cv2.imread, self.config.file_path)
         if image is not None:
             return Frame.create(

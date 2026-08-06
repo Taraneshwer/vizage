@@ -19,7 +19,7 @@ export const Logs: React.FC = () => {
 
       <Card className="flex-1 bg-black border-gray-300 flex flex-col overflow-hidden font-mono text-sm relative">
         
-        {/* Terminal Header */}
+        {}
         <div className="bg-secondary/80 border-b border-gray-200 p-2 flex items-center justify-between z-10">
            <div className="flex gap-2 px-2">
              <div className="w-3 h-3 rounded-full bg-danger/80" />
@@ -40,7 +40,7 @@ export const Logs: React.FC = () => {
            </div>
         </div>
 
-        {/* Terminal Body */}
+        {}
         <div className="flex-1 overflow-y-auto p-4 space-y-1 text-gray-300">
            <div className="flex gap-4 hover:bg-gray-100/10 px-2 py-0.5 rounded">
              <span className="text-gray-500 shrink-0">14:38:22.102</span>

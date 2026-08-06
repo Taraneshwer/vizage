@@ -31,9 +31,9 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 
 
-# ---------------------------------------------------------------------------
-# Domain exception
-# ---------------------------------------------------------------------------
+                                                                             
+                  
+                                                                             
 
 
 class ImageLoadError(OSError):
@@ -48,9 +48,9 @@ class ImageLoadError(OSError):
         super().__init__(f"Cannot load image '{path}': {reason}")
 
 
-# ---------------------------------------------------------------------------
-# Named tuple for image metadata
-# ---------------------------------------------------------------------------
+                                                                             
+                                
+                                                                             
 
 
 class ImageDimensions(NamedTuple):
@@ -67,9 +67,9 @@ class ImageDimensions(NamedTuple):
     channels: int
 
 
-# ---------------------------------------------------------------------------
-# Load helpers
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 def load_image_bgr(path: Path) -> np.ndarray:
@@ -136,9 +136,9 @@ def load_pil(path: Path) -> Image.Image:
         raise ImageLoadError(path, str(exc)) from exc
 
 
-# ---------------------------------------------------------------------------
-# Metadata helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                  
+                                                                             
 
 
 def image_dimensions(img: np.ndarray) -> ImageDimensions:
@@ -163,9 +163,9 @@ def image_dimensions(img: np.ndarray) -> ImageDimensions:
         raise ValueError(f"Unexpected array shape: {img.shape}")
 
 
-# ---------------------------------------------------------------------------
-# Quality metrics
-# ---------------------------------------------------------------------------
+                                                                             
+                 
+                                                                             
 
 
 def laplacian_variance(img: np.ndarray) -> float:
@@ -227,9 +227,9 @@ def is_grayscale(img: np.ndarray, *, tolerance: int = 5) -> bool:
     )
 
 
-# ---------------------------------------------------------------------------
-# Transforms
-# ---------------------------------------------------------------------------
+                                                                             
+            
+                                                                             
 
 
 def letterbox_resize(
@@ -261,7 +261,7 @@ def letterbox_resize(
 
     resized = cv2.resize(img, (new_w, new_h), interpolation=interpolation)
 
-    # Create padded canvas.
+                           
     canvas = np.full(
         (target_h, target_w, img.shape[2]) if img.ndim == 3 else (target_h, target_w),
         pad_color[0] if img.ndim == 2 else 0,
@@ -314,12 +314,12 @@ def bgr_to_rgb(img: np.ndarray) -> np.ndarray:
     return img[:, :, ::-1]
 
 
-# ---------------------------------------------------------------------------
-# Save helpers
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
-# Mapping from lowercase extension to OpenCV encode params.
+                                                           
 _ENCODE_PARAMS: dict[str, list[int]] = {
     "jpg": [cv2.IMWRITE_JPEG_QUALITY, 95],
     "jpeg": [cv2.IMWRITE_JPEG_QUALITY, 95],
@@ -357,7 +357,7 @@ def save_image(
         )
 
     params = list(_ENCODE_PARAMS[ext])
-    # Override quality for lossy formats.
+                                         
     if ext in {"jpg", "jpeg"}:
         params = [cv2.IMWRITE_JPEG_QUALITY, max(1, min(100, quality))]
     elif ext == "webp":

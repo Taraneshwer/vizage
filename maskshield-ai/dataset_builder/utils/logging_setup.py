@@ -37,16 +37,16 @@ from loguru import logger
 if TYPE_CHECKING:
     from config.models import AppConfig
 
-# ---------------------------------------------------------------------------
-# Internal sentinel: IDs of Loguru sinks added by this module.
-# Stored in a module-level list so configure_logging can be idempotent.
-# ---------------------------------------------------------------------------
+                                                                             
+                                                              
+                                                                       
+                                                                             
 
 _ACTIVE_SINK_IDS: list[int] = []
 
-# ---------------------------------------------------------------------------
-# Log format strings
-# ---------------------------------------------------------------------------
+                                                                             
+                    
+                                                                             
 
 _CONSOLE_FORMAT: str = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
@@ -62,16 +62,16 @@ _FILE_FORMAT: str = (
     "{message}"
 )
 
-# Maximum log file size before rotation (10 MiB).
+                                                 
 _LOG_ROTATION_SIZE: str = "10 MB"
 
-# Keep the last 5 rotated files.
+                                
 _LOG_RETENTION: str = "5 files"
 
 
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
+                                                                             
+            
+                                                                             
 
 
 def configure_logging(cfg: AppConfig) -> None:
@@ -95,14 +95,14 @@ def configure_logging(cfg: AppConfig) -> None:
         configure_logging(load_config())
         logger.success("Logging is ready.")
     """
-    global _ACTIVE_SINK_IDS  # noqa: PLW0602  (mutation, not reassignment)
+    global _ACTIVE_SINK_IDS                                               
 
-    # 1. Remove previously added sinks to keep the call idempotent.
+                                                                   
     for sink_id in _ACTIVE_SINK_IDS:
         try:
             logger.remove(sink_id)
         except ValueError:
-            pass  # Sink already removed elsewhere.
+            pass                                   
     _ACTIVE_SINK_IDS.clear()
 
     level = cfg.project.log_level.upper()
@@ -110,7 +110,7 @@ def configure_logging(cfg: AppConfig) -> None:
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "dataset_builder.log"
 
-    # 2. Console sink (stderr, coloured).
+                                         
     console_id = logger.add(
         sys.stderr,
         level=level,
@@ -122,7 +122,7 @@ def configure_logging(cfg: AppConfig) -> None:
     )
     _ACTIVE_SINK_IDS.append(console_id)
 
-    # 3. Rotating plain-text file sink.
+                                       
     file_id = logger.add(
         str(log_file),
         level=level,
@@ -131,8 +131,8 @@ def configure_logging(cfg: AppConfig) -> None:
         retention=_LOG_RETENTION,
         compression="gz",
         backtrace=True,
-        diagnose=False,  # Avoid writing locals to disk for security.
-        enqueue=True,    # Thread-safe background writer.
+        diagnose=False,                                              
+        enqueue=True,                                    
         encoding="utf-8",
     )
     _ACTIVE_SINK_IDS.append(file_id)
@@ -153,7 +153,7 @@ def configure_logging_minimal(level: str = "DEBUG") -> None:
     Args:
         level: Loguru level string.
     """
-    global _ACTIVE_SINK_IDS  # noqa: PLW0602
+    global _ACTIVE_SINK_IDS                 
 
     for sink_id in _ACTIVE_SINK_IDS:
         try:

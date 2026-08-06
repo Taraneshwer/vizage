@@ -33,7 +33,7 @@ class WebcamSource(StreamingSource):
 
     async def connect(self) -> bool:
         """Synchronous cv2 operations wrapped for async contexts."""
-        # Use platform-native backends for lower capture overhead
+                                                                 
         import sys
         api_preference = cv2.CAP_ANY
         if sys.platform.startswith('win'):
@@ -44,14 +44,14 @@ class WebcamSource(StreamingSource):
         self.cap = await asyncio.to_thread(cv2.VideoCapture, self.config.camera_index, api_preference)
         
         if self.cap and self.cap.isOpened():
-            # Enforce 1-frame driver-level buffer to ensure real-time retrieval
+                                                                               
             self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
             
-            # Explicit FPS
+                          
             fps = self.config.target_fps or 30
             self.cap.set(cv2.CAP_PROP_FPS, fps)
             
-            # Explicit Resolution (Defaulting to 640x480)
+                                                         
             res = self.config.preferred_resolution or (640, 480)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
@@ -100,7 +100,7 @@ class WebcamSource(StreamingSource):
         self.running = False
 
     async def pause(self) -> None:
-        pass # Not natively supported by raw cv2 webcams
+        pass                                            
 
     async def resume(self) -> None:
         pass
@@ -109,11 +109,11 @@ class WebcamSource(StreamingSource):
         if not self.health.is_streaming:
             return None
             
-        # Wait up to 500ms for a new frame
+                                          
         for _ in range(50):
             image = self.latest_frame
             if image is not None:
-                self.latest_frame = None  # Consume frame
+                self.latest_frame = None                 
                 self.frame_counter += 1
                 return Frame.create(
                     source_id=self.config.source_id,

@@ -72,7 +72,7 @@ class MaskDetectionService:
         if not getattr(self, 'is_loaded', False) or self.model is None:
             return MaskResult(has_mask=False, confidence=0.0)
             
-        # Preprocess
+                    
         input_tensor = self.transform(face_crop).unsqueeze(0)
         
         if getattr(self.gpu_manager, 'is_cuda', False):
@@ -84,7 +84,7 @@ class MaskDetectionService:
                 probs = torch.nn.functional.softmax(outputs, dim=1)
                 
         probs_cpu = probs.cpu().numpy()[0]
-        # Class 0: No Mask, Class 1: Mask
+                                         
         has_mask = bool(probs_cpu[1] > probs_cpu[0])
         confidence = float(probs_cpu[1] if has_mask else probs_cpu[0])
         

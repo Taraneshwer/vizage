@@ -30,15 +30,15 @@ from augmentations.pipeline import AugmentationPipeline, AugmentationResult
 from augmentations.transforms import build_preview_transform, build_transform_pipeline
 
 __all__ = [
-    # mask_simulator
+                    
     "MaskSimulator",
     "SunglassesSimulator",
     "apply_random_mask",
     "apply_random_sunglasses",
-    # pipeline
+              
     "AugmentationPipeline",
     "AugmentationResult",
-    # transforms
+                
     "build_transform_pipeline",
     "build_preview_transform",
 ]

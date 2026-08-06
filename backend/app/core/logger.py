@@ -12,12 +12,12 @@ def setup_logging():
     """
     Initializes Loguru with standard out and file sinks.
     """
-    logger.remove()  # Remove default handler
+    logger.remove()                          
     
-    # Ensure log directory exists
+                                 
     os.makedirs(settings.LOG_DIR, exist_ok=True)
     
-    # Console output
+                    
     logger.add(
         sys.stdout,
         format=LOG_FORMAT,
@@ -26,7 +26,7 @@ def setup_logging():
         enqueue=True,
     )
     
-    # File output (rotating)
+                            
     logger.add(
         f"{settings.LOG_DIR}/vizage_{{time:YYYY-MM-DD}}.log",
         rotation=LOG_ROTATION,

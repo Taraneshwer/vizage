@@ -28,7 +28,7 @@ class GPUManager:
         
         if self.is_cuda:
             logger.info(f"GPU Manager initialized. Device: {torch.cuda.get_device_name(0)}")
-            # Optimize cudnn for fixed input sizes if possible
+                                                              
             torch.backends.cudnn.benchmark = True
         else:
             logger.warning("GPU Manager initialized on CPU. Performance will be degraded.")
@@ -67,7 +67,7 @@ class GPUManager:
                 total_memory_mb=total // (1024 * 1024),
                 allocated_memory_mb=allocated // (1024 * 1024),
                 free_memory_mb=(total - reserved) // (1024 * 1024),
-                utilization_percent=None, # Needs pynvml for accurate util, optional
+                utilization_percent=None,                                           
                 temperature=None
             )
         except Exception as e:

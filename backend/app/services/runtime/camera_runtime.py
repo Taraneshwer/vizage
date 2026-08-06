@@ -37,13 +37,13 @@ class CameraRuntime:
         
         while self.is_running:
             try:
-                # Initialize session
+                                    
                 self.session = SourceSession(self.source)
                 await self.session.start_session()
                 logger.info(f"CameraRuntime {self.camera_id} connected.")
                 await self.event_bus.publish(CameraRecoveredEvent(camera_id=self.camera_id))
                 
-                # Frame loop
+                            
                 frame_interval = 1.0 / app_runtime_config.target_fps
                 
                 while self.is_running:
@@ -57,23 +57,23 @@ class CameraRuntime:
                         else:
                             break
                         
-                    # Publish event
+                                   
                     await self.event_bus.publish(FrameCapturedEvent(
                         camera_id=self.camera_id,
                         frame_id=frame.frame_id
                     ))
                     
-                    # Execute callback (Orchestrator)
+                                                     
                     if self._frame_callback:
                         self._frame_callback(frame)
                         
-                    # Manage FPS
+                                
                     elapsed = time.time() - loop_start
                     sleep_time = frame_interval - elapsed
                     if sleep_time > 0:
                         await asyncio.sleep(sleep_time)
                     else:
-                        await asyncio.sleep(0.001) # Yield to event loop
+                        await asyncio.sleep(0.001)                      
                         
             except asyncio.CancelledError:
                 break

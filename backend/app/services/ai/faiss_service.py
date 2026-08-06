@@ -31,7 +31,7 @@ class FAISSService(IVectorStoreService):
             
         logger.info(f"Loading FAISS index from {self.index_path}...")
         
-        # Load mapping
+                      
         map_path = self.index_path + ".map.json"
         if os.path.exists(map_path):
             try:
@@ -42,8 +42,8 @@ class FAISSService(IVectorStoreService):
                 logger.error(f"Failed to load FAISS mapping: {e}")
                 self.identity_mapping = {}
         
-        # We use IndexFlatIP (Inner Product) since embeddings from AdaFace are L2 normalized,
-        # which effectively computes Cosine Similarity.
+                                                                                             
+                                                       
         if os.path.exists(self.index_path):
             try:
                 self.index = faiss.read_index(self.index_path)
@@ -89,8 +89,8 @@ class FAISSService(IVectorStoreService):
         self.identity_mapping[self._current_id] = identity_id
         self._current_id += 1
         
-        # Optionally save index periodically
-        # self._save_index()
+                                            
+                            
 
     def delete_embedding(self, identity_id: str) -> None:
         """Removes all vectors mapping to this identity."""
@@ -123,7 +123,7 @@ class FAISSService(IVectorStoreService):
             candidates.append(RecognitionCandidate(
                 identity_id=identity_id,
                 similarity_score=float(dist),
-                name=None, # To be fetched from SQLite via a Repository layer later
+                name=None,                                                         
                 department=None
             ))
             

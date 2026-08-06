@@ -19,7 +19,7 @@ def ensure_dependencies():
         req_file = Path(__file__).resolve().parent.parent / "requirements.txt"
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", str(req_file)])
-            # Retry imports
+                           
             for req in required:
                 __import__(req)
             print("[INFO] All dependencies successfully installed and verified.")
@@ -29,7 +29,7 @@ def ensure_dependencies():
     else:
         print("[INFO] All required Python dependencies are present.")
 
-# Run dependency check immediately before other imports
+                                                       
 ensure_dependencies()
 
 import torch
@@ -60,8 +60,8 @@ def gather_hardware_info():
 def generate_pseudo_labels(images_dir, labels_dir):
     print("[WARNING] YOLO labels are missing. Generating pseudo-labels using pretrained YOLOv8n-face...")
     os.makedirs(labels_dir, exist_ok=True)
-    # Using a generic object detection model for pseudo labeling faces if dedicated face model not downloaded
-    # To avoid complex downloads, we just use yolov8n and detect class 0 (person) as a fallback representation
+                                                                                                             
+                                                                                                              
     model = YOLO("yolov8n.pt") 
     
     image_paths = list(Path(images_dir).glob("*.jpg")) + list(Path(images_dir).glob("*.png"))
@@ -70,13 +70,13 @@ def generate_pseudo_labels(images_dir, labels_dir):
         sys.exit(1)
         
     for img_path in image_paths:
-        results = model(str(img_path), classes=[0], verbose=False) # 0 is person
+        results = model(str(img_path), classes=[0], verbose=False)              
         label_path = Path(labels_dir) / f"{img_path.stem}.txt"
         with open(label_path, 'w') as f:
             for r in results:
                 boxes = r.boxes
                 for box in boxes:
-                    # class_id x_center y_center width height
+                                                             
                     x, y, w, h = box.xywhn[0]
                     f.write(f"0 {x:.6f} {y:.6f} {w:.6f} {h:.6f}\n")
     print(f"[INFO] Generated pseudo-labels for {len(image_paths)} images.")
@@ -84,7 +84,7 @@ def generate_pseudo_labels(images_dir, labels_dir):
 def verify_datasets(base_path):
     stats = {}
     
-    # YOLO Dataset Verification
+                               
     yolo_dir = base_path / "processed" / "yolo"
     yolo_images = yolo_dir / "images" / "train"
     yolo_labels = yolo_dir / "labels" / "train"
@@ -107,7 +107,7 @@ def verify_datasets(base_path):
     stats['yolo_train_images'] = num_yolo_images
     stats['yolo_train_labels'] = num_yolo_labels
     
-    # AdaFace Dataset Verification
+                                  
     arcface_dir = base_path / "processed" / "arcface" / "train"
     if not arcface_dir.exists():
         print(f"[ERROR] AdaFace identity directory {arcface_dir} is missing.")

@@ -53,8 +53,8 @@ async def clear_history(session: AsyncSession = Depends(get_db_session)):
     await repo.clear_all()
     return BaseResponse(success=True, message="History cleared.")
 
-# IMPORTANT: /export must be declared BEFORE /{history_id} so FastAPI doesn't
-# interpret the literal string "export" as a history_id path parameter.
+                                                                             
+                                                                       
 @router.get("/export", summary="Export History to CSV")
 async def export_history(session: AsyncSession = Depends(get_db_session)):
     """Exports history to CSV."""

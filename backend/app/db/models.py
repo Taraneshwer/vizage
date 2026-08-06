@@ -29,7 +29,7 @@ class RecognitionHistory(BaseModel):
     name = Column(String(255), nullable=True)
     department = Column(String(255), nullable=True)
     verification_score = Column(Integer, nullable=False)
-    mode = Column(String(50), nullable=False) # e.g. "Known", "Unknown"
+    mode = Column(String(50), nullable=False)                          
     camera_id = Column(String(255), nullable=False)
     tracking_id = Column(String(255), nullable=True)
     processing_time_ms = Column(Integer, nullable=False)
@@ -43,6 +43,6 @@ class CameraSource(BaseModel):
     __tablename__ = "camera_sources"
 
     name = Column(String(255), nullable=False)
-    source_type = Column(String(50), nullable=False) # e.g. "RTSP", "WEBCAM", "IPCAMERA"
-    connection_url = Column(String(1024), nullable=False) # RTSP url or integer string for webcam index
+    source_type = Column(String(50), nullable=False)                                    
+    connection_url = Column(String(1024), nullable=False)                                              
     is_active = Column(Boolean, default=False)

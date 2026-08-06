@@ -26,12 +26,12 @@ class HistoryRepository(BaseRepository[RecognitionHistory]):
                 )
             )
             
-        # Get total count
+                         
         count_stmt = select(func.count()).select_from(stmt.subquery())
         total_result = await self.session.execute(count_stmt)
         total = total_result.scalar_one()
         
-        # Get paginated data
+                            
         stmt = stmt.order_by(RecognitionHistory.timestamp.desc()).limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         records = list(result.scalars().all())

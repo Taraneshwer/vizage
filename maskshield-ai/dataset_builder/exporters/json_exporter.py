@@ -48,9 +48,9 @@ from config.models import AppConfig
 from exporters.stats_collector import DatasetStats
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class JsonExportPaths(BaseModel):
@@ -67,9 +67,9 @@ class JsonExportPaths(BaseModel):
     manifest_json: Path
 
 
-# ---------------------------------------------------------------------------
-# Exporter
-# ---------------------------------------------------------------------------
+                                                                             
+          
+                                                                             
 
 
 class JsonExporter:
@@ -83,9 +83,9 @@ class JsonExporter:
         self._cfg = cfg
         self._reports_dir = Path(cfg.paths.reports_dir)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def export(
         self,
@@ -115,9 +115,9 @@ class JsonExporter:
         )
         return JsonExportPaths(report_json=report_path, manifest_json=manifest_path)
 
-    # ------------------------------------------------------------------
-    # Private: report
-    # ------------------------------------------------------------------
+                                                                        
+                     
+                                                                        
 
     def _write_report(self, stats: DatasetStats, dest: Path) -> Path:
         """Serialise the full :class:`DatasetStats` to JSON.
@@ -174,9 +174,9 @@ class JsonExporter:
         logger.debug("Report JSON: {path}", path=out_path)
         return out_path
 
-    # ------------------------------------------------------------------
-    # Private: manifest
-    # ------------------------------------------------------------------
+                                                                        
+                       
+                                                                        
 
     def _write_manifest(self, stats: DatasetStats, dest: Path) -> Path:
         """Write a pipeline run manifest capturing environment metadata.
@@ -245,9 +245,9 @@ class JsonExporter:
         return out_path
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+                                                                             
+         
+                                                                             
 
 
 def _utc_now_iso() -> str:
@@ -272,7 +272,7 @@ def _atomic_write_json(path: Path, data: dict, indent: int = 2) -> None:
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
             json.dump(data, fh, indent=indent, default=str, ensure_ascii=False)
-            fh.write("\n")  # POSIX-friendly trailing newline.
+            fh.write("\n")                                    
         os.replace(tmp_path, path)
     except Exception:
         try:

@@ -42,9 +42,9 @@ import numpy as np
 from config.models import MaskSimulationConfig, SunglassesSimulationConfig
 
 
-# ---------------------------------------------------------------------------
-# Mask simulator
-# ---------------------------------------------------------------------------
+                                                                             
+                
+                                                                             
 
 
 class MaskSimulator:
@@ -84,39 +84,39 @@ class MaskSimulator:
         h, w = img.shape[:2]
         result = img.copy()
 
-        # Geometry: mask covers lower portion of the image.
+                                                           
         mask_h_ratio = rng.uniform(*self._cfg.mask_height_ratio)
         mask_w_ratio = rng.uniform(*self._cfg.mask_width_ratio)
 
         mask_h = int(h * mask_h_ratio)
         mask_w = int(w * mask_w_ratio)
 
-        # Vertical position: lower-middle of face (below nose).
+                                                               
         y_start = int(h * 0.45)
         y_end = min(h, y_start + mask_h)
 
-        # Horizontal position: centred with some jitter.
+                                                        
         x_center = w // 2
         x_start = max(0, x_center - mask_w // 2)
         x_end = min(w, x_start + mask_w)
 
-        # Colour: sample from config ranges (per channel).
+                                                          
         r_range, g_range, b_range = self._cfg.mask_color_range
-        # Config is RGB order; OpenCV is BGR.
+                                             
         color_bgr = (
             rng.randint(*b_range),
             rng.randint(*g_range),
             rng.randint(*r_range),
         )
 
-        # Blend mask rectangle over image with slight transparency.
+                                                                   
         alpha = rng.uniform(0.82, 0.97)
         overlay = result.copy()
         overlay[y_start:y_end, x_start:x_end] = color_bgr
 
         result = _blend(result, overlay, alpha)
 
-        # Add subtle edge softening (box blur on mask boundary).
+                                                                
         result = _soften_edges(result, y_start, y_end, x_start, x_end, blur_px=3)
 
         return result
@@ -133,9 +133,9 @@ class MaskSimulator:
         return rng.random() <= self._cfg.probability
 
 
-# ---------------------------------------------------------------------------
-# Sunglasses simulator
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 class SunglassesSimulator:
@@ -172,15 +172,15 @@ class SunglassesSimulator:
         h, w = img.shape[:2]
         result = img.copy()
 
-        # Eye-band geometry: approximately top 25–45 % of face height.
+                                                                      
         y_start = int(h * 0.25)
         y_end = int(h * 0.47)
-        # Slightly narrower than full width.
+                                            
         x_margin = int(w * rng.uniform(0.05, 0.12))
         x_start = x_margin
         x_end = w - x_margin
 
-        # Tint colour in BGR (config provides RGB).
+                                                   
         r, g, b = self._cfg.tint_color
         tint_bgr = (b, g, r)
 
@@ -193,9 +193,9 @@ class SunglassesSimulator:
         return result
 
 
-# ---------------------------------------------------------------------------
-# Functional convenience wrappers
-# ---------------------------------------------------------------------------
+                                                                             
+                                 
+                                                                             
 
 
 def apply_random_mask(
@@ -234,9 +234,9 @@ def apply_random_sunglasses(
     return SunglassesSimulator(config).apply(img, rng)
 
 
-# ---------------------------------------------------------------------------
-# Private numpy helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                       
+                                                                             
 
 
 def _blend(base: np.ndarray, overlay: np.ndarray, alpha: float) -> np.ndarray:
@@ -278,10 +278,10 @@ def _soften_edges(
     Returns:
         Modified ``uint8`` image array.
     """
-    import cv2  # lazy import to keep module importable without cv2 at parse-time
+    import cv2                                                                   
 
-    ksize = max(1, blur_px * 2 + 1)  # ensure odd kernel size
-    # Blur a 1-pixel border around the rectangle.
+    ksize = max(1, blur_px * 2 + 1)                          
+                                                 
     border = max(1, blur_px)
     y0b = max(0, y0 - border)
     y1b = min(img.shape[0], y1 + border)
@@ -291,7 +291,7 @@ def _soften_edges(
     region = img[y0b:y1b, x0b:x1b].copy()
     blurred = cv2.GaussianBlur(region, (ksize, ksize), 0)
 
-    # Only replace the border rows/cols, not the core rectangle.
+                                                                
     mask = np.zeros(region.shape[:2], dtype=bool)
     inner_y0 = y0 - y0b
     inner_y1 = y1 - y0b

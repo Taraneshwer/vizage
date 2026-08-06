@@ -32,9 +32,9 @@ from albumentations.core.transforms_interface import ImageOnlyTransform
 from config.models import AugmentationConfig
 
 
-# ---------------------------------------------------------------------------
-# Individual transform builders
-# ---------------------------------------------------------------------------
+                                                                             
+                               
+                                                                             
 
 
 def _build_rotation(cfg: AugmentationConfig) -> A.BasicTransform | None:
@@ -52,7 +52,7 @@ def _build_rotation(cfg: AugmentationConfig) -> A.BasicTransform | None:
     return A.SafeRotate(
         limit=rc.limit_degrees,
         p=rc.probability,
-        border_mode=0,  # cv2.BORDER_CONSTANT
+        border_mode=0,                       
     )
 
 
@@ -105,7 +105,7 @@ def _build_gaussian_blur(cfg: AugmentationConfig) -> A.BasicTransform | None:
     gb = cfg.transforms.gaussian_blur
     if not gb.enabled:
         return None
-    # blur_limit must be a list/tuple of odd integers; albumentations handles this.
+                                                                                   
     return A.GaussianBlur(
         blur_limit=list(gb.blur_limit),
         p=gb.probability,
@@ -185,9 +185,9 @@ def _build_random_shadow(cfg: AugmentationConfig) -> A.BasicTransform | None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Coarse-dropout (partial occlusion) — uses albumentations built-in
-# ---------------------------------------------------------------------------
+                                                                             
+                                                                   
+                                                                             
 
 
 def _build_coarse_dropout(cfg: AugmentationConfig) -> A.BasicTransform | None:
@@ -208,7 +208,7 @@ def _build_coarse_dropout(cfg: AugmentationConfig) -> A.BasicTransform | None:
     if not po.enabled:
         return None
 
-    # Reference canvas size for ratio calculation.
+                                                  
     ref_w, ref_h = 112, 112
     max_h = max(1, int(ref_h * po.max_height_ratio))
     max_w = max(1, int(ref_w * po.max_width_ratio))
@@ -222,11 +222,11 @@ def _build_coarse_dropout(cfg: AugmentationConfig) -> A.BasicTransform | None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Pipeline builder
-# ---------------------------------------------------------------------------
+                                                                             
+                  
+                                                                             
 
-# Ordered list of (builder_function) — applied left-to-right.
+                                                             
 _BUILDERS = [
     _build_horizontal_flip,
     _build_rotation,
@@ -294,12 +294,12 @@ def build_preview_transform(cfg: AugmentationConfig) -> A.Compose:
     Returns:
         ``albumentations.Compose`` with all transforms forced active.
     """
-    # Re-use standard builders but patch probability to 1.0.
+                                                            
     transforms: list[A.BasicTransform] = []
     for builder in _BUILDERS:
         t = builder(cfg)
         if t is not None:
-            # Albumentations transforms support deepcopy + p override.
+                                                                      
             import copy
             t_copy = copy.deepcopy(t)
             t_copy.p = 1.0

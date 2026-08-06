@@ -67,9 +67,9 @@ from utils.image_utils import (
 )
 
 
-# ---------------------------------------------------------------------------
-# Face crop hook protocol
-# ---------------------------------------------------------------------------
+                                                                             
+                         
+                                                                             
 
 
 @runtime_checkable
@@ -108,9 +108,9 @@ class FaceCropHook(Protocol):
         ...
 
 
-# ---------------------------------------------------------------------------
-# Processing status
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class ProcessingStatus(str, Enum):
@@ -133,9 +133,9 @@ class ProcessingStatus(str, Enum):
     UNKNOWN_ERROR = "unknown_error"
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class PreprocessingResult(BaseModel):
@@ -173,9 +173,9 @@ class PreprocessingResult(BaseModel):
         return self.status == ProcessingStatus.SUCCESS
 
 
-# ---------------------------------------------------------------------------
-# Image metadata sidecar model
-# ---------------------------------------------------------------------------
+                                                                             
+                              
+                                                                             
 
 
 class ImageMetadata(BaseModel):
@@ -210,9 +210,9 @@ class ImageMetadata(BaseModel):
     padding_color: tuple[int, int, int]
 
 
-# ---------------------------------------------------------------------------
-# Interpolation map
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 _INTERPOLATION_MAP: dict[str, int] = {
     "NEAREST": cv2.INTER_NEAREST,
@@ -223,9 +223,9 @@ _INTERPOLATION_MAP: dict[str, int] = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Preprocessor service
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 class ImagePreprocessor:
@@ -255,14 +255,14 @@ class ImagePreprocessor:
             config.interpolation.upper(), cv2.INTER_LANCZOS4
         )
         self._pad_color: tuple[int, int, int] = (
-            config.padding_color[2],  # BGR: R→B
+            config.padding_color[2],            
             config.padding_color[1],
-            config.padding_color[0],  # BGR: B→R
+            config.padding_color[0],            
         )
 
-    # ------------------------------------------------------------------
-    # Public API — single image
-    # ------------------------------------------------------------------
+                                                                        
+                               
+                                                                        
 
     def process(
         self,
@@ -285,9 +285,9 @@ class ImagePreprocessor:
         Returns:
             :class:`PreprocessingResult` describing the outcome.
         """
-        # ----------------------------------------------------------------
-        # Skip check
-        # ----------------------------------------------------------------
+                                                                          
+                    
+                                                                          
         if dst.exists() and not overwrite:
             logger.debug("Skipping existing: {path}", path=dst)
             return PreprocessingResult(
@@ -296,9 +296,9 @@ class ImagePreprocessor:
                 status=ProcessingStatus.SKIPPED,
             )
 
-        # ----------------------------------------------------------------
-        # Load
-        # ----------------------------------------------------------------
+                                                                          
+              
+                                                                          
         try:
             img = load_image_bgr(src)
         except (ImageLoadError, FileNotFoundError, OSError) as exc:
@@ -313,9 +313,9 @@ class ImagePreprocessor:
         orig_dims = image_dimensions(img)
         file_size = src.stat().st_size if src.exists() else 0
 
-        # ----------------------------------------------------------------
-        # Step 1 — Face crop hook
-        # ----------------------------------------------------------------
+                                                                          
+                                 
+                                                                          
         was_cropped = False
         if self._hook is not None:
             try:
@@ -324,7 +324,7 @@ class ImagePreprocessor:
                     img = cropped
                     was_cropped = True
                     logger.debug("Face crop applied: {path}", path=src)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:                
                 logger.error("Face crop error [{path}]: {exc}", path=src, exc=exc)
                 return PreprocessingResult(
                     src=src,
@@ -335,9 +335,9 @@ class ImagePreprocessor:
                     error_message=str(exc),
                 )
 
-        # ----------------------------------------------------------------
-        # Step 2 — Letterbox resize
-        # ----------------------------------------------------------------
+                                                                          
+                                   
+                                                                          
         img = letterbox_resize(
             img,
             target_w=self._target_w,
@@ -346,17 +346,17 @@ class ImagePreprocessor:
             interpolation=self._interpolation,
         )
 
-        # ----------------------------------------------------------------
-        # Step 3 — CLAHE (optional)
-        # ----------------------------------------------------------------
+                                                                          
+                                   
+                                                                          
         was_equalised = False
         if self._cfg.apply_histogram_equalization:
             img = apply_clahe(img)
             was_equalised = True
 
-        # ----------------------------------------------------------------
-        # Step 4 — Save
-        # ----------------------------------------------------------------
+                                                                          
+                       
+                                                                          
         ensure_dir(dst.parent)
         try:
             save_image(img, dst, quality=jpeg_quality)
@@ -373,9 +373,9 @@ class ImagePreprocessor:
 
         out_dims = image_dimensions(img)
 
-        # ----------------------------------------------------------------
-        # Step 5 — Sidecar metadata
-        # ----------------------------------------------------------------
+                                                                          
+                                   
+                                                                          
         if write_sidecar:
             self._write_sidecar(
                 dst=dst,
@@ -409,9 +409,9 @@ class ImagePreprocessor:
             was_equalised=was_equalised,
         )
 
-    # ------------------------------------------------------------------
-    # Public API — batch processing
-    # ------------------------------------------------------------------
+                                                                        
+                                   
+                                                                        
 
     def process_directory(
         self,
@@ -515,9 +515,9 @@ class ImagePreprocessor:
             )
         )
 
-    # ------------------------------------------------------------------
-    # Public API — normalisation (for training pipelines)
-    # ------------------------------------------------------------------
+                                                                        
+                                                         
+                                                                        
 
     def normalise_array(self, img: np.ndarray) -> np.ndarray:
         """Apply configured mean/std normalisation to a ``float32`` image array.
@@ -535,20 +535,20 @@ class ImagePreprocessor:
         """
         cfg = self._cfg
         arr = img.astype(np.float32) / 255.0
-        mean = np.array(cfg.normalize_mean[::-1], dtype=np.float32)  # BGR order
+        mean = np.array(cfg.normalize_mean[::-1], dtype=np.float32)             
         std = np.array(cfg.normalize_std[::-1], dtype=np.float32)
         return (arr - mean) / std
 
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
+                                                                        
+                     
+                                                                        
 
     def _write_sidecar(
         self,
         dst: Path,
         src: Path,
-        orig_dims: object,  # ImageDimensions
-        out_dims: object,   # ImageDimensions
+        orig_dims: object,                   
+        out_dims: object,                    
         file_size: int,
         was_cropped: bool,
         was_equalised: bool,
@@ -568,10 +568,10 @@ class ImagePreprocessor:
         """
         metadata = ImageMetadata(
             original_path=str(src.resolve()),
-            original_width=orig_dims.width,  # type: ignore[attr-defined]
-            original_height=orig_dims.height,  # type: ignore[attr-defined]
-            output_width=out_dims.width,  # type: ignore[attr-defined]
-            output_height=out_dims.height,  # type: ignore[attr-defined]
+            original_width=orig_dims.width,                              
+            original_height=orig_dims.height,                              
+            output_width=out_dims.width,                              
+            output_height=out_dims.height,                              
             original_file_size_bytes=file_size,
             target_size=self._cfg.target_size,
             interpolation=self._cfg.interpolation,

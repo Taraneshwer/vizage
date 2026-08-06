@@ -33,13 +33,13 @@ from app.core.events import EventBus
 import asyncio
 import time
 
-# Import source providers at module level to trigger @SourceFactory.register decorators
-import app.sources.providers.webcam   # noqa: F401
-import app.sources.providers.rtsp     # noqa: F401
-import app.sources.providers.ip_camera  # noqa: F401
+                                                                                       
+import app.sources.providers.webcam               
+import app.sources.providers.rtsp                 
+import app.sources.providers.ip_camera              
 
 class MockSource(StreamingSource):
-    # Fallback mock source if no specific source is injected
+                                                            
     def __init__(self):
         super().__init__(BaseSourceConfig(source_id="default_camera"))
     def get_capabilities(self): 
@@ -55,21 +55,21 @@ class MockSource(StreamingSource):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
+             
     logger.info("Starting up MaskShield AI Backend...")
     
-    # 0. Initialize Database
+                            
     await init_db()
     
-    # 1. Initialize Runtime (GPU, Models)
+                                         
     model_manager = initialize_runtime()
     
-    # 2. Instantiate Engine Services
+                                    
     from app.services.ai.performance_monitor import PerformanceMonitor
     perf_monitor = PerformanceMonitor()
     inference_engine = InferenceEngine(model_manager=model_manager, perf_monitor=perf_monitor)
     
-    # 3. Instantiate Runtimes & Orchestrators
+                                             
     from app.db.session import AsyncSessionLocal
     from app.db.repository.camera_repo import CameraRepository
     from app.sources.factory import SourceFactory
@@ -100,11 +100,11 @@ async def lifespan(app: FastAPI):
         inference_engine=inference_engine
     )
     
-    # We need FAISSService for enrollment
+                                         
     try:
         faiss_service = model_manager.get_service("FAISS")
     except KeyError:
-        # Mock for missing FAISS in this specific startup if not registered
+                                                                           
         faiss_service = None
         
     enrollment_orchestrator = EnrollmentOrchestrator(
@@ -114,35 +114,35 @@ async def lifespan(app: FastAPI):
     
     runtime_inspector = RuntimeInspector(model_manager=model_manager)
     
-    # 4. Initialize WebSockets & Streaming
+                                          
     streaming_manager = StreamingManager()
     event_bus = EventBus()
     event_bridge = EventBridge(event_bus, streaming_manager)
     
-    # Wire the camera frame broadcaster into the recognition orchestrator
-    # so every frame received is broadcast to WS /ws/camera clients.
-    # CameraRuntime calls callbacks synchronously, so we schedule async work via create_task.
+                                                                         
+                                                                    
+                                                                                             
     _orig_frame_callback = recognition_orchestrator._on_frame_received
     def _combined_frame_callback(frame):
         """Calls the orchestrator pipeline AND schedules a camera frame broadcast."""
-        # Schedule the async broadcast (non-blocking)
+                                                     
         asyncio.get_event_loop().create_task(event_bridge.broadcast_camera_frame(
             camera_id=camera_runtime.camera_id,
             frame_id=frame.frame_id,
             image_matrix=frame.image,
             capture_timestamp=frame.timestamp
         ))
-        # Run the synchronous orchestrator callback
+                                                   
         _orig_frame_callback(frame)
     
     camera_runtime.set_callback(_combined_frame_callback)
     
-    # Log sink
+              
     loop = asyncio.get_running_loop()
     log_sink = WebSocketLogSink(loop)
     logger.add(log_sink.write, format="{message}")
     
-    # Attach to App State for Dependency Injection
+                                                  
     app.state.model_manager = model_manager
     app.state.inference_engine = inference_engine
     app.state.camera_runtime = camera_runtime
@@ -151,12 +151,12 @@ async def lifespan(app: FastAPI):
     app.state.runtime_inspector = runtime_inspector
     app.state.streaming_manager = streaming_manager
     
-    # Background Ticker for Metrics
+                                   
     async def metrics_ticker():
         while True:
             await asyncio.sleep(1.0)
             
-            # Runtime stats
+                           
             r_stats = recognition_orchestrator.session_manager.get_session_stats()
             r_msg = RuntimeMessage(
                 topic="runtime",
@@ -170,7 +170,7 @@ async def lifespan(app: FastAPI):
             )
             await streaming_manager.broadcast("runtime", r_msg.model_dump_json())
             
-            # System stats (can be slower, e.g., every 5s, but 1s is fine for streaming UI)
+                                                                                           
             sys_report = runtime_inspector.generate_report()
             s_msg = SystemMessage(
                 topic="system",
@@ -185,7 +185,7 @@ async def lifespan(app: FastAPI):
     
     yield
     
-    # Shutdown
+              
     logger.info("Shutting down MaskShield AI Backend...")
     ticker_task.cancel()
     await recognition_orchestrator.stop_session()
@@ -198,7 +198,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS
+      
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -207,10 +207,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Exception Handlers
+                    
 setup_exception_handlers(app)
 
-# Include Routers
+                 
 api_v1_prefix = "/api/v1"
 app.include_router(health.router)
 app.include_router(system.router, prefix=api_v1_prefix)
@@ -221,7 +221,7 @@ app.include_router(enrollment.router, prefix=api_v1_prefix)
 app.include_router(settings.router, prefix=api_v1_prefix)
 app.include_router(history.router, prefix=api_v1_prefix)
 
-# Include WebSocket Routers
+                           
 app.include_router(ws_routers.router)
 
 if __name__ == "__main__":

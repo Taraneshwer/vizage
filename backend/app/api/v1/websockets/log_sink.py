@@ -16,7 +16,7 @@ class WebSocketLogSink:
         """Called synchronously by Loguru"""
         record = message.record
         
-        # Build payload
+                       
         payload = LogMessage(
             topic="logs",
             timestamp=time.time(),
@@ -25,7 +25,7 @@ class WebSocketLogSink:
             message=record["message"]
         )
         
-        # Schedule broadcast asynchronously
+                                           
         asyncio.run_coroutine_threadsafe(
             self.manager.broadcast("logs", payload.model_dump_json()),
             self.loop

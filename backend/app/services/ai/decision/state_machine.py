@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 
 class RecognitionStateManager:
     def __init__(self):
-        # Maps tracking_id to its current state
+                                               
         self._states: Dict[str, RecognitionState] = {}
         
     def get_state(self, tracking_id: str) -> RecognitionState:
@@ -21,7 +21,7 @@ class RecognitionStateManager:
         """Transitions a track to a new state if valid."""
         current = self.get_state(tracking_id)
         if current != new_state:
-            # logger.debug(f"Track {tracking_id} State Transition: {current.value} -> {new_state.value}")
+                                                                                                         
             self._states[tracking_id] = new_state
             
     def remove_track(self, tracking_id: str) -> None:

@@ -15,16 +15,16 @@ class EventBridge:
         self.event_bus = event_bus
         self.manager = manager
         
-        # Subscribe to internal events
+                                      
         self.event_bus.subscribe(RecognitionEvent, self._handle_recognition)
         self.event_bus.subscribe(HistoryEvent, self._handle_history)
         
-        # Note: In a production system, we might want to bypass EventBus for raw frames
-        # and tap directly into CameraRuntime to save memory, but we'll try this first if
-        # frames are sent through EventBus, or we can use a callback.
+                                                                                       
+                                                                                         
+                                                                     
         
     async def _handle_recognition(self, event: RecognitionEvent):
-        # Translate to WS schema
+                                
         msg = RecognitionStreamMessage(
             topic="recognition",
             timestamp=time.time(),
@@ -61,8 +61,8 @@ class EventBridge:
 
     async def broadcast_camera_frame(self, camera_id: str, frame_id: str, image_matrix, capture_timestamp: float = 0.0):
         """Called directly by CameraRuntime or Orchestrator to avoid EventBus memory bloat."""
-        # Encode to JPEG
-        # Optimization: only encode if there are active connections
+                        
+                                                                   
         if not self.manager.active_connections.get("camera"):
             return
             

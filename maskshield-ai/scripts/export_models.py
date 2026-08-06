@@ -24,7 +24,7 @@ def export_yolo(model_path: str, output_dir: str):
     logger.info(f"Exporting YOLO Model: {model_path}")
     model = YOLO(model_path)
     
-    # Export ONNX
+                 
     try:
         onnx_path = model.export(format='onnx', dynamic=True)
         shutil.copy(onnx_path, Path(output_dir) / 'best_yolo.onnx')
@@ -32,7 +32,7 @@ def export_yolo(model_path: str, output_dir: str):
     except Exception as e:
         logger.error(f"Failed to export YOLO ONNX: {e}")
         
-    # Export TensorRT
+                     
     try:
         engine_path = model.export(format='engine', dynamic=True, workspace=4, half=True)
         shutil.copy(engine_path, Path(output_dir) / 'best_yolo.engine')
@@ -47,7 +47,7 @@ def export_adaface(model_path: str, output_dir: str):
         
     logger.info(f"Exporting AdaFace Model: {model_path}")
     
-    # We must load the architecture first to export
+                                                   
     import torchvision.models as models
     import torch.nn as nn
     

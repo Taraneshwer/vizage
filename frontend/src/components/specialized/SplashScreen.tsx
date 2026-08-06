@@ -22,7 +22,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     if (stepIndex < loadingSteps.length) {
       const timer = setTimeout(() => {
         setStepIndex(s => s + 1);
-      }, 600); // 600ms per step
+      }, 600); 
       return () => clearTimeout(timer);
     } else {
       const completeTimer = setTimeout(() => {

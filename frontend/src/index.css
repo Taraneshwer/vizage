@@ -11,7 +11,7 @@
 
 @layer components {
 
-  /* Flat enterprise aesthetic */
+  
   .flat-card {
     @apply bg-card border border-gray-200 rounded-md shadow-sm;
   }
@@ -21,7 +21,7 @@
   }
 }
 
-/* Custom Scrollbar for sleekness */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

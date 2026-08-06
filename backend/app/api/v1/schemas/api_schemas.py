@@ -5,12 +5,12 @@ Utilizes Pydantic v2 for strong typing and validation.
 from typing import List, Optional, Any, Dict
 from pydantic import BaseModel, Field
 
-# --- GENERIC SCHEMAS ---
+                         
 class BaseResponse(BaseModel):
     success: bool
     message: Optional[str] = None
     
-# --- RECOGNITION SCHEMAS ---
+                             
 class BoundingBoxModel(BaseModel):
     x1: int
     y1: int
@@ -35,7 +35,7 @@ class RecognitionResultModel(BaseModel):
 class BatchRecognitionResultModel(BaseResponse):
     results: List[RecognitionResultModel]
 
-# --- ENROLLMENT SCHEMAS ---
+                            
 class EnrollmentRequest(BaseModel):
     identity_id: str = Field(..., description="Unique ID for the person")
     name: str = Field(..., description="Full name")
@@ -58,7 +58,7 @@ class UpdateIdentityRequest(BaseModel):
     department: Optional[str] = None
     notes: Optional[str] = None
 
-# --- CAMERA SCHEMAS ---
+                        
 class CameraSourceModel(BaseModel):
     id: str
     name: str
@@ -90,7 +90,7 @@ class CameraStatusResponse(BaseResponse):
     fps: float
     dropped_frames: int
 
-# --- RUNTIME SCHEMAS ---
+                         
 class RuntimeStatsResponse(BaseModel):
     state: str
     total_frames_processed: int
@@ -100,7 +100,7 @@ class RuntimeStatsResponse(BaseModel):
     uptime_seconds: float
     average_fps: float
     
-# --- SYSTEM SCHEMAS ---
+                        
 class GPUStatusModel(BaseModel):
     is_available: bool
     device_name: str

@@ -42,8 +42,8 @@ async def list_identities(session: AsyncSession = Depends(get_db_session)):
         for ident in identities
     ]
 
-# IMPORTANT: /export must be declared BEFORE /{person_id} so FastAPI doesn't
-# interpret the literal string "export" as a person_id path parameter.
+                                                                            
+                                                                      
 @router.get("/export", summary="Export Identities to CSV")
 async def export_identities(session: AsyncSession = Depends(get_db_session)):
     repo = IdentityRepository(session)
@@ -92,26 +92,26 @@ async def enroll_person(
     if not frames:
         raise EnrollmentException("No valid images provided for enrollment.")
         
-    # Check if exists in DB first
+                                 
     repo = IdentityRepository(session)
     existing = await repo.get_by_identity_id(identity_id)
     if existing:
         raise EnrollmentException(f"Identity ID {identity_id} already exists.")
         
-    # Process FAISS
+                   
     result = orchestrator.enroll_person(identity_id=identity_id, name=name, frames=frames)
     
     if not result.success:
         raise EnrollmentException(f"Enrollment failed: {result.error_msg}")
         
-    # Save to SQLite
+                    
     new_identity = Identity(
         identity_id=identity_id,
         name=name,
         department=department
     )
     repo.add(new_identity)
-    # The session is committed automatically by the get_db_session dependency generator.
+                                                                                        
         
     return EnrollmentResponse(success=True, identity_id=identity_id, message="Enrollment successful.")
 
@@ -160,7 +160,7 @@ async def delete_enrolled_person(
     session: AsyncSession = Depends(get_db_session)
 ):
     """Deletes an enrolled person from FAISS and SQLite."""
-    # Delete from SQLite
+                        
     repo = IdentityRepository(session)
     ident = await repo.get_by_identity_id(person_id)
     if not ident:
@@ -168,7 +168,7 @@ async def delete_enrolled_person(
         
     await repo.delete(ident)
     
-    # Delete from FAISS
+                       
     orchestrator.faiss.delete_embedding(person_id)
     orchestrator.faiss.save_index()
     

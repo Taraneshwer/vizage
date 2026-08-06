@@ -39,17 +39,17 @@ from pydantic import BaseModel, ConfigDict, Field
 from config.models import AppConfig
 
 
-# ---------------------------------------------------------------------------
-# Archive type literal
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 ArchiveType = Literal["tar.gz", "tar.bz2", "tar.xz", "zip", "rar", "7z", "none"]
 DatasetCategory = Literal["masked", "unmasked", "detection", "unknown"]
 
 
-# ---------------------------------------------------------------------------
-# Dataset source specification
-# ---------------------------------------------------------------------------
+                                                                             
+                              
+                                                                             
 
 
 class DatasetSourceSpec(BaseModel):
@@ -101,9 +101,9 @@ class DatasetSourceSpec(BaseModel):
         return urls
 
 
-# ---------------------------------------------------------------------------
-# Registry
-# ---------------------------------------------------------------------------
+                                                                             
+          
+                                                                             
 
 
 class DatasetRegistry:
@@ -119,9 +119,9 @@ class DatasetRegistry:
     def __init__(self, specs: dict[str, DatasetSourceSpec]) -> None:
         self._specs: dict[str, DatasetSourceSpec] = dict(specs)
 
-    # ------------------------------------------------------------------
-    # Factory
-    # ------------------------------------------------------------------
+                                                                        
+             
+                                                                        
 
     @classmethod
     def from_config(cls, cfg: AppConfig) -> DatasetRegistry:
@@ -139,9 +139,9 @@ class DatasetRegistry:
         raw = cfg.datasets
         specs: dict[str, DatasetSourceSpec] = {}
 
-        # ----------------------------------------------------------------
-        # LFW
-        # ----------------------------------------------------------------
+                                                                          
+             
+                                                                          
         lfw_raw = raw.lfw.model_extra or {}
         specs["lfw"] = DatasetSourceSpec(
             name="lfw",
@@ -158,9 +158,9 @@ class DatasetRegistry:
             enabled=raw.lfw.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # CelebA
-        # ----------------------------------------------------------------
+                                                                          
+                
+                                                                          
         celeba_raw = raw.celeba.model_extra or {}
         specs["celeba"] = DatasetSourceSpec(
             name="celeba",
@@ -176,9 +176,9 @@ class DatasetRegistry:
             enabled=raw.celeba.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # CASIA-WebFace
-        # ----------------------------------------------------------------
+                                                                          
+                       
+                                                                          
         casia_raw = raw.casia_webface.model_extra or {}
         specs["casia_webface"] = DatasetSourceSpec(
             name="casia_webface",
@@ -195,9 +195,9 @@ class DatasetRegistry:
             enabled=raw.casia_webface.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # VGGFace2
-        # ----------------------------------------------------------------
+                                                                          
+                  
+                                                                          
         vgg_raw = raw.vggface2.model_extra or {}
         specs["vggface2"] = DatasetSourceSpec(
             name="vggface2",
@@ -214,9 +214,9 @@ class DatasetRegistry:
             enabled=raw.vggface2.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # RMFD
-        # ----------------------------------------------------------------
+                                                                          
+              
+                                                                          
         rmfd_raw = raw.rmfd.model_extra or {}
         specs["rmfd"] = DatasetSourceSpec(
             name="rmfd",
@@ -234,9 +234,9 @@ class DatasetRegistry:
             enabled=raw.rmfd.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # SMFD
-        # ----------------------------------------------------------------
+                                                                          
+              
+                                                                          
         smfd_raw = raw.smfd.model_extra or {}
         specs["smfd"] = DatasetSourceSpec(
             name="smfd",
@@ -249,9 +249,9 @@ class DatasetRegistry:
             enabled=raw.smfd.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # MAFA
-        # ----------------------------------------------------------------
+                                                                          
+              
+                                                                          
         mafa_raw = raw.mafa.model_extra or {}
         specs["mafa"] = DatasetSourceSpec(
             name="mafa",
@@ -268,9 +268,9 @@ class DatasetRegistry:
             enabled=raw.mafa.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # WIDER FACE
-        # ----------------------------------------------------------------
+                                                                          
+                    
+                                                                          
         wider_raw = raw.wider_face.model_extra or {}
         specs["wider_face"] = DatasetSourceSpec(
             name="wider_face",
@@ -301,9 +301,9 @@ class DatasetRegistry:
             enabled=raw.wider_face.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # MaskedFace-Net
-        # ----------------------------------------------------------------
+                                                                          
+                        
+                                                                          
         mfn_raw = raw.maskedface_net.model_extra or {}
         specs["maskedface_net"] = DatasetSourceSpec(
             name="maskedface_net",
@@ -320,14 +320,14 @@ class DatasetRegistry:
             enabled=raw.maskedface_net.enabled,
         )
 
-        # ----------------------------------------------------------------
-        # Custom
-        # ----------------------------------------------------------------
+                                                                          
+                
+                                                                          
         custom_raw = raw.custom.model_extra or {}
         specs["custom"] = DatasetSourceSpec(
             name="custom",
             display_name="Custom Dataset",
-            category=raw.custom.category,  # type: ignore[arg-type]
+            category=raw.custom.category,                          
             downloadable=False,
             manual_note="Set 'root_path' in config.json to your custom dataset folder.",
             manual_root_path=_optional_path(custom_raw.get("root_path")),
@@ -344,9 +344,9 @@ class DatasetRegistry:
         )
         return cls(specs)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def get(self, name: str) -> DatasetSourceSpec:
         """Return the spec for *name*, raising :class:`KeyError` if not found.
@@ -418,9 +418,9 @@ class DatasetRegistry:
         return f"DatasetRegistry(total={len(self._specs)}, enabled={enabled})"
 
 
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                  
+                                                                             
 
 
 def _optional_path(value: str | None) -> Path | None:

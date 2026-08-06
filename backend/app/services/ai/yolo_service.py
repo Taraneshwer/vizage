@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 
 class YOLODetectionService:
     def __init__(self, model_path: str = "yolov8n-face.pt", conf_threshold: float = 0.5):
-        # using v8n-face as placeholder for face model
+                                                      
         self.model_path = model_path
         self.conf_threshold = conf_threshold
         self.model = None
@@ -36,10 +36,10 @@ class YOLODetectionService:
         logger.info(f"Loading YOLO model from {self.model_path}...")
         
         try:
-            # YOLO auto-detects .pt, .onnx, and .engine. We specify task to ensure correct inference mode.
+                                                                                                          
             self.model = YOLO(self.model_path, task='detect')
             
-            # Only call .to() for PyTorch weights (.pt)
+                                                       
             if self.model_path.endswith('.pt') and getattr(self.gpu_manager, 'is_cuda', False):
                 self.model.to('cuda')
                 
@@ -68,7 +68,7 @@ class YOLODetectionService:
         results = []
         
         with self.gpu_manager.autocast():
-            # YOLO inference
+                            
             preds = self.model(img_array, conf=self.conf_threshold, verbose=False)
             
         for pred in preds:
@@ -77,12 +77,12 @@ class YOLODetectionService:
                 x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
                 conf = float(box.conf[0].item())
                 
-                # Ensure bounds are within the image
+                                                    
                 h, w = img_array.shape[:2]
                 x1, y1 = max(0, x1), max(0, y1)
                 x2, y2 = min(w, x2), min(h, y2)
                 
-                # Extract crop
+                              
                 face_crop = img_array[y1:y2, x1:x2].copy()
                 
                 if face_crop.size == 0:

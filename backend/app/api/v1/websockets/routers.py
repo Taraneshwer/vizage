@@ -8,7 +8,7 @@ from app.api.v1.websockets.manager import StreamingManager
 
 router = APIRouter(prefix="/ws", tags=["WebSockets"])
 
-# Simple dependency to get manager
+                                  
 def get_manager():
     return StreamingManager()
 
@@ -17,7 +17,7 @@ async def ws_recognition(websocket: WebSocket, manager: StreamingManager = Depen
     await manager.connect(websocket, "recognition")
     try:
         while True:
-            # Client heartbeat
+                              
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket, "recognition")

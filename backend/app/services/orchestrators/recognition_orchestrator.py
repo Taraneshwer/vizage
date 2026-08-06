@@ -37,7 +37,7 @@ class RecognitionOrchestrator:
         self.pipeline.add_middleware(LoggingMiddleware())
         self.pipeline.add_middleware(MemoryOptimizationMiddleware())
         
-        # Bind the callback
+                           
         self.camera_runtime.set_callback(self._on_frame_received)
         
     async def start_session(self, active_cam: Optional[object] = None) -> None:
@@ -66,7 +66,7 @@ class RecognitionOrchestrator:
                 logger.error(f"Failed to load active camera configuration: {e}")
             
         self.session_manager.set_state("RUNNING")
-        # Run the infinite camera loop as a background task so the event loop stays free
+                                                                                        
         self._camera_task = asyncio.create_task(self.camera_runtime.start())
         logger.info("Camera runtime task started in background.")
         
@@ -101,21 +101,21 @@ class RecognitionOrchestrator:
             t_dequeue = time.time()
             t_preprocess_start = time.time()
             
-            # 1. Pipeline Before
+                                
             frame = self.pipeline.run_before(frame)
             t_preprocess_end = time.time()
             
-            # 2. Inference Engine (Detection -> Alignment -> AdaFace -> FAISS -> Decision)
+                                                                                          
             t_inference_start = time.time()
             context = self.inference_engine.process_frame(frame)
             t_inference_end = time.time()
             
-            # 3. Pipeline After
+                               
             t_postprocess_start = time.time()
             context = self.pipeline.run_after(context)
             t_postprocess_end = time.time()
             
-            # Log full latency metrics
+                                      
             latency_queue = (t_dequeue - frame.timestamp) * 1000
             latency_preprocess = (t_preprocess_end - t_preprocess_start) * 1000
             latency_inference = (t_inference_end - t_inference_start) * 1000
@@ -131,24 +131,24 @@ class RecognitionOrchestrator:
                 f"Backend E2E={latency_total:.1f}ms"
             )
             
-            # 4. Handle Results and Events
+                                          
             for res in context.detections:
-                # Update Session Stats
+                                      
                 self.session_manager.log_recognition(res.is_unknown, res.verification_score)
                 
-                # Asynchronously save to SQLite
+                                               
                 loop = asyncio.get_event_loop()
                 loop.create_task(self._save_history_event(frame, res, context))
                 
                 if res.is_unknown:
-                    # Fire Unknown Event
+                                        
                     self.event_bus.publish_sync(UnknownDetectedEvent(
                         camera_id=self.camera_runtime.camera_id,
                         frame_id=frame.frame_id,
                         tracking_id=res.tracking_id or "untracked"
                     ))
                 elif res.state == RecognitionState.RECOGNIZED and res.candidate:
-                    # Fire Recognition Event
+                                            
                     self.event_bus.publish_sync(RecognitionEvent(
                         identity_id=res.candidate.identity_id,
                         verification_score=res.verification_score,
@@ -162,9 +162,9 @@ class RecognitionOrchestrator:
                         capture_timestamp=frame.timestamp
                     ))
                     
-            # 5. Log Session Frame
+                                  
             total_time = sum([v for k, v in context.timers.items() if k.endswith("_duration")])
-            self.session_manager.log_frame(fps=0.0, processing_time_ms=total_time) # fps will be tracked dynamically
+            self.session_manager.log_frame(fps=0.0, processing_time_ms=total_time)                                  
             
         except Exception as e:
             self.session_manager.log_error()
@@ -180,7 +180,7 @@ class RecognitionOrchestrator:
                 name = None
                 department = None
                 
-                # If known, fetch details to cache in history
+                                                             
                 if not res.is_unknown and res.candidate:
                     stmt = select(Identity).where(Identity.identity_id == res.candidate.identity_id)
                     db_res = await session.execute(stmt)
@@ -207,7 +207,7 @@ class RecognitionOrchestrator:
                 session.add(history)
                 await session.commit()
                 
-                # Publish history event
+                                       
                 self.event_bus.publish_sync(HistoryEvent(
                     history_id=history.id,
                     timestamp=history.timestamp.isoformat(),

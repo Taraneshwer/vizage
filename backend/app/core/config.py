@@ -17,24 +17,24 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = PROJECT_NAME
     API_V1_STR: str = API_V1_STR
     
-    # Environment
+                 
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
     
-    # Database
+              
     DATABASE_URL: str = DEFAULT_DB_URL
     
-    # Logging
+             
     LOG_LEVEL: str = "INFO"
     LOG_DIR: str = "logs"
     
-    # AI Models
+               
     YOLO_MODEL_PATH: str = str(MODELS_DIR / "best_yolo.onnx")
     ADAFACE_MODEL_PATH: str = str(MODELS_DIR / "best_adaface.onnx")
     MASK_MODEL_PATH: str = str(MODELS_DIR / "mask_detector.pth")
-    EXECUTION_PROVIDER: str = "CUDA" # CPU, CUDA, TensorRT
+    EXECUTION_PROVIDER: str = "CUDA"                      
     
-    # Tracking
+              
     TRACK_THRESH: float = 0.5
     MATCH_THRESH: float = 0.8
     TRACK_BUFFER: int = 30

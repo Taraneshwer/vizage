@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 import numpy as np
 
-# Add backend to path so we can import services
+                                               
 backend_dir = Path(__file__).resolve().parent.parent.parent / "backend"
 sys.path.append(str(backend_dir))
 
@@ -21,12 +21,12 @@ def run_pre_train_verification():
     yolo_path = models_dir / "yolo11n.pt"
     adaface_path = models_dir / "best_adaface.onnx"
     
-    # Use official yolo11n.pt which will automatically download and detect 'person'
+                                                                                   
     if not adaface_path.exists():
         print(f"[ERROR] Required models not found in {models_dir}.")
         return
 
-    # Initialize Services
+                         
     settings.YOLO_MODEL_PATH = str(yolo_path)
     settings.ADAFACE_MODEL_PATH = str(adaface_path)
     
@@ -39,7 +39,7 @@ def run_pre_train_verification():
     embedder = AdaFaceService(model_path=str(adaface_path))
     embedder.load_model()
     
-    # Grab 10 sample images from LFW dataset
+                                            
     dataset_dir = backend_dir.parent / "maskshield-ai" / "datasets" / "lfw"
     if not dataset_dir.exists():
         print(f"[ERROR] LFW dataset not found at {dataset_dir}")
@@ -72,18 +72,18 @@ def run_pre_train_verification():
         
         print(f"\n[Image {i+1}] {img_path.name}")
         
-        # 1. Detection
+                      
         detections = detector.detect(test_frame)
         print(f"  -> YOLO: Detected {len(detections)} faces.")
         
         if not detections:
             continue
             
-        # 2. Tracking
+                     
         tracked_objects = tracker.update(detections, test_frame.image)
         print(f"  -> ByteTrack: Assigned {len(tracked_objects)} track IDs.")
         
-        # 3. Recognition
+                        
         features_extracted = 0
         for obj in tracked_objects:
             if hasattr(obj, 'bbox'):

@@ -26,11 +26,11 @@ class CameraRepository:
         self.session.add(camera)
 
     async def set_active(self, camera_id: str):
-        # Set all inactive
+                          
         await self.session.execute(
             update(CameraSource).values(is_active=False)
         )
-        # Set target active
+                           
         if camera_id:
             await self.session.execute(
                 update(CameraSource).where(CameraSource.id == camera_id).values(is_active=True)

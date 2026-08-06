@@ -21,7 +21,7 @@ def run_audit(data_root: str):
             
         images = list(ds_path.rglob("*.jpg")) + list(ds_path.rglob("*.png")) + list(ds_path.rglob("*.jpeg"))
         
-        # Count identities (folders) if they exist
+                                                  
         identities = len([d for d in ds_path.iterdir() if d.is_dir()])
         
         audit["datasets"][ds_name] = {
@@ -33,11 +33,11 @@ def run_audit(data_root: str):
         audit["totals"]["images"] += len(images)
         audit["totals"]["identities"] += identities
         
-    # Write JSON
+                
     with open("dataset_audit.json", "w") as f:
         json.dump(audit, f, indent=4)
         
-    # Write MD
+              
     with open("dataset_audit.md", "w") as f:
         f.write("# Dataset Audit Report\n\n")
         f.write(f"**Total Images**: {audit['totals']['images']}\n")

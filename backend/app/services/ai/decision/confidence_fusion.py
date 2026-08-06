@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 
 class ConfidenceFusionEngine:
     def __init__(self):
-        # Weights could be moved to ThresholdManager later
+                                                          
         self.weights = {
             "embedding": 0.60,
             "temporal": 0.25,
@@ -23,18 +23,18 @@ class ConfidenceFusionEngine:
         if result.candidate is None:
             return 0.0
             
-        # Extract components
+                            
         embedding_score = result.candidate.similarity_score
         detection_score = result.detection.confidence
         
-        # Penalize if mask confidence is high but we somehow lack a strong embedding match
+                                                                                          
         mask_penalty = 0.0
         if result.mask and result.mask.has_mask:
-            # Mask implies upper face embedding was used. If score is low, penalize more.
+                                                                                         
             if embedding_score < 0.5:
                 mask_penalty = 0.10
                 
-        # Calculate weighted sum
+                                
         final_score = (
             (embedding_score * self.weights["embedding"]) +
             (temporal_stability * self.weights["temporal"]) +

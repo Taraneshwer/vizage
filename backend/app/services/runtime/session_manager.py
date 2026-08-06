@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 class RuntimeSessionState(BaseModel):
     session_id: str
     camera_id: str
-    state: str # INIT, RUNNING, RECOVERING, STOPPED
+    state: str                                     
     runtime_seconds: float
     current_fps: float
     frames_processed: int

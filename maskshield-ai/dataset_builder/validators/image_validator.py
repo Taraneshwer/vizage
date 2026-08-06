@@ -56,9 +56,9 @@ from utils.image_utils import (
 )
 
 
-# ---------------------------------------------------------------------------
-# Typed rejection reasons
-# ---------------------------------------------------------------------------
+                                                                             
+                         
+                                                                             
 
 
 class RejectionReason(str, Enum):
@@ -83,9 +83,9 @@ class RejectionReason(str, Enum):
     TOO_BRIGHT = "too_bright"
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class ImageValidationResult(BaseModel):
@@ -130,9 +130,9 @@ class ImageValidationResult(BaseModel):
         return "unknown"
 
 
-# ---------------------------------------------------------------------------
-# Validator service
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class ImageValidator:
@@ -157,9 +157,9 @@ class ImageValidator:
             ext.lower().lstrip(".") for ext in config.supported_formats
         )
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def validate(self, image_path: Path) -> ImageValidationResult:
         """Validate a single image file against all configured checks.
@@ -178,9 +178,9 @@ class ImageValidator:
         reasons: list[RejectionReason] = []
         file_size = image_path.stat().st_size if image_path.exists() else 0
 
-        # ----------------------------------------------------------------
-        # Check 1 — Format
-        # ----------------------------------------------------------------
+                                                                          
+                          
+                                                                          
         if not self._check_format(image_path):
             reasons.append(RejectionReason.UNSUPPORTED_FORMAT)
             logger.debug(
@@ -188,7 +188,7 @@ class ImageValidator:
                 path=image_path,
                 ext=image_path.suffix,
             )
-            # Cannot proceed with pixel-level checks.
+                                                     
             return ImageValidationResult(
                 path=image_path,
                 is_valid=False,
@@ -196,9 +196,9 @@ class ImageValidator:
                 file_size_bytes=file_size,
             )
 
-        # ----------------------------------------------------------------
-        # Check 2 — Decodability
-        # ----------------------------------------------------------------
+                                                                          
+                                
+                                                                          
         try:
             img = load_image_bgr(image_path)
         except (ImageLoadError, FileNotFoundError, OSError) as exc:
@@ -219,9 +219,9 @@ class ImageValidator:
         blur = laplacian_variance(img)
         brightness = mean_brightness(img)
 
-        # ----------------------------------------------------------------
-        # Check 3 — Minimum size
-        # ----------------------------------------------------------------
+                                                                          
+                                
+                                                                          
         if not self._check_size(dims.width, dims.height):
             reasons.append(RejectionReason.TOO_SMALL)
             logger.debug(
@@ -231,9 +231,9 @@ class ImageValidator:
                 h=dims.height,
             )
 
-        # ----------------------------------------------------------------
-        # Check 4 — Aspect ratio
-        # ----------------------------------------------------------------
+                                                                          
+                                
+                                                                          
         if not self._check_aspect_ratio(dims.width, dims.height):
             reasons.append(RejectionReason.BAD_ASPECT_RATIO)
             ratio = dims.width / dims.height if dims.height else 0
@@ -243,9 +243,9 @@ class ImageValidator:
                 ratio=ratio,
             )
 
-        # ----------------------------------------------------------------
-        # Check 5 — Blur
-        # ----------------------------------------------------------------
+                                                                          
+                        
+                                                                          
         if not self._check_blur(blur):
             reasons.append(RejectionReason.TOO_BLURRY)
             logger.debug(
@@ -254,9 +254,9 @@ class ImageValidator:
                 score=blur,
             )
 
-        # ----------------------------------------------------------------
-        # Check 6 — Brightness
-        # ----------------------------------------------------------------
+                                                                          
+                              
+                                                                          
         brightness_reason = self._check_brightness(brightness)
         if brightness_reason is not None:
             reasons.append(brightness_reason)
@@ -267,9 +267,9 @@ class ImageValidator:
                 b=brightness,
             )
 
-        # ----------------------------------------------------------------
-        # Assemble result
-        # ----------------------------------------------------------------
+                                                                          
+                         
+                                                                          
         is_valid = len(reasons) == 0
         if is_valid:
             logger.debug("Accepted: {path}", path=image_path)
@@ -296,9 +296,9 @@ class ImageValidator:
         """
         return self._check_format(image_path)
 
-    # ------------------------------------------------------------------
-    # Private check helpers
-    # ------------------------------------------------------------------
+                                                                        
+                           
+                                                                        
 
     def _check_format(self, path: Path) -> bool:
         """Return ``True`` if the file extension is allowed."""

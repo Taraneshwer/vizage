@@ -19,9 +19,9 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
-# ---------------------------------------------------------------------------
-# Leaf-level models
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class ProjectConfig(BaseModel):
@@ -174,9 +174,9 @@ class PreprocessingConfig(BaseModel):
     )
 
 
-# ---------------------------------------------------------------------------
-# Augmentation sub-models
-# ---------------------------------------------------------------------------
+                                                                             
+                         
+                                                                             
 
 
 class RotationTransformConfig(BaseModel):
@@ -353,9 +353,9 @@ class AugmentationConfig(BaseModel):
     transforms: TransformSetConfig = Field(default_factory=TransformSetConfig)
 
 
-# ---------------------------------------------------------------------------
-# Dataset entry models
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 class DatasetEntryConfig(BaseModel):
@@ -403,7 +403,7 @@ class DatasetsConfig(BaseModel):
             if isinstance(entry, DatasetEntryConfig) and entry.enabled
         }
 
-    def __iter__(self):  # type: ignore[override]
+    def __iter__(self):                          
         """Yield ``(field_name, value)`` pairs for iteration."""
         for field_name in self.model_fields:
             yield field_name, getattr(self, field_name)
@@ -443,9 +443,9 @@ class SplitsConfig(BaseModel):
         return self
 
 
-# ---------------------------------------------------------------------------
-# Root config model
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class AppConfig(BaseModel):

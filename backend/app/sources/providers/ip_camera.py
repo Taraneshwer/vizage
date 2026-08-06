@@ -35,10 +35,10 @@ class IPCameraSource(StreamingSource):
         if self.config.auth_token:
             headers["Authorization"] = f"Bearer {self.config.auth_token}"
         self.client = httpx.AsyncClient(headers=headers, timeout=self.config.connection_timeout_sec)
-        # Note: True MJPEG streaming requires iterative reading.
-        # For Milestone 1.5, we validate the endpoint can be reached.
+                                                                
+                                                                     
         try:
-            # We assume a snapshot endpoint for simplicity of the abstraction
+                                                                             
             response = await self.client.head(self.config.http_url)
             if response.status_code < 400:
                 self.health.is_connected = True
@@ -75,7 +75,7 @@ class IPCameraSource(StreamingSource):
             return None
             
         try:
-            # Simple snapshot approach; production would handle multipart/x-mixed-replace
+                                                                                         
             response = await self.client.get(self.config.http_url)
             if response.status_code == 200:
                 np_arr = np.frombuffer(response.content, np.uint8)

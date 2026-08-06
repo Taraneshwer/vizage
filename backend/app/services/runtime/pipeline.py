@@ -23,7 +23,7 @@ class IMiddleware(ABC):
 
 class LoggingMiddleware(IMiddleware):
     def process_before(self, frame: Frame) -> Frame:
-        # logger.debug(f"Processing frame from {frame.source_id}")
+                                                                  
         return frame
         
     def process_after(self, context: RecognitionContext) -> RecognitionContext:
@@ -38,7 +38,7 @@ class MemoryOptimizationMiddleware(IMiddleware):
         
     def process_after(self, context: RecognitionContext) -> RecognitionContext:
         """Drops bulky image arrays from the context to free memory."""
-        # Drop full frame image
+                               
         if getattr(context.frame, 'image', None) is not None:
             context.frame.image = None
             

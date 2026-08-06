@@ -46,7 +46,7 @@ class MediaPipeService:
         try:
             self.mp_face_mesh = mp.solutions.face_mesh
             self.face_mesh = self.mp_face_mesh.FaceMesh(
-                static_image_mode=True, # We crop images first, so static mode is better
+                static_image_mode=True,                                                 
                 max_num_faces=self.max_num_faces,
                 refine_landmarks=True,
                 min_detection_confidence=self.min_detection_confidence
@@ -72,23 +72,23 @@ class MediaPipeService:
         left_eye_center = np.array(left_eye, dtype=np.float32)
         right_eye_center = np.array(right_eye, dtype=np.float32)
         
-        # Calculate angle
+                         
         dy = right_eye_center[1] - left_eye_center[1]
         dx = right_eye_center[0] - left_eye_center[0]
         angle = np.degrees(np.arctan2(dy, dx))
         
-        # Calculate center
+                          
         eyes_center = ((left_eye_center[0] + right_eye_center[0]) / 2, 
                        (left_eye_center[1] + right_eye_center[1]) / 2)
                        
-        # Get rotation matrix
+                             
         M = cv2.getRotationMatrix2D(eyes_center, angle, scale=1.0)
         
-        # Adjust matrix for translation to center of output
+                                                           
         M[0, 2] += (desired_size[0] * 0.5) - eyes_center[0]
-        M[1, 2] += (desired_size[1] * 0.4) - eyes_center[1] # Eyes slightly above center
+        M[1, 2] += (desired_size[1] * 0.4) - eyes_center[1]                             
         
-        # Perform affine warp
+                             
         aligned_face = cv2.warpAffine(image, M, desired_size, flags=cv2.INTER_CUBIC)
         return aligned_face
 
@@ -97,7 +97,7 @@ class MediaPipeService:
         Extracts landmarks from a face crop and returns an aligned image.
         """
         if not getattr(self, 'is_loaded', False) or self.face_mesh is None:
-            # Degraded fallback mode without detailed landmarks
+                                                               
             aligned_face = cv2.resize(face_crop, (112, 112))
             return LandmarkResult(
                 landmarks=np.array([]),
@@ -105,7 +105,7 @@ class MediaPipeService:
                 upper_face_crop=aligned_face
             )
             
-        # MediaPipe requires RGB
+                                
         try:
             img_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
         except Exception as e:
@@ -117,16 +117,16 @@ class MediaPipeService:
         if not results.multi_face_landmarks:
             return None
             
-        # Get first face
+                        
         face_landmarks = results.multi_face_landmarks[0]
         h, w = face_crop.shape[:2]
         
-        # Convert normalized coordinates to absolute pixels
+                                                           
         landmarks_abs = np.array([(int(lm.x * w), int(lm.y * h)) for lm in face_landmarks.landmark])
         
-        # Standard eye indices in MediaPipe FaceMesh
-        # Left eye center approx index 468
-        # Right eye center approx index 473
+                                                    
+                                          
+                                           
         left_eye_idx = 468
         right_eye_idx = 473
         
@@ -135,10 +135,10 @@ class MediaPipeService:
             right_eye = tuple(landmarks_abs[right_eye_idx])
             aligned_face = self._align_face(face_crop, left_eye, right_eye)
             
-            # Extract upper face (approx top 60%) for masked recognition
+                                                                        
             h_aligned = aligned_face.shape[0]
             upper_face = aligned_face[0:int(h_aligned * 0.6), :].copy()
-            # Resize back to standard embedding size
+                                                    
             upper_face = cv2.resize(upper_face, (112, 112))
         else:
             aligned_face = cv2.resize(face_crop, (112, 112))

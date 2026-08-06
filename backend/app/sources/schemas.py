@@ -28,7 +28,7 @@ class SourceHealth(BaseModel):
     last_error: Optional[str] = None
     last_health_check: datetime = Field(default_factory=datetime.utcnow)
     
-    # New metrics
+                 
     current_queue_size: int = 0
     average_latency_ms: float = 0.0
     last_frame_timestamp: Optional[float] = None
@@ -43,18 +43,18 @@ class BaseSourceConfig(BaseModel):
     """Base configuration for any input source."""
     source_id: str
     
-    # Connection / Reconnect policies
+                                     
     automatic_reconnect: bool = True
     reconnect_interval_sec: float = 5.0
-    max_reconnect_attempts: int = -1  # -1 for infinite
+    max_reconnect_attempts: int = -1                   
     connection_timeout_sec: float = 10.0
     retry_policy: Literal["exponential", "fixed"] = "fixed"
     
-    # Buffering
+               
     frame_buffer_size: int = 2
     drop_strategy: Literal["oldest", "newest"] = "oldest"
     
-    # Target Metrics
+                    
     target_fps: Optional[int] = None
     target_latency_ms: Optional[float] = None
     preferred_resolution: Optional[tuple[int, int]] = None

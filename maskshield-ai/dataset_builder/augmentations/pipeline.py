@@ -57,9 +57,9 @@ from utils.file_ops import ensure_dir, iter_images
 from utils.image_utils import ImageLoadError, load_image_bgr, save_image
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class AugmentationResult(BaseModel):
@@ -87,9 +87,9 @@ class AugmentationResult(BaseModel):
         return self.copies_created > 0 and self.error_message is None
 
 
-# ---------------------------------------------------------------------------
-# Pipeline
-# ---------------------------------------------------------------------------
+                                                                             
+          
+                                                                             
 
 
 class AugmentationPipeline:
@@ -112,12 +112,12 @@ class AugmentationPipeline:
         if not self._aug_cfg.enabled:
             logger.warning("Augmentation is disabled in config (enabled=false).")
 
-        # Build the Albumentations Compose pipeline once.
+                                                         
         self._transform = build_transform_pipeline(
             self._aug_cfg, seed=self._aug_cfg.seed
         )
 
-        # Build custom simulators.
+                                  
         self._mask_sim = MaskSimulator(
             self._aug_cfg.transforms.random_mask_simulation
         )
@@ -130,9 +130,9 @@ class AugmentationPipeline:
         self._output_fmt = f".{self._aug_cfg.output_format.lstrip('.')}"
         self._jpeg_quality = self._aug_cfg.jpeg_quality
 
-    # ------------------------------------------------------------------
-    # Public API — batch
-    # ------------------------------------------------------------------
+                                                                        
+                        
+                                                                        
 
     def augment_directory(
         self,
@@ -227,9 +227,9 @@ class AugmentationPipeline:
             )
         )
 
-    # ------------------------------------------------------------------
-    # Public API — single image
-    # ------------------------------------------------------------------
+                                                                        
+                               
+                                                                        
 
     def augment_image(
         self,
@@ -255,7 +255,7 @@ class AugmentationPipeline:
         Returns:
             :class:`AugmentationResult`.
         """
-        # Load source image.
+                            
         try:
             original = load_image_bgr(src)
         except (ImageLoadError, FileNotFoundError, OSError) as exc:
@@ -275,7 +275,7 @@ class AugmentationPipeline:
         failed = 0
 
         for copy_idx in range(self._n_copies):
-            # Deterministic per-copy seed.
+                                          
             copy_seed = self._global_seed ^ (image_index * 1_000 + copy_idx)
             rng = random.Random(copy_seed)
 
@@ -288,7 +288,7 @@ class AugmentationPipeline:
 
             try:
                 augmented = self._apply_pipeline(original.copy(), rng, copy_seed)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:                
                 logger.error(
                     "Augmentation failed [{src}] copy {n}: {exc}",
                     src=src.name,
@@ -308,7 +308,7 @@ class AugmentationPipeline:
                     )
                     failed += 1
             else:
-                # Dry run: count as created without writing.
+                                                            
                 output_paths.append(out_path)
 
         logger.debug(
@@ -325,9 +325,9 @@ class AugmentationPipeline:
             output_paths=output_paths,
         )
 
-    # ------------------------------------------------------------------
-    # Private: apply full pipeline to one image
-    # ------------------------------------------------------------------
+                                                                        
+                                               
+                                                                        
 
     def _apply_pipeline(
         self, img: np.ndarray, rng: random.Random, seed: int
@@ -347,27 +347,27 @@ class AugmentationPipeline:
         Returns:
             Augmented BGR ``uint8`` array.
         """
-        # Step 1 — Albumentations (operates on RGB internally).
-        img_rgb = img[:, :, ::-1]  # BGR → RGB
+                                                               
+        img_rgb = img[:, :, ::-1]             
         result = self._transform(image=img_rgb)
         img_rgb = result["image"]
-        img = img_rgb[:, :, ::-1]  # RGB → BGR
+        img = img_rgb[:, :, ::-1]             
 
-        # Step 2 — Synthetic mask
+                                 
         mask_cfg = self._aug_cfg.transforms.random_mask_simulation
         if mask_cfg.enabled:
             img = self._mask_sim.apply(img, rng)
 
-        # Step 3 — Synthetic sunglasses
+                                       
         glasses_cfg = self._aug_cfg.transforms.random_sunglasses
         if glasses_cfg.enabled:
             img = self._glasses_sim.apply(img, rng)
 
         return img
 
-    # ------------------------------------------------------------------
-    # Public: preview
-    # ------------------------------------------------------------------
+                                                                        
+                     
+                                                                        
 
     def generate_preview_grid(
         self,
@@ -399,17 +399,17 @@ class AugmentationPipeline:
             try:
                 aug = self._apply_pipeline(original.copy(), rng, self._global_seed + i + 1)
                 samples.append(aug)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:                
                 logger.warning("Preview sample {i} failed: {exc}", i=i, exc=exc)
 
-        # Resize all samples to a common size for the grid.
+                                                           
         thumb_size = (128, 128)
         thumbnails = [
             cv2.resize(s, thumb_size, interpolation=cv2.INTER_LANCZOS4)
             for s in samples
         ]
 
-        # Arrange into a row grid (up to 8 per row).
+                                                    
         cols = min(8, len(thumbnails))
         rows = (len(thumbnails) + cols - 1) // cols
         row_imgs = []

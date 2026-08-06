@@ -18,27 +18,28 @@ class UnknownDetectionEngine:
         Determines whether the candidate should be accepted, marked as possible match, or unknown.
         """
         if not result.candidate:
+            
             return DecisionExplanation(
                 reason="No candidate provided by FAISS",
                 is_accepted=False,
                 decision_type="Unknown"
             )
             
-        # Determine applicable threshold
+                                        
         is_masked = result.mask.has_mask if result.mask else False
         threshold = self.thresholds.get("masked_verification_min" if is_masked else "unmasked_verification_min")
         unknown_max = self.thresholds.get("unknown_max")
         
         explanation = DecisionExplanation(
             embedding_score=result.candidate.similarity_score,
-            temporal_stability=fused_score, # For simplicity here
+            temporal_stability=fused_score,                      
             tracking_score=result.detection.confidence,
             is_accepted=False,
             decision_type="Unknown",
             reason=""
         )
         
-        # Logic branches
+                        
         if fused_score >= threshold:
             explanation.is_accepted = True
             explanation.decision_type = "Known"

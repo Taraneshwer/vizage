@@ -60,9 +60,9 @@ from utils.file_ops import ensure_dir, human_size
 from utils.hashing import sha256_file
 
 
-# ---------------------------------------------------------------------------
-# Download status enum
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 class DownloadStatus(str, Enum):
@@ -89,9 +89,9 @@ class DownloadStatus(str, Enum):
     UNKNOWN_ERROR = "unknown_error"
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class DownloadResult(BaseModel):
@@ -133,9 +133,9 @@ class DownloadResult(BaseModel):
         return ", ".join(parts) + ")"
 
 
-# ---------------------------------------------------------------------------
-# Downloader service
-# ---------------------------------------------------------------------------
+                                                                             
+                    
+                                                                             
 
 
 class DatasetDownloader:
@@ -163,9 +163,9 @@ class DatasetDownloader:
         ensure_dir(self._temp_dir)
         ensure_dir(self._datasets_root)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def download_dataset(
         self,
@@ -200,9 +200,9 @@ class DatasetDownloader:
             "Downloading [{name}]: {url}", name=dataset_name, url=url
         )
 
-        # ----------------------------------------------------------------
-        # Skip if already downloaded and extracted
-        # ----------------------------------------------------------------
+                                                                          
+                                                  
+                                                                          
         if archive_path.exists() and self._archive_intact(archive_path, archive_type):
             logger.info(
                 "[{name}] Archive already present: {path}. Checking extraction ...",
@@ -220,9 +220,9 @@ class DatasetDownloader:
                     elapsed_seconds=time.monotonic() - t_start,
                 )
 
-        # ----------------------------------------------------------------
-        # Download (with resume + retry)
-        # ----------------------------------------------------------------
+                                                                          
+                                        
+                                                                          
         try:
             bytes_downloaded = self._download_with_retry(url, archive_path)
         except requests.HTTPError as exc:
@@ -248,9 +248,9 @@ class DatasetDownloader:
                 error_message=str(exc),
             )
 
-        # ----------------------------------------------------------------
-        # Checksum verification
-        # ----------------------------------------------------------------
+                                                                          
+                               
+                                                                          
         checksum_verified = False
         if expected_checksum:
             checksum_verified = self._verify_checksum(
@@ -268,9 +268,9 @@ class DatasetDownloader:
                     error_message="SHA-256 checksum mismatch.",
                 )
 
-        # ----------------------------------------------------------------
-        # Extraction
-        # ----------------------------------------------------------------
+                                                                          
+                    
+                                                                          
         if archive_type == "none":
             ensure_dir(extract_root)
             dest = extract_root / archive_name
@@ -315,7 +315,7 @@ class DatasetDownloader:
 
     def download_all(
         self,
-        specs: dict,  # dict[str, DatasetSourceSpec]
+        specs: dict,                                
     ) -> list[DownloadResult]:
         """Download all datasets described by *specs*.
 
@@ -359,9 +359,9 @@ class DatasetDownloader:
                 results.append(result)
         return results
 
-    # ------------------------------------------------------------------
-    # Private: download logic
-    # ------------------------------------------------------------------
+                                                                        
+                             
+                                                                        
 
     def _download_with_retry(self, url: str, dest: Path) -> int:
         """Download *url* to *dest*, resuming if a ``.part`` file exists.
@@ -388,7 +388,7 @@ class DatasetDownloader:
             try:
                 return self._attempt_download(url, dest, part_path)
             except requests.HTTPError as exc:
-                # 4xx are not retryable.
+                                        
                 if exc.response is not None and exc.response.status_code < 500:
                     raise
                 if attempt > max_retries:
@@ -415,8 +415,8 @@ class DatasetDownloader:
                 )
                 time.sleep(wait)
 
-        # This line is unreachable but satisfies mypy.
-        raise requests.ConnectionError("Exhausted retries.")  # pragma: no cover
+                                                      
+        raise requests.ConnectionError("Exhausted retries.")                    
 
     def _attempt_download(self, url: str, dest: Path, part_path: Path) -> int:
         """Single HTTP download attempt, supporting resume via Range header.
@@ -476,7 +476,7 @@ class DatasetDownloader:
                         bytes_this_attempt += len(chunk)
                         bar.update(len(chunk))
 
-        # Rename .part → final destination atomically.
+                                                      
         part_path.rename(dest)
         logger.debug(
             "Download complete: {path} ({size})",
@@ -485,9 +485,9 @@ class DatasetDownloader:
         )
         return bytes_this_attempt
 
-    # ------------------------------------------------------------------
-    # Private: verification
-    # ------------------------------------------------------------------
+                                                                        
+                           
+                                                                        
 
     def _verify_checksum(
         self,
@@ -518,9 +518,9 @@ class DatasetDownloader:
         )
         return False
 
-    # ------------------------------------------------------------------
-    # Private: extraction
-    # ------------------------------------------------------------------
+                                                                        
+                         
+                                                                        
 
     def _extract_archive(
         self,
@@ -571,7 +571,7 @@ class DatasetDownloader:
                     "Supported: tar.gz, tar.bz2, tar.xz, zip, rar, 7z, none."
                 )
 
-            # Move extracted contents to final destination.
+                                                           
             self._move_extracted(tmp, extract_root)
 
         logger.success("Extraction complete → {path}", path=extract_root)
@@ -586,7 +586,7 @@ class DatasetDownloader:
             dest: Destination directory.
         """
         with tarfile.open(archive_path, "r:*") as tf:
-            # Safety filter: reject absolute paths and ``..`` traversal.
+                                                                        
             members = [
                 m for m in tf.getmembers()
                 if not (
@@ -594,7 +594,7 @@ class DatasetDownloader:
                     or ".." in Path(m.name).parts
                 )
             ]
-            tf.extractall(path=str(dest), members=members)  # type: ignore[call-arg]
+            tf.extractall(path=str(dest), members=members)                          
 
     @staticmethod
     def _extract_zip(archive_path: Path, dest: Path) -> None:
@@ -605,7 +605,7 @@ class DatasetDownloader:
             dest: Destination directory.
         """
         with zipfile.ZipFile(archive_path, "r") as zf:
-            # Safety filter: reject absolute paths and ``..`` traversal.
+                                                                        
             safe_members = [
                 name for name in zf.namelist()
                 if not (
@@ -628,7 +628,7 @@ class DatasetDownloader:
             ImportError: If ``patool`` is not installed.
         """
         try:
-            import patoollib  # type: ignore
+            import patoollib                
         except ImportError as exc:
             raise ImportError(
                 "patool is required for RAR/7z extraction. "
@@ -651,7 +651,7 @@ class DatasetDownloader:
         ensure_dir(dst_dir)
         children = list(src_dir.iterdir())
 
-        # Unwrap single-directory tarballs (e.g. ``lfw/`` inside ``lfw.tgz``).
+                                                                              
         if len(children) == 1 and children[0].is_dir():
             src_dir = children[0]
             children = list(src_dir.iterdir())
@@ -665,9 +665,9 @@ class DatasetDownloader:
                     target.unlink()
             shutil.move(str(item), str(dst_dir))
 
-    # ------------------------------------------------------------------
-    # Private: helpers
-    # ------------------------------------------------------------------
+                                                                        
+                      
+                                                                        
 
     @staticmethod
     def _archive_intact(path: Path, archive_type: str) -> bool:
@@ -694,9 +694,9 @@ class DatasetDownloader:
         return True
 
 
-# ---------------------------------------------------------------------------
-# Module-level helper
-# ---------------------------------------------------------------------------
+                                                                             
+                     
+                                                                             
 
 
 def _url_filename(url: str) -> str:
@@ -710,5 +710,5 @@ def _url_filename(url: str) -> str:
         or ``"download"`` if the URL ends with a slash.
     """
     part = url.rstrip("/").split("/")[-1]
-    # Strip query strings.
+                          
     return part.split("?")[0] or "download"

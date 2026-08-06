@@ -54,7 +54,7 @@ from utils.image_utils import (
 from utils.logging_setup import configure_logging, configure_logging_minimal
 
 __all__ = [
-    # file_ops
+              
     "IMAGE_EXTENSIONS",
     "count_files",
     "ensure_dir",
@@ -66,13 +66,13 @@ __all__ = [
     "safe_copy",
     "safe_move",
     "stem_with_suffix",
-    # hashing
+             
     "HashAlgorithm",
     "hamming_distance",
     "perceptual_hash",
     "sha256_bytes",
     "sha256_file",
-    # image_utils
+                 
     "ImageDimensions",
     "ImageLoadError",
     "apply_clahe",
@@ -86,7 +86,7 @@ __all__ = [
     "load_pil",
     "mean_brightness",
     "save_image",
-    # logging_setup
+                   
     "configure_logging",
     "configure_logging_minimal",
 ]

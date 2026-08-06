@@ -15,7 +15,7 @@ class StreamingManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(StreamingManager, cls).__new__(cls)
-            # topic -> list of websockets
+                                         
             cls._instance.active_connections = {
                 "recognition": [],
                 "camera": [],
@@ -49,7 +49,7 @@ class StreamingManager:
         dead_connections = []
         for connection in self.active_connections[topic]:
             try:
-                # We use asyncio.wait_for to prevent slow clients from blocking
+                                                                               
                 await asyncio.wait_for(connection.send_text(message), timeout=1.0)
             except (WebSocketDisconnect, RuntimeError):
                 dead_connections.append(connection)
@@ -60,6 +60,6 @@ class StreamingManager:
                 logger.error(f"WS Broadcast error on {topic}: {e}")
                 dead_connections.append(connection)
                 
-        # Clean up dead connections
+                                   
         for dead in dead_connections:
             self.disconnect(dead, topic)

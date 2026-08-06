@@ -25,15 +25,15 @@ export const History = () => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
-  // When search or page changes, clear live events to avoid confusion,
-  // or only apply live events if on page 0 and no search.
+  
+  
   useEffect(() => {
     setLiveEvents([]);
   }, [page, search]);
 
   useEffect(() => {
     if (streamData && page === 0 && !search) {
-      // Map WSHistoryMessage to HistoryRecord
+      
       const newEvent: HistoryRecord = {
         history_id: streamData.history_id,
         timestamp: streamData.event_timestamp,
@@ -55,7 +55,7 @@ export const History = () => {
   const displayedEvents = useMemo(() => {
     const base = historyData?.records || [];
     if (page === 0 && !search) {
-      // Deduplicate live events that might have been fetched in base
+      
       const baseIds = new Set(base.map(e => e.history_id));
       const newLive = liveEvents.filter(e => !baseIds.has(e.history_id));
       return [...newLive, ...base].slice(0, limit);
@@ -120,7 +120,7 @@ export const History = () => {
           </div>
         </div>
 
-        {/* Statistics Bar */}
+        {}
         <div className="grid grid-cols-4 gap-4">
           <Card className="p-4 flex items-center gap-4">
              <div className="p-3 bg-primary/10 rounded"><CheckCircle className="text-primary"/></div>
@@ -190,13 +190,13 @@ export const History = () => {
                         ${selectedEvent?.history_id === event.history_id ? 'bg-gray-200' : ''}
                       `}
                     >
-                    {/* Timeline Node */}
+                    {}
                     <div className="w-16 flex flex-col items-center py-4 relative shrink-0">
                         <div className="w-px h-full bg-gray-200 absolute top-0" />
                         <div className={`w-3 h-3 rounded-full relative z-10 ${isUnknown ? 'bg-danger shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-primary'}`} />
                     </div>
                     
-                    {/* Event Details */}
+                    {}
                     <div className="flex-1 py-4 pr-6 flex items-center justify-between">
                       <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded bg-black overflow-hidden border border-gray-300 shrink-0">
@@ -234,7 +234,7 @@ export const History = () => {
           )}
         </Card>
 
-        {/* Pagination */}
+        {}
         <div className="flex justify-between items-center text-sm text-gray-600 shrink-0">
           <span>Showing {displayedEvents.length} of {totalRecords} events</span>
           <div className="flex gap-1">
@@ -246,7 +246,7 @@ export const History = () => {
 
       </div>
 
-      {/* Details Side Panel */}
+      {}
       <AnimatePresence>
         {selectedEvent && (
           <motion.div
@@ -314,7 +314,7 @@ export const History = () => {
         )}
       </AnimatePresence>
 
-      {/* Delete Modals */}
+      {}
       <AnimatePresence>
         {showClearConfirm && (
           <motion.div 

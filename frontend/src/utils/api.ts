@@ -96,7 +96,7 @@ export const useSystemInfo = () => {
 export interface EnrollmentRequest {
   identity_id: string;
   name: string;
-  files: Blob[]; // Array of 5 captured images
+  files: Blob[]; 
 }
 
 export interface EnrollmentResponse {

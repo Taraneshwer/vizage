@@ -61,9 +61,9 @@ from config.models import AppConfig
 from utils.file_ops import ensure_dir, extension_of, iter_images, safe_copy, safe_move
 
 
-# ---------------------------------------------------------------------------
-# Enumerations
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class OrganizeMode(str, Enum):
@@ -78,9 +78,9 @@ class OrganizeMode(str, Enum):
     MOVE = "move"
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class OrganizeResult(BaseModel):
@@ -134,9 +134,9 @@ class OrganizeResult(BaseModel):
         )
 
 
-# ---------------------------------------------------------------------------
-# Internal mutable accumulator (not exposed publicly)
-# ---------------------------------------------------------------------------
+                                                                             
+                                                     
+                                                                             
 
 
 class _OrganizeAccumulator:
@@ -172,9 +172,9 @@ class _OrganizeAccumulator:
         )
 
 
-# ---------------------------------------------------------------------------
-# Organizer service
-# ---------------------------------------------------------------------------
+                                                                             
+                   
+                                                                             
 
 
 class DatasetOrganizer:
@@ -189,7 +189,7 @@ class DatasetOrganizer:
         result = organizer.organize("lfw", Path("datasets/raw/lfw"), mode=OrganizeMode.COPY)
     """
 
-    # Strategy map: dataset_name → organizer method name
+                                                        
     _STRATEGY_MAP: dict[str, str] = {
         "lfw": "_organize_lfw",
         "celeba": "_organize_celeba",
@@ -208,7 +208,7 @@ class DatasetOrganizer:
         self._datasets_root = Path(cfg.paths.datasets_root)
         self._splits_cfg = cfg.splits
 
-        # Pre-build canonical directory structure.
+                                                  
         self._identities_dir = self._datasets_root / "identities"
         self._masked_dir = self._datasets_root / "masked"
         self._unmasked_dir = self._datasets_root / "unmasked"
@@ -226,9 +226,9 @@ class DatasetOrganizer:
         ):
             ensure_dir(d)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def organize(
         self,
@@ -279,7 +279,7 @@ class DatasetOrganizer:
         )
         strategy(source_root, mode, acc)
 
-        # Apply train/val/test split to identities.
+                                                   
         self._apply_splits(acc)
 
         result = acc.to_result()
@@ -311,9 +311,9 @@ class DatasetOrganizer:
         """
         return self.organize(dataset_name, source_root, mode)
 
-    # ------------------------------------------------------------------
-    # Private: per-dataset strategies
-    # ------------------------------------------------------------------
+                                                                        
+                                     
+                                                                        
 
     def _organize_lfw(
         self,
@@ -330,7 +330,7 @@ class DatasetOrganizer:
             mode: Copy or move.
             acc: Mutable accumulator.
         """
-        # Handle both ``source_root/lfw/`` and flat ``source_root/person/``
+                                                                           
         lfw_inner = source_root / "lfw"
         scan_root = lfw_inner if lfw_inner.is_dir() else source_root
 
@@ -368,10 +368,10 @@ class DatasetOrganizer:
         identity_file = source_root / "identity_CelebA.txt"
 
         if not img_dir.is_dir():
-            # Try flat layout.
+                              
             img_dir = source_root
 
-        # Build image → identity mapping.
+                                         
         id_map: dict[str, str] = {}
         if identity_file.exists():
             for line in identity_file.read_text(encoding="utf-8").splitlines():
@@ -455,7 +455,7 @@ class DatasetOrganizer:
             ensure_dir(dest_dir)
             acc.identities.add(person_id)
 
-            # VGGFace2 sometimes nests an extra level.
+                                                      
             for img_path in iter_images(person_dir, recursive=True):
                 dest_file = dest_dir / img_path.name
                 self._transfer(img_path, dest_file, mode, acc)
@@ -479,7 +479,7 @@ class DatasetOrganizer:
             mode: Copy or move.
             acc: Mutable accumulator.
         """
-        # Navigate into the archive's root directory if present.
+                                                                
         inner = _find_inner_root(source_root, "Real-World-Masked-Face-Dataset")
 
         masked_identity_dir = _find_subdir(inner, [
@@ -491,7 +491,7 @@ class DatasetOrganizer:
             "RMFRD",
         ])
 
-        # Masked identity subdataset (person-labelled).
+                                                       
         if masked_identity_dir and masked_identity_dir.is_dir():
             for person_dir in sorted(masked_identity_dir.iterdir()):
                 if not person_dir.is_dir():
@@ -512,7 +512,7 @@ class DatasetOrganizer:
                     self._transfer(img_path, dest_file, mode, acc)
                     acc.masked_count += 1
 
-        # Real-world masked faces (no identity labels).
+                                                       
         if masked_real_dir and masked_real_dir.is_dir():
             for img_path in iter_images(masked_real_dir, recursive=True):
                 dest_file = self._masked_dir / img_path.name
@@ -625,7 +625,7 @@ class DatasetOrganizer:
         subdirs = [p for p in source_root.iterdir() if p.is_dir()]
 
         if subdirs:
-            # Per-identity subfolders.
+                                      
             for person_dir in sorted(subdirs):
                 person_id = f"custom_{_sanitise_identity(person_dir.name)}"
                 dest_dir = self._identities_dir / person_id
@@ -637,15 +637,15 @@ class DatasetOrganizer:
                     self._transfer(img_path, dest_file, mode, acc)
                     acc.unmasked_count += 1
         else:
-            # Flat directory — treat all as unknown.
+                                                    
             for img_path in iter_images(source_root, recursive=False):
                 dest_file = self._unknown_dir / f"custom_{img_path.name}"
                 self._transfer(img_path, dest_file, mode, acc)
                 acc.unknown_count += 1
 
-    # ------------------------------------------------------------------
-    # Private: file transfer
-    # ------------------------------------------------------------------
+                                                                        
+                            
+                                                                        
 
     def _transfer(
         self,
@@ -684,9 +684,9 @@ class DatasetOrganizer:
                 exc=exc,
             )
 
-    # ------------------------------------------------------------------
-    # Private: train / val / test split
-    # ------------------------------------------------------------------
+                                                                        
+                                       
+                                                                        
 
     def _apply_splits(self, acc: _OrganizeAccumulator) -> None:
         """Partition identity directories into train / val / test.
@@ -734,10 +734,10 @@ class DatasetOrganizer:
             elif person_id in test_ids:
                 dst_dir = self._test_dir / person_id
             else:
-                continue  # Stays in identities/ (train).
+                continue                                 
 
             if dst_dir.exists():
-                continue  # Already split — idempotent.
+                continue                               
 
             try:
                 ensure_dir(dst_dir.parent)
@@ -753,9 +753,9 @@ class DatasetOrganizer:
                 )
 
 
-# ---------------------------------------------------------------------------
-# Module-level helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                      
+                                                                             
 
 
 def _sanitise_identity(name: str) -> str:
@@ -805,7 +805,7 @@ def _find_subdir(root: Path, candidates: list[str]) -> Path | None:
         candidate = root / name
         if candidate.is_dir():
             return candidate
-    # Case-insensitive fallback.
+                                
     lower_candidates = {c.lower() for c in candidates}
     for child in root.iterdir():
         if child.is_dir() and child.name.lower() in lower_candidates:

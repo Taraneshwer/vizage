@@ -51,17 +51,17 @@ from pydantic import BaseModel, ConfigDict
 from config.models import AppConfig
 from exporters.stats_collector import DatasetStats
 
-# ---------------------------------------------------------------------------
-# Force the non-interactive Agg backend before importing pyplot.
-# This prevents crashes on headless servers (no display) and in
-# sub-threads / background tasks.
-# ---------------------------------------------------------------------------
+                                                                             
+                                                                
+                                                               
+                                 
+                                                                             
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 
-# ---------------------------------------------------------------------------
-# Result model
-# ---------------------------------------------------------------------------
+                                                                             
+              
+                                                                             
 
 
 class VisualizationPaths(BaseModel):
@@ -84,9 +84,9 @@ class VisualizationPaths(BaseModel):
     images_per_identity_hist: Path | None = None
 
 
-# ---------------------------------------------------------------------------
-# Colour palette
-# ---------------------------------------------------------------------------
+                                                                             
+                
+                                                                             
 
 _PALETTE = {
     "primary": "#4F8EF7",
@@ -107,13 +107,13 @@ _PALETTE = {
     "test": "#F76F4F",
 }
 
-_FONT_FAMILY = "DejaVu Sans"  # Available in all Matplotlib installs.
+_FONT_FAMILY = "DejaVu Sans"                                         
 _DPI = 150
 
 
-# ---------------------------------------------------------------------------
-# Visualizer service
-# ---------------------------------------------------------------------------
+                                                                             
+                    
+                                                                             
 
 
 class DatasetVisualizer:
@@ -135,9 +135,9 @@ class DatasetVisualizer:
         self._top_n = cfg.statistics.top_identities_for_plot
         self._apply_style()
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+                                                                        
+                
+                                                                        
 
     def generate_all(
         self,
@@ -216,7 +216,7 @@ class DatasetVisualizer:
             alpha=0.9,
         )
 
-        # Colour bars with fewer than min_images in warning colour.
+                                                                   
         min_imgs = self._cfg.statistics.min_images_per_identity
         for bar, val in zip(bars, values):
             if val < min_imgs:
@@ -262,11 +262,11 @@ class DatasetVisualizer:
         sizes = [stats.train_identities, stats.val_identities, stats.test_identities]
         colors = [_PALETTE["train"], _PALETTE["val"], _PALETTE["test"]]
 
-        # Filter out zero slices.
+                                 
         filtered = [(l, s, c) for l, s, c in zip(labels, sizes, colors) if s > 0]
         if not filtered:
             return None
-        labels, sizes, colors = zip(*filtered)  # type: ignore[assignment]
+        labels, sizes, colors = zip(*filtered)                            
 
         fig, ax = plt.subplots(figsize=(7, 7))
         fig.patch.set_facecolor(_PALETTE["bg_dark"])
@@ -355,7 +355,7 @@ class DatasetVisualizer:
             pad=14,
         )
 
-        # Annotate with count and %.
+                                    
         for i, (bar, val) in enumerate(zip(bars, values)):
             pct = val / total * 100
             ax.text(
@@ -481,9 +481,9 @@ class DatasetVisualizer:
         _save_fig(fig, out_path)
         return out_path
 
-    # ------------------------------------------------------------------
-    # Private: style helpers
-    # ------------------------------------------------------------------
+                                                                        
+                            
+                                                                        
 
     @staticmethod
     def _apply_style() -> None:
@@ -513,27 +513,27 @@ class DatasetVisualizer:
         )
 
     @staticmethod
-    def _style_axes(ax: object) -> None:  # type: ignore[type-arg]
+    def _style_axes(ax: object) -> None:                          
         """Apply consistent axis styling.
 
         Args:
             ax: Matplotlib ``Axes`` object.
         """
-        ax.yaxis.grid(True, alpha=0.4, color=_PALETTE["grid"])  # type: ignore[attr-defined]
-        ax.set_axisbelow(True)  # type: ignore[attr-defined]
-        ax.spines["top"].set_visible(False)    # type: ignore[attr-defined]
-        ax.spines["right"].set_visible(False)  # type: ignore[attr-defined]
-        ax.spines["left"].set_color(_PALETTE["grid"])   # type: ignore[attr-defined]
-        ax.spines["bottom"].set_color(_PALETTE["grid"]) # type: ignore[attr-defined]
-        ax.tick_params(colors=_PALETTE["text"])          # type: ignore[attr-defined]
+        ax.yaxis.grid(True, alpha=0.4, color=_PALETTE["grid"])                              
+        ax.set_axisbelow(True)                              
+        ax.spines["top"].set_visible(False)                                
+        ax.spines["right"].set_visible(False)                              
+        ax.spines["left"].set_color(_PALETTE["grid"])                               
+        ax.spines["bottom"].set_color(_PALETTE["grid"])                             
+        ax.tick_params(colors=_PALETTE["text"])                                      
 
 
-# ---------------------------------------------------------------------------
-# Module-level plot helpers
-# ---------------------------------------------------------------------------
+                                                                             
+                           
+                                                                             
 
 
-def _save_fig(fig: object, path: Path) -> None:  # type: ignore[type-arg]
+def _save_fig(fig: object, path: Path) -> None:                          
     """Save *fig* to *path* and close it to free memory.
 
     Args:
@@ -544,17 +544,17 @@ def _save_fig(fig: object, path: Path) -> None:  # type: ignore[type-arg]
 
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(str(path))  # type: ignore[attr-defined]
+        fig.savefig(str(path))                              
         logger.debug("Plot saved: {path}", path=path)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:                
         logger.error("Failed to save plot {path}: {exc}", path=path, exc=exc)
     finally:
-        plt.close(fig)  # type: ignore[arg-type]
+        plt.close(fig)                          
 
 
 def _add_value_labels(
-    ax: object,  # type: ignore[type-arg]
-    bars: object,  # type: ignore[type-arg]
+    ax: object,                          
+    bars: object,                          
     color: str = "white",
     fontsize: int = 8,
 ) -> None:
@@ -566,10 +566,10 @@ def _add_value_labels(
         color: Label text colour.
         fontsize: Label font size.
     """
-    for bar in bars:  # type: ignore[union-attr]
+    for bar in bars:                            
         height = bar.get_height()
         if height > 0:
-            ax.text(  # type: ignore[attr-defined]
+            ax.text(                              
                 bar.get_x() + bar.get_width() / 2.0,
                 height + max(height * 0.01, 0.5),
                 f"{int(height):,}",
@@ -581,7 +581,7 @@ def _add_value_labels(
             )
 
 
-def _add_mean_line(ax: object, mean: float, color: str) -> None:  # type: ignore[type-arg]
+def _add_mean_line(ax: object, mean: float, color: str) -> None:                          
     """Draw a dashed vertical / horizontal mean line with label.
 
     Args:
@@ -589,7 +589,7 @@ def _add_mean_line(ax: object, mean: float, color: str) -> None:  # type: ignore
         mean: Mean value to annotate.
         color: Line colour.
     """
-    ax.axhline(  # type: ignore[attr-defined]
+    ax.axhline(                              
         mean,
         color=color,
         linestyle="--",
@@ -597,7 +597,7 @@ def _add_mean_line(ax: object, mean: float, color: str) -> None:  # type: ignore
         alpha=0.8,
         label=f"Mean: {mean:.1f}",
     )
-    ax.legend(  # type: ignore[attr-defined]
+    ax.legend(                              
         facecolor=_PALETTE["bg_panel"],
         edgecolor=_PALETTE["grid"],
         labelcolor=_PALETTE["text"],

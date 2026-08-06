@@ -4,7 +4,7 @@ import cv2
 import time
 from pathlib import Path
 
-# Add backend to path so we can import services
+                                               
 backend_dir = Path(__file__).resolve().parent.parent.parent / "backend"
 sys.path.append(str(backend_dir))
 
@@ -24,8 +24,8 @@ def run_smoke_test():
         print(f"[WARNING] Exported models missing for smoke test. Skipping smoke test.")
         return
 
-    # Update settings to point to our newly exported models
-    # They should already be named best_yolo.onnx, but let's be safe
+                                                           
+                                                                    
     settings.YOLO_MODEL_PATH = str(yolo_path)
     settings.ADAFACE_MODEL_PATH = str(adaface_path)
     
@@ -40,7 +40,7 @@ def run_smoke_test():
     embedder = AdaFaceService(model_path=str(adaface_path))
     embedder.load_model()
     
-    # Grab a sample image from the processed dataset
+                                                    
     dataset_dir = backend_dir.parent / "maskshield-ai" / "datasets" / "processed" / "yolo" / "images" / "train"
     sample_images = list(dataset_dir.glob("*.jpg"))
     if not sample_images:
@@ -65,21 +65,21 @@ def run_smoke_test():
         channels=c
     )
     
-    # 1. Detection
+                  
     detections = detector.detect(test_frame)
     print(f"       -> Detected {len(detections)} faces.")
     
-    # 2. Tracking
+                 
     tracked_objects = tracker.update(detections, frame)
     print(f"       -> Tracked {len(tracked_objects)} objects.")
     
-    # 3. Recognition
+                    
     features_extracted = 0
     for obj in tracked_objects:
         bbox = obj.get('bbox', [])
         if len(bbox) == 4:
             x1, y1, x2, y2 = map(int, bbox)
-            # Ensure within frame bounds
+                                        
             x1, y1 = max(0, x1), max(0, y1)
             x2, y2 = min(frame.shape[1], x2), min(frame.shape[0], y2)
             face_crop = frame[y1:y2, x1:x2]

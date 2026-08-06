@@ -5,7 +5,7 @@ def replace_in_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Replacements for light theme readability
+                                              
     replacements = {
         r'text-white': 'text-gray-900',
         r'text-gray-100': 'text-gray-800',
@@ -23,7 +23,7 @@ def replace_in_file(filepath):
 
     new_content = content
     for pattern, repl in replacements.items():
-        # Match whole words to avoid partial class name matches if any, though hyphenated classes are fine
+                                                                                                          
         new_content = re.sub(rf'\b{pattern}\b', repl, new_content)
 
     if new_content != content:
