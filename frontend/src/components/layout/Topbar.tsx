@@ -1,7 +1,9 @@
 import React from 'react';
 import { Camera, Search, Bell, Moon, Settings as SettingsIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Topbar: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <header className="h-16 border-b border-gray-200 bg-background/50 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-10">
       
@@ -31,14 +33,20 @@ export const Topbar: React.FC = () => {
         
         <div className="h-6 w-px bg-gray-200 mx-2" />
         
-        <button className="p-2 rounded-full hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors relative">
+        <button 
+          onClick={() => navigate('/logs')}
+          className="p-2 rounded-full hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors relative"
+        >
           <Bell size={18} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(37,99,235,0.8)]" />
         </button>
         <button className="p-2 rounded-full hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors">
           <Moon size={18} />
         </button>
-        <button className="p-2 rounded-full hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors">
+        <button 
+          onClick={() => navigate('/settings')}
+          className="p-2 rounded-full hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+        >
           <SettingsIcon size={18} />
         </button>
         

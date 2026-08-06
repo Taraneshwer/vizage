@@ -23,7 +23,7 @@ from app.sources.base import StreamingSource
 from app.sources.schemas import BaseSourceConfig
 
 from app.api.v1.exceptions.handlers import setup_exception_handlers
-from app.api.v1.routers import health, system, camera, runtime, recognition, enrollment, settings, history
+from app.api.v1.routers import health, system, camera, runtime, recognition, enrollment, settings, history, auth
 from app.api.v1.websockets import routers as ws_routers
 from app.api.v1.websockets.manager import StreamingManager
 from app.api.v1.websockets.event_bridge import EventBridge
@@ -221,6 +221,7 @@ app.include_router(recognition.router, prefix=api_v1_prefix)
 app.include_router(enrollment.router, prefix=api_v1_prefix)
 app.include_router(settings.router, prefix=api_v1_prefix)
 app.include_router(history.router, prefix=api_v1_prefix)
+app.include_router(auth.router, prefix=api_v1_prefix)
 
                            
 app.include_router(ws_routers.router)

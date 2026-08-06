@@ -141,26 +141,29 @@ class RecognitionOrchestrator:
                 loop.create_task(self._save_history_event(frame, res, context))
                 
                 if res.is_unknown:
-                                        
+                    # Publish Unknown event for internal triggers
                     self.event_bus.publish_sync(UnknownDetectedEvent(
                         camera_id=self.camera_runtime.camera_id,
                         frame_id=frame.frame_id,
                         tracking_id=res.tracking_id or "untracked"
                     ))
-                elif res.state == RecognitionState.RECOGNIZED and res.candidate:
-                                            
-                    self.event_bus.publish_sync(RecognitionEvent(
-                        identity_id=res.candidate.identity_id,
-                        verification_score=res.verification_score,
-                        bbox=(res.detection.bbox.x1, res.detection.bbox.y1, res.detection.bbox.x2, res.detection.bbox.y2),
-                        camera_id=self.camera_runtime.camera_id,
-                        frame_id=frame.frame_id,
-                        tracking_id=res.tracking_id or "untracked",
-                        mask_status=res.mask.has_mask if res.mask else False,
-                        recognition_mode="Upper" if (res.embedding and getattr(res.embedding, 'is_upper_face', False)) else "Full",
-                        processing_time_ms=context.timers.get("yolo_detection_duration", 0) + context.timers.get("adaface_embedding_duration", 0),
-                        capture_timestamp=frame.timestamp
-                    ))
+                
+                # ALWAYS publish Recognition event for frontend websockets (to draw bounding boxes)
+                identity_id = res.candidate.identity_id if (res.state == RecognitionState.RECOGNIZED and res.candidate) else "Unknown"
+                score = res.verification_score if (res.state == RecognitionState.RECOGNIZED and res.candidate) else 0.0
+                
+                self.event_bus.publish_sync(RecognitionEvent(
+                    identity_id=identity_id,
+                    verification_score=score,
+                    bbox=(res.detection.bbox.x1, res.detection.bbox.y1, res.detection.bbox.x2, res.detection.bbox.y2),
+                    camera_id=self.camera_runtime.camera_id,
+                    frame_id=frame.frame_id,
+                    tracking_id=res.tracking_id or "untracked",
+                    mask_status=res.mask.has_mask if res.mask else False,
+                    recognition_mode="Upper" if (res.embedding and getattr(res.embedding, 'is_upper_face', False)) else "Full",
+                    processing_time_ms=context.timers.get("yolo_detection_duration", 0) + context.timers.get("adaface_embedding_duration", 0),
+                    capture_timestamp=frame.timestamp
+                ))
                     
                                   
             total_time = sum([v for k, v in context.timers.items() if k.endswith("_duration")])

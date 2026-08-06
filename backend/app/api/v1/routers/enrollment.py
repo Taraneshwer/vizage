@@ -110,7 +110,7 @@ async def enroll_person(
         name=name,
         department=department
     )
-    repo.add(new_identity)
+    session.add(new_identity)
                                                                                         
         
     return EnrollmentResponse(success=True, identity_id=identity_id, message="Enrollment successful.")
@@ -166,7 +166,7 @@ async def delete_enrolled_person(
     if not ident:
         raise HTTPException(status_code=404, detail="Person not found")
         
-    await repo.delete(ident)
+    await session.delete(ident)
     
                        
     orchestrator.faiss.delete_embedding(person_id)

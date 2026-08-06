@@ -18,3 +18,5 @@ torch>=2.0.0
 torchvision>=0.15.0
 python-multipart>=0.0.6
 onnxruntime>=1.15.0
+PyJWT>=2.8.0
+passlib[bcrypt]>=1.7.4

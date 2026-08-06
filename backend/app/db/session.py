@@ -26,10 +26,26 @@ async def init_db() -> None:
     Initializes the database by creating all tables.
     """
     from app.db.base import Base
-    import app.db.models                                      
+    import app.db.models
+    from sqlalchemy import select
+    from app.core.security import get_password_hash
+
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+        
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(app.db.models.User).filter_by(email="admin@vizage.local"))
+            admin_user = result.scalars().first()
+            if not admin_user:
+                new_admin = app.db.models.User(
+                    email="admin@vizage.local",
+                    hashed_password=get_password_hash("admin")
+                )
+                session.add(new_admin)
+                await session.commit()
+                logger.info("Created default admin user (admin@vizage.local)")
+
         logger.info("Database initialized successfully.")
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { CameraFeed } from '../components/specialized/CameraFeed';
-import { CheckCircle2, ChevronRight, Camera, RefreshCcw, Check, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Camera, RefreshCcw, Check, XCircle, Upload } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { useCameraStream, useRecognitionStream } from '../hooks/useWebSocket';
 import { useEnrollPerson } from '../utils/api';
@@ -32,6 +32,7 @@ const base64ToBlob = (base64: string, mimeType: string = 'image/jpeg'): Blob => 
 
 export const Enrollment: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   
   const { data: cameraStream, isConnected: isCameraConnected } = useCameraStream();
@@ -72,6 +73,35 @@ export const Enrollment: React.FC = () => {
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    
+    // Calculate how many more images we can add
+    const remainingSlots = 5 - captures.length;
+    const filesToAdd = files.slice(0, remainingSlots);
+    
+    filesToAdd.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          // Strip the data:image/jpeg;base64, part
+          const base64String = (event.target.result as string).split(',')[1];
+          setCaptures(prev => {
+            if (prev.length < 5) return [...prev, base64String];
+            return prev;
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Reset input so the same files can be selected again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleReset = () => {
     setCaptures([]);
     setCurrentStep(0);
@@ -93,7 +123,7 @@ export const Enrollment: React.FC = () => {
   };
 
   const canProceed = () => {
-    if (currentStep === 0) return captures.length === 5;
+    if (currentStep === 0) return captures.length >= 1 && captures.length <= 5;
     if (currentStep === 1) return quality.faceDetected && !quality.maskDetected;
     if (currentStep === 2) return formData.fullName.length > 0 && formData.employeeId.length > 0;
     return true;
@@ -160,10 +190,23 @@ export const Enrollment: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Capture 5 varied angles (Front, Left, Right, Up, Down)</p>
-                  <Button onClick={handleCapture} disabled={!isCameraConnected || captures.length >= 5}>
-                    <Camera size={16} className="mr-2"/> Capture ({captures.length}/5)
-                  </Button>
+                  <p className="text-sm text-gray-600">Capture or upload up to 5 images (min 1)</p>
+                  <div className="flex gap-2">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple 
+                      className="hidden" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                    />
+                    <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={captures.length >= 5}>
+                      <Upload size={16} className="mr-2"/> Upload
+                    </Button>
+                    <Button onClick={handleCapture} disabled={!isCameraConnected || captures.length >= 5}>
+                      <Camera size={16} className="mr-2"/> Capture ({captures.length}/5)
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="flex-1 flex flex-col gap-4">
@@ -216,8 +259,8 @@ export const Enrollment: React.FC = () => {
                <h3 className="text-xl text-gray-900">Quality Verification</h3>
                <div className="space-y-4 text-left bg-background p-6 rounded border border-gray-300">
                  <div className="flex items-center justify-between">
-                   <span className="text-gray-700">Minimum 5 Captures</span>
-                   {captures.length === 5 ? <Check size={18} className="text-success" /> : <XCircle size={18} className="text-danger" />}
+                   <span className="text-gray-700">1 to 5 Captures</span>
+                   {captures.length >= 1 && captures.length <= 5 ? <Check size={18} className="text-success" /> : <XCircle size={18} className="text-danger" />}
                  </div>
                  <div className="flex items-center justify-between">
                    <span className="text-gray-700">Face Detected Continuously</span>

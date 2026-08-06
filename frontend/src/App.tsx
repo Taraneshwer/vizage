@@ -13,6 +13,18 @@ import { Logs } from './pages/Logs';
 import { Settings } from './pages/Settings';
 import { About } from './pages/About';
 import { Cameras } from './pages/Cameras';
+import { Login } from './pages/Login';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
 
 function App() {
   const [isReady, React_useState] = React.useState(false);
@@ -24,23 +36,26 @@ function App() {
 
       {isReady && (
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<DesktopLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="recognition" element={<Recognition />} />
-                <Route path="enrollment" element={<Enrollment />} />
-                <Route path="history" element={<History />} />
-                <Route path="database" element={<Database />} />
-                <Route path="cameras" element={<Cameras />} />
-                <Route path="system" element={<System />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="logs" element={<Logs />} />
-                <Route path="about" element={<About />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<ProtectedRoute><DesktopLayout /></ProtectedRoute>}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="recognition" element={<Recognition />} />
+                  <Route path="enrollment" element={<Enrollment />} />
+                  <Route path="history" element={<History />} />
+                  <Route path="database" element={<Database />} />
+                  <Route path="cameras" element={<Cameras />} />
+                  <Route path="system" element={<System />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="logs" element={<Logs />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
         </QueryClientProvider>
       )}
     </>
