@@ -51,11 +51,11 @@ class FAISSService(IVectorStoreService):
                 self._current_id = max(self.identity_mapping.keys()) + 1 if self.identity_mapping else self.index.ntotal
             except Exception as e:
                 logger.error(f"Failed to load FAISS index: {e}. Building a new one.")
-                self.index = faiss.IndexIDMap(faiss.IndexFlatIP(self.dimension))
+                self.index = faiss.IndexIDMap2(faiss.IndexFlatIP(self.dimension))
                 self.identity_mapping = {}
                 self._current_id = 0
         else:
-            self.index = faiss.IndexIDMap(faiss.IndexFlatIP(self.dimension))
+            self.index = faiss.IndexIDMap2(faiss.IndexFlatIP(self.dimension))
             logger.info("Initialized new empty FAISS IndexFlatIP.")
             
     def unload_model(self) -> None:
@@ -97,17 +97,32 @@ class FAISSService(IVectorStoreService):
                             
 
     def delete_embedding(self, identity_id: str) -> None:
-        """Removes all vectors mapping to this identity."""
+        """Removes all vectors for this identity by rebuilding the index without them."""
         if self.index is None:
             raise RuntimeError("FAISS index not loaded.")
-            
-        ids_to_remove = [fid for fid, uid in self.identity_mapping.items() if uid == identity_id]
+
+        ids_to_remove = {fid for fid, uid in self.identity_mapping.items() if uid == identity_id}
         if not ids_to_remove:
+            logger.warning(f"No FAISS embeddings found for identity '{identity_id}' — skipping removal.")
             return
-            
-        self.index.remove_ids(np.array(ids_to_remove, dtype=np.int64))
-        for fid in ids_to_remove:
-            del self.identity_mapping[fid]
+
+        # Rebuild remaining mapping and vectors
+        remaining = {fid: uid for fid, uid in self.identity_mapping.items() if fid not in ids_to_remove}
+
+        new_index = faiss.IndexIDMap2(faiss.IndexFlatIP(self.dimension))
+
+        if remaining:
+            # Reconstruct vectors for all remaining IDs
+            remaining_ids = np.array(list(remaining.keys()), dtype=np.int64)
+            vectors = np.vstack([
+                self.index.reconstruct(int(fid)).reshape(1, -1)
+                for fid in remaining_ids
+            ]).astype(np.float32)
+            new_index.add_with_ids(vectors, remaining_ids)
+
+        self.index = new_index
+        self.identity_mapping = remaining
+        logger.info(f"Deleted {len(ids_to_remove)} embedding(s) for identity '{identity_id}'. {len(remaining)} vectors remain.")
 
     def search(self, embedding: Embedding, k: int = 1) -> List[RecognitionCandidate]:
         if self.index is None or self.index.ntotal == 0:
