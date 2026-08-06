@@ -87,7 +87,8 @@ async def enroll_person(
         nparr = np.frombuffer(contents, np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if image is not None:
-            frames.append(Frame(source_id="api_enrollment", frame_id=str(i), image=image))
+            import time
+            frames.append(Frame.create(source_id="api_enrollment", image=image, frame_number=i, timestamp=time.time()))
             
     if not frames:
         raise EnrollmentException("No valid images provided for enrollment.")

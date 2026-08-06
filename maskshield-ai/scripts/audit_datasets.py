@@ -18,7 +18,7 @@ def get_dir_stats(path: Path):
     }
 
 def analyze_datasets():
-    datasets_dir = Path(r"c:\Users\LParikshith\Downloads\vizage\maskshield-ai\datasets")
+    datasets_dir = Path(__file__).resolve().parent.parent / "datasets"
     
     report = {}
     for folder_name in ["lfw", "mask", "IMFD", "CMFD"]:

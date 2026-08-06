@@ -202,9 +202,13 @@ class DatasetPreparer:
         logger.info(f"Preparation complete: {metadata}")
 
 if __name__ == "__main__":
+    script_dir = Path(__file__).resolve().parent
+    data_root = script_dir.parent / "datasets"
+    output_root = data_root / "processed"
+    
     preparer = DatasetPreparer(
-        data_root="c:/Users/LParikshith/Downloads/vizage/maskshield-ai/datasets",
-        output_root="c:/Users/LParikshith/Downloads/vizage/maskshield-ai/datasets/processed",
+        data_root=str(data_root),
+        output_root=str(output_root),
         blur_threshold=50.0
     )
     preparer.process_and_split()

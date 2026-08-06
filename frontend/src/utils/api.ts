@@ -6,7 +6,7 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000,
+  timeout: 30000,
 });
 
 export interface HealthResponse {
@@ -304,3 +304,57 @@ export const useDeleteCamera = (): UseMutationResult<BaseResponse, Error, string
   });
 };
 
+export interface RecognitionResultModel {
+  is_unknown: boolean;
+  state: string;
+  verification_score: number;
+  candidate?: {
+    identity_id: string;
+    similarity_score: number;
+    name?: string;
+  };
+  bbox?: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  };
+  tracking_id?: string;
+  has_mask: boolean;
+  processing_time_ms: number;
+}
+
+export interface BatchRecognitionResult {
+  success: boolean;
+  results: RecognitionResultModel[];
+}
+
+export const useBatchVerify = (): UseMutationResult<BatchRecognitionResult, Error, Blob[]> => {
+  return useMutation({
+    mutationFn: async (files: Blob[]) => {
+      const formData = new FormData();
+      files.forEach((file, index) => {
+        formData.append('files', file, `verify_${index}.jpg`);
+      });
+      const response = await apiClient.post<BatchRecognitionResult>('/api/v1/recognition/batch', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useRecognizeSingle = (): UseMutationResult<RecognitionResultModel, Error, File> => {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      const response = await apiClient.post<RecognitionResultModel>('/api/v1/recognition', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+  });
+};

@@ -30,12 +30,14 @@ class TrackerService:
                                                         
         class TrackerArgs:
             def __init__(self, track_thresh, track_buffer, match_thresh):
+                self.tracker_type = 'bytetrack'
                 self.track_high_thresh = track_thresh
                 self.track_low_thresh = 0.1
                 self.new_track_thresh = track_thresh
                 self.track_buffer = track_buffer
                 self.match_thresh = match_thresh
                 self.gmc_method = 'sparseOptFlow'
+                self.fuse_score = True
                 
         args = TrackerArgs(self.track_thresh, self.track_buffer, self.match_thresh)
         
@@ -77,22 +79,21 @@ class TrackerService:
                 det.confidence, 0                   
             ])
             
-        dets_tensor = np.array(dets_array)
-        
-                                                                                            
-                                                                       
         import torch
-        dets_tensor = torch.tensor(dets_tensor)
+        from ultralytics.engine.results import Boxes
         
+        dets_tensor = torch.tensor(dets_array, dtype=torch.float32) if dets_array else torch.empty((0, 6), dtype=torch.float32)
+        h, w = frame_img.shape[:2]
+        boxes = Boxes(dets_tensor, orig_shape=(h, w))
                         
-        tracks = self.tracker.update(dets_tensor, frame_img)
+        tracks = self.tracker.update(boxes, frame_img)
         
         tracked_results = []
                                                                                                       
                                                                 
         
         for track in tracks:
-            x1, y1, x2, y2, track_id, conf, cls = track
+            x1, y1, x2, y2, track_id, conf, cls = track[:7]
             
                             
             area = (x2 - x1) * (y2 - y1)

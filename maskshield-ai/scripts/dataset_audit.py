@@ -51,4 +51,5 @@ def run_audit(data_root: str):
                 f.write(f"- **Identities (Folders)**: {v['identity_count']}\n")
 
 if __name__ == "__main__":
-    run_audit("c:/Users/LParikshith/Downloads/vizage/maskshield-ai/datasets")
+    datasets_dir = Path(__file__).resolve().parent.parent / "datasets"
+    run_audit(str(datasets_dir))

@@ -64,6 +64,10 @@ class FAISSService(IVectorStoreService):
             self.index = None
             logger.info("FAISS index unloaded.")
             
+    def save_index(self) -> None:
+        """Saves FAISS index to disk."""
+        self._save_index()
+        
     def _save_index(self) -> None:
         if self.index is not None:
             faiss.write_index(self.index, self.index_path)

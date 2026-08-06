@@ -18,7 +18,8 @@ async def process_image_upload(file: UploadFile, engine: InferenceEngine) -> Rec
     if image is None:
         raise RecognitionException(f"Invalid image file: {file.filename}")
         
-    frame = Frame(source_id="api_upload", frame_id="0", image=image)
+    import time
+    frame = Frame.create(source_id="api_upload", image=image, frame_number=0, timestamp=time.time())
     context = engine.process_frame(frame)
     
     if not context.detections:
@@ -48,7 +49,7 @@ async def process_image_upload(file: UploadFile, engine: InferenceEngine) -> Rec
     return RecognitionResultModel(
         is_unknown=det.is_unknown,
         state=det.state.name,
-        verification_score=det.verification_score,
+        verification_score=det.verification_score if not det.is_unknown else det.detection.confidence,
         candidate=candidate_model,
         bbox=bbox,
         tracking_id=det.tracking_id,

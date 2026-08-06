@@ -5,7 +5,7 @@ Defines system-wide dynamic constraints and behavior settings.
 from pydantic import BaseModel
 
 class RuntimeConfig(BaseModel):
-    target_fps: int = 15
+    target_fps: int = 2
     max_frame_queue_size: int = 10
     camera_reconnect_delay_sec: float = 5.0
     batch_size: int = 1                  

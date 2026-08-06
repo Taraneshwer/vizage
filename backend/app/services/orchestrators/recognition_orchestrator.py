@@ -150,7 +150,7 @@ class RecognitionOrchestrator:
                 
                 # ALWAYS publish Recognition event for frontend websockets (to draw bounding boxes)
                 identity_id = res.candidate.identity_id if (res.state == RecognitionState.RECOGNIZED and res.candidate) else "Unknown"
-                score = res.verification_score if (res.state == RecognitionState.RECOGNIZED and res.candidate) else 0.0
+                score = res.verification_score if (res.state == RecognitionState.RECOGNIZED and res.candidate) else res.detection.confidence
                 
                 self.event_bus.publish_sync(RecognitionEvent(
                     identity_id=identity_id,

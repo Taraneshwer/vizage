@@ -46,7 +46,7 @@ def run_smoke_test():
     if not sample_images:
         print("[WARNING] No sample images found in dataset for smoke test. Generating a blank test image.")
         import numpy as np
-        frame_np = np.zeros((480, 640, 3), dtype=np.uint8)
+        frame = np.zeros((480, 640, 3), dtype=np.uint8)
     else:
         frame = cv2.imread(str(sample_images[0]))
         

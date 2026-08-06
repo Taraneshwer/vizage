@@ -3,7 +3,7 @@ Application Event Bus.
 Provides a strictly-typed Pub/Sub mechanism for decoupling orchestration from downstream consumers (e.g., logging, websockets).
 """
 import asyncio
-from typing import Callable, Dict, List, Any, Type, Awaitable
+from typing import Callable, Dict, List, Any, Type, Awaitable, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 from app.core.logger import get_logger
@@ -39,14 +39,14 @@ class UnknownDetectedEvent(AppEvent):
 class HistoryEvent(AppEvent):
     history_id: str
     timestamp: str
-    identity_id: str = None
-    name: str = None
-    department: str = None
+    identity_id: Optional[str] = None
+    name: Optional[str] = None
+    department: Optional[str] = None
     verification_score: int
     mode: str
     camera_id: str
     tracking_id: str
-    processing_time_ms: int
+    processing_time_ms: float
     state: str
     has_mask: bool
 

@@ -4,6 +4,8 @@ The primary orchestrator of the AI pipeline. Takes a raw Frame, pushes it throug
 Detection -> MediaPipe -> Mask -> Embedding -> Search, and returns a RecognitionContext.
 """
 from typing import List, Optional
+import cv2
+import numpy as np
 from app.core.logger import get_logger
 from app.sources.frame import Frame
 from .models import RecognitionContext, RecognitionResult, RecognitionCandidate
@@ -59,10 +61,53 @@ class InferenceEngine:
         det_time = self.perf_monitor.stop_timer(timers, "yolo_detection")
         self.model_manager.update_model_metrics("YOLO11", det_time)
         
+        # Fallback to MediaPipe FaceMesh for face detection if YOLO found 0 faces
+        if not detections:
+            try:
+                if self.mediapipe and getattr(self.mediapipe, "is_loaded", False) and self.mediapipe.face_mesh:
+                    img_h, img_w = frame.image.shape[:2]
+                    img_rgb = cv2.cvtColor(frame.image, cv2.COLOR_BGR2RGB)
+                    results = self.mediapipe.face_mesh.process(img_rgb)
+                    
+                    if results and results.multi_face_landmarks:
+                        face_landmarks = results.multi_face_landmarks[0]
+                        landmarks_abs = np.array([(int(lm.x * img_w), int(lm.y * img_h)) for lm in face_landmarks.landmark])
+                        
+                        xs = landmarks_abs[:, 0]
+                        ys = landmarks_abs[:, 1]
+                        xmin, xmax = int(np.min(xs)), int(np.max(xs))
+                        ymin, ymax = int(np.min(ys)), int(np.max(ys))
+                        
+                        # Add a 15% margin to match standard face detector crop
+                        w_box = xmax - xmin
+                        h_box = ymax - ymin
+                        x1 = max(0, int(xmin - 0.15 * w_box))
+                        y1 = max(0, int(ymin - 0.15 * h_box))
+                        x2 = min(img_w, int(xmax + 0.15 * w_box))
+                        y2 = min(img_h, int(ymax + 0.15 * h_box))
+                        
+                        face_crop = frame.image[y1:y2, x1:x2].copy()
+                        
+                        from app.services.ai.models import DetectionResult, BoundingBox
+                        synthetic_det = DetectionResult(
+                            bbox=BoundingBox(x1=x1, y1=y1, x2=x2, y2=y2),
+                            confidence=0.95,
+                            face_crop=face_crop
+                        )
+                        detections = [synthetic_det]
+                        logger.info("YOLO detected 0 faces; successfully fell back to MediaPipe FaceMesh to detect face.")
+            except Exception as e:
+                logger.error(f"MediaPipe Face Detection fallback failed: {e}")
+        
                                 
         self.perf_monitor.start_timer(timers, "bytetrack")
         try:
-            tracked_detections = self.tracker.update(detections, frame.image)
+            if frame.source_id and frame.source_id.startswith("api_"):
+                tracked_detections = detections
+                for idx, det in enumerate(tracked_detections):
+                    det.tracking_id = f"static_{idx}"
+            else:
+                tracked_detections = self.tracker.update(detections, frame.image)
         except Exception as e:
             logger.error(f"Tracker failed: {e}")
             tracked_detections = detections

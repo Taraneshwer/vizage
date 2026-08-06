@@ -23,6 +23,24 @@ except ImportError:
 
 logger = get_logger(__name__)
 
+if torch:
+    class FaceModel(nn.Module):
+        def __init__(self, embedding_size=512):
+            super(FaceModel, self).__init__()
+            import torchvision.models as models
+            self.backbone = models.resnet50(pretrained=False)
+            self.backbone.fc = nn.Linear(self.backbone.fc.in_features, embedding_size)
+            self.bn = nn.BatchNorm1d(embedding_size)
+
+        def forward(self, x):
+            x = self.backbone(x)
+            x = self.bn(x)
+            return x
+else:
+    class FaceModel:
+        pass
+
+
 class AdaFaceService:
     def __init__(self, model_path: str = "adaface_ir100.pth"):
         self.model_path = model_path
@@ -59,9 +77,7 @@ class AdaFaceService:
                 return
                 
                               
-            import torchvision.models as models
-            self.model = models.resnet50(pretrained=False)
-            self.model.fc = nn.Linear(self.model.fc.in_features, 512)
+            self.model = FaceModel(512)
             
             try:
                 self.model.load_state_dict(torch.load(self.model_path, map_location='cpu'))
