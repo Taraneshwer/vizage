@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends
 from app.api.v1.schemas.api_schemas import RuntimeStatsResponse
 from app.api.v1.dependencies import get_recognition_orchestrator
 from app.services.orchestrators.recognition_orchestrator import RecognitionOrchestrator
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.db.session import get_db_session
+from app.db.repository.camera_repo import CameraRepository
 
 router = APIRouter(prefix="/runtime", tags=["Runtime"])
 
@@ -22,8 +25,13 @@ async def get_runtime_stats(orchestrator: RecognitionOrchestrator = Depends(get_
 from app.api.v1.schemas.api_schemas import BaseResponse
 
 @router.post("/start", response_model=BaseResponse, summary="Start Runtime Engine")
-async def start_runtime(orchestrator: RecognitionOrchestrator = Depends(get_recognition_orchestrator)):
-    await orchestrator.start_session()
+async def start_runtime(
+    orchestrator: RecognitionOrchestrator = Depends(get_recognition_orchestrator),
+    session: AsyncSession = Depends(get_db_session)
+):
+    repo = CameraRepository(session)
+    active_cam = await repo.get_active()
+    await orchestrator.start_session(active_cam)
     return BaseResponse(success=True, message="Runtime Engine started successfully.")
 
 @router.post("/stop", response_model=BaseResponse, summary="Stop Runtime Engine")

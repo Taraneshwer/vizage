@@ -41,6 +41,7 @@ class SourceSession:
         if self._capture_task:
             self._capture_task.cancel()
         await self.source.stop()
+        await self.source.disconnect()
         logger.info(f"SourceSession stopped for {self.source.config.source_id}")
 
     async def _capture_loop(self) -> None:

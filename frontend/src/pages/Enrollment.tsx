@@ -245,7 +245,7 @@ export const Enrollment: React.FC = () => {
                     type="text" 
                     value={formData.fullName}
                     onChange={e => setFormData(f => ({ ...f, fullName: e.target.value }))}
-                    className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none" 
+                    className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none" 
                     placeholder="e.g. Felix Architect"
                   />
                 </div>
@@ -255,7 +255,7 @@ export const Enrollment: React.FC = () => {
                     type="text" 
                     value={formData.employeeId}
                     onChange={e => setFormData(f => ({ ...f, employeeId: e.target.value }))}
-                    className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none" 
+                    className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none" 
                     placeholder="e.g. EMP-9482"
                   />
                 </div>
@@ -264,7 +264,7 @@ export const Enrollment: React.FC = () => {
                   <select 
                     value={formData.department}
                     onChange={e => setFormData(f => ({ ...f, department: e.target.value }))}
-                    className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none"
+                    className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary focus:outline-none"
                   >
                      <option>Engineering</option>
                      <option>Security</option>

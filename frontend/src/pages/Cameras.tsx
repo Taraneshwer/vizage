@@ -69,7 +69,7 @@ export const Cameras: React.FC = () => {
                 type="text" 
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none" 
+                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none" 
                 placeholder="e.g. Front Entrance"
               />
             </div>
@@ -78,7 +78,7 @@ export const Cameras: React.FC = () => {
               <select 
                 value={formData.source_type}
                 onChange={e => setFormData({ ...formData, source_type: e.target.value })}
-                className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none"
+                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none"
               >
                 <option value="RTSP">RTSP Stream (IP Camera)</option>
                 <option value="WEBCAM">USB Webcam (Local)</option>
@@ -90,7 +90,7 @@ export const Cameras: React.FC = () => {
                 type="text" 
                 value={formData.connection_url}
                 onChange={e => setFormData({ ...formData, connection_url: e.target.value })}
-                className="w-full bg-black border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none" 
+                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:border-primary outline-none" 
                 placeholder={formData.source_type === 'RTSP' ? 'rtsp://user:pass@ip:port/stream' : '0'}
               />
             </div>

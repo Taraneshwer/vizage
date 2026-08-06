@@ -122,7 +122,7 @@ export const Database: React.FC = () => {
           </Card>
         </div>
 
-        <Card className="p-3 flex gap-3 items-center bg-black/20">
+        <Card className="p-3 flex gap-3 items-center bg-secondary">
           <div className="relative flex-1 max-w-md">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input 
@@ -130,7 +130,7 @@ export const Database: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, ID, or department..." 
-              className="w-full bg-black/40 border border-gray-300 rounded-md py-1.5 pl-9 pr-4 text-sm text-gray-900 focus:outline-none focus:border-primary/50"
+              className="w-full bg-white border border-gray-300 rounded-md py-1.5 pl-9 pr-4 text-sm text-gray-900 focus:outline-none focus:border-primary/50"
             />
           </div>
           <Button variant="outline" size="sm"><Filter size={14} className="mr-2"/> Filters</Button>
@@ -215,15 +215,15 @@ export const Database: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs text-gray-600">Name</label>
-                    <input type="text" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-black border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1" />
+                    <input type="text" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1" />
                   </div>
                   <div>
                     <label className="text-xs text-gray-600">Department</label>
-                    <input type="text" value={editForm.department} onChange={e => setEditForm(f => ({ ...f, department: e.target.value }))} className="w-full bg-black border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1" />
+                    <input type="text" value={editForm.department} onChange={e => setEditForm(f => ({ ...f, department: e.target.value }))} className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1" />
                   </div>
                   <div>
                     <label className="text-xs text-gray-600">Notes</label>
-                    <textarea value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="w-full bg-black border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1 h-20" />
+                    <textarea value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mt-1 h-20" />
                   </div>
                   <div className="flex gap-2 pt-2">
                     <Button variant="outline" size="sm" className="flex-1" onClick={() => setIsEditing(false)}>Cancel</Button>

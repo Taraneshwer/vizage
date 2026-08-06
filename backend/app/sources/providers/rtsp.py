@@ -19,6 +19,9 @@ class RTSPSource(StreamingSource):
         self.config: RTSPConfig = config
         self.cap: Optional[cv2.VideoCapture] = None
         self.frame_counter = 0
+        self.latest_frame = None
+        self.capture_thread = None
+        self.running = False
 
     def get_capabilities(self) -> SourceCapabilities:
         return SourceCapabilities(
@@ -42,18 +45,37 @@ class RTSPSource(StreamingSource):
         return False
 
     async def disconnect(self) -> None:
+        self.running = False
+        self.health.is_streaming = False
         if self.cap:
             await asyncio.to_thread(self.cap.release)
+            self.cap = None
         self.health.is_connected = False
-        self.health.is_streaming = False
+
+    def _capture_thread_func(self) -> None:
+        logger.info(f"RTSP background thread starting on url {self.config.rtsp_url}")
+        while self.running and self.cap and self.cap.isOpened():
+            ret, image = self.cap.read()
+            if not ret or image is None:
+                time.sleep(0.01)
+                continue
+            self.latest_frame = image
+        logger.info(f"RTSP background thread stopped for url {self.config.rtsp_url}")
 
     async def start(self) -> None:
         if not self.health.is_connected:
             await self.connect()
         self.health.is_streaming = True
+        self.running = True
+        self.latest_frame = None
+        
+        import threading
+        self.capture_thread = threading.Thread(target=self._capture_thread_func, daemon=True)
+        self.capture_thread.start()
 
     async def stop(self) -> None:
         self.health.is_streaming = False
+        self.running = False
 
     async def pause(self) -> None:
         pass
@@ -62,18 +84,22 @@ class RTSPSource(StreamingSource):
         pass
 
     async def read_frame(self) -> Optional[Frame]:
-        if not self.health.is_streaming or not self.cap:
+        if not self.health.is_streaming:
             return None
             
-        ret, image = await asyncio.to_thread(self.cap.read)
-        if not ret or image is None:
-            self.health.last_error = "Dropped frame or disconnected"
-            return None
+        # Wait up to 500ms for a new frame
+        for _ in range(50):
+            image = self.latest_frame
+            if image is not None:
+                self.latest_frame = None  # Consume frame
+                self.frame_counter += 1
+                return Frame.create(
+                    source_id=self.config.source_id,
+                    image=image,
+                    frame_number=self.frame_counter,
+                    timestamp=time.time()
+                )
+            await asyncio.sleep(0.01)
             
-        self.frame_counter += 1
-        return Frame.create(
-            source_id=self.config.source_id,
-            image=image,
-            frame_number=self.frame_counter,
-            timestamp=time.time()
-        )
+        self.health.last_error = "Timeout waiting for new frame from RTSP thread"
+        return None

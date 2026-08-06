@@ -25,7 +25,7 @@ export const Topbar: React.FC = () => {
           <input 
             type="text" 
             placeholder="Search identities..." 
-            className="w-64 bg-black/20 border border-gray-300 rounded-full py-1.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+            className="w-64 bg-gray-100 border border-gray-200 rounded-full py-1.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
           />
         </div>
         

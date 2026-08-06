@@ -15,6 +15,9 @@ from app.sources.frame import Frame
 from app.services.ai.models import RecognitionState
 from app.db.session import AsyncSessionLocal
 from app.db.models import RecognitionHistory, Identity
+from app.db.repository.camera_repo import CameraRepository
+from app.sources.factory import SourceFactory
+from app.sources.schemas import WebcamConfig, RTSPConfig
 from sqlalchemy import select
 from datetime import datetime
 
@@ -37,10 +40,31 @@ class RecognitionOrchestrator:
         # Bind the callback
         self.camera_runtime.set_callback(self._on_frame_received)
         
-    async def start_session(self) -> None:
+    async def start_session(self, active_cam: Optional[object] = None) -> None:
         if self._camera_task and not self._camera_task.done():
             logger.warning("Session already running.")
             return
+            
+        if active_cam:
+            try:
+                logger.info(f"Loading active camera configuration: {active_cam.name} ({active_cam.source_type})")
+                if active_cam.source_type == "WEBCAM":
+                    config = WebcamConfig(source_id=active_cam.id, camera_index=int(active_cam.connection_url))
+                    source = SourceFactory.create("webcam", config)
+                elif active_cam.source_type == "RTSP":
+                    config = RTSPConfig(source_id=active_cam.id, rtsp_url=active_cam.connection_url)
+                    source = SourceFactory.create("rtsp", config)
+                else:
+                    logger.warning(f"Unknown source type: {active_cam.source_type}, using current source.")
+                    source = None
+                    
+                if source:
+                    self.camera_runtime.camera_id = active_cam.id
+                    self.camera_runtime.source = source
+                    self.session_manager.camera_id = active_cam.id
+            except Exception as e:
+                logger.error(f"Failed to load active camera configuration: {e}")
+            
         self.session_manager.set_state("RUNNING")
         # Run the infinite camera loop as a background task so the event loop stays free
         self._camera_task = asyncio.create_task(self.camera_runtime.start())
@@ -57,6 +81,18 @@ class RecognitionOrchestrator:
                 pass
             self._camera_task = None
         logger.info("Camera runtime task stopped.")
+
+    async def switch_active_camera(self, active_cam: object) -> None:
+        """Performs a hot switch of the active camera config, restarting the stream."""
+        logger.info(f"Switching active camera to: {active_cam.id if active_cam else 'None'}")
+        was_running = self._camera_task and not self._camera_task.done()
+        
+        if was_running:
+            logger.info("Stopping running camera session for hot switch...")
+            await self.stop_session()
+            
+        logger.info("Activating camera session with the new active camera...")
+        await self.start_session(active_cam)
         
     def _on_frame_received(self, frame: Frame) -> None:
         """Called by CameraRuntime when a frame is ready."""

@@ -149,7 +149,7 @@ export const History = () => {
           </Card>
         </div>
 
-        <Card className="p-3 flex gap-3 items-center bg-black/20">
+        <Card className="p-3 flex gap-3 items-center bg-secondary">
           <div className="relative flex-1 max-w-md">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input 
@@ -157,7 +157,7 @@ export const History = () => {
               placeholder="Search by name, ID, or camera..." 
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-black/40 border border-gray-300 rounded-md py-1.5 pl-9 pr-4 text-sm text-gray-900 focus:outline-none focus:border-primary/50"
+              className="w-full bg-white border border-gray-300 rounded-md py-1.5 pl-9 pr-4 text-sm text-gray-900 focus:outline-none focus:border-primary/50"
             />
           </div>
           <Button variant="outline" size="sm"><Filter size={14} className="mr-2"/> Filters</Button>

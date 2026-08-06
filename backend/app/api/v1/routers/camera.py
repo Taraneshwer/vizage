@@ -70,10 +70,15 @@ async def get_available_sources():
         return {"success": False, "sources": [], "message": str(e)}
 
 @router.post("/start", response_model=BaseResponse, summary="Start Camera Stream")
-async def start_camera(orchestrator: RecognitionOrchestrator = Depends(get_recognition_orchestrator)):
+async def start_camera(
+    orchestrator: RecognitionOrchestrator = Depends(get_recognition_orchestrator),
+    session: AsyncSession = Depends(get_db_session)
+):
     """Starts the orchestrator and camera loop."""
     try:
-        await orchestrator.start_session()
+        repo = CameraRepository(session)
+        active_cam = await repo.get_active()
+        await orchestrator.start_session(active_cam)
         return BaseResponse(success=True, message="Camera started.")
     except Exception as e:
         raise CameraException(f"Failed to start camera: {e}")
@@ -126,14 +131,19 @@ async def update_camera(camera_id: str, data: CameraSourceUpdateRequest, session
     return BaseResponse(success=True, message="Camera updated successfully")
 
 @router.post("/{camera_id}/activate", response_model=BaseResponse, summary="Set Active Camera")
-async def activate_camera(camera_id: str, session: AsyncSession = Depends(get_db_session)):
+async def activate_camera(
+    camera_id: str, 
+    session: AsyncSession = Depends(get_db_session),
+    orchestrator: RecognitionOrchestrator = Depends(get_recognition_orchestrator)
+):
     repo = CameraRepository(session)
     camera = await repo.get(camera_id)
     if not camera:
         raise HTTPException(status_code=404, detail="Camera not found")
     
     await repo.set_active(camera_id)
-    return BaseResponse(success=True, message=f"Camera {camera.name} set as active")
+    await orchestrator.switch_active_camera(camera)
+    return BaseResponse(success=True, message=f"Camera {camera.name} set as active and switched successfully")
 
 @router.delete("/{camera_id}", response_model=BaseResponse, summary="Delete Camera")
 async def delete_camera(camera_id: str, session: AsyncSession = Depends(get_db_session)):
