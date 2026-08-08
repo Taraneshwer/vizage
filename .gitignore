@@ -18,10 +18,13 @@ ENV/
 *.sqlite3
 *.db
 vizage.db
+*.csv
+*.zip
 
 # IDEs
 .idea/
 .vscode/
+.ipynb_checkpoints/
 
 # Project
 logs/
