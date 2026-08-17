@@ -1,0 +1,8 @@
+--index-url https://pypi.org
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+-r requirements-base.txt
+
+torch==2.13.0
+torchvision==0.28.0
+onnxruntime==1.28.0
