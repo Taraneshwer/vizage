@@ -68,9 +68,11 @@ class MaskDetectionService:
             self.is_loaded = False
             logger.info("Mask Detector unloaded.")
             
-    def detect_mask(self, face_crop: np.ndarray) -> MaskResult:
+    def detect_mask(self, face_crop: np.ndarray, class_id: int = 0) -> MaskResult:
         if not getattr(self, 'is_loaded', False) or self.model is None:
-            return MaskResult(has_mask=False, confidence=0.0)
+            # Fallback to YOLO detection class (0: face, 1: masked_face)
+            has_mask = (class_id == 1)
+            return MaskResult(has_mask=has_mask, confidence=0.9 if has_mask else 0.0)
             
                     
         input_tensor = self.transform(face_crop).unsqueeze(0)

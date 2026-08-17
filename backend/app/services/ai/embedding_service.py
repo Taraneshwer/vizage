@@ -64,7 +64,18 @@ class AdaFaceService:
                     logger.error("onnxruntime is required for ONNX model inference.")
                     self.is_loaded = False
                     return
-                providers = ['CUDAExecutionProvider'] if getattr(self.gpu_manager, 'is_cuda', False) else ['CPUExecutionProvider']
+                if getattr(self.gpu_manager, 'is_cuda', False):
+                    providers = [
+                        ('CUDAExecutionProvider', {
+                            'device_id': 0,
+                            'arena_extend_strategy': 'kNextPowerOfTwo',
+                            'cudnn_conv_algo_search': 'EXHAUSTIVE',
+                            'do_copy_in_default_stream': True,
+                        }),
+                        'CPUExecutionProvider'
+                    ]
+                else:
+                    providers = ['CPUExecutionProvider']
                 self.model = ort.InferenceSession(self.model_path, providers=providers)
                 self.is_onnx = True
                 self.is_loaded = True
@@ -107,9 +118,19 @@ class AdaFaceService:
             self.is_onnx = False
             self.is_loaded = True
             logger.info("AdaFace PyTorch model loaded successfully.")
+
         except Exception as e:
             logger.error(f"Failed to load AdaFace model: {e}")
             self.is_loaded = False
+            return
+
+        # Perform GPU Warmup
+        try:
+            dummy_crop = np.zeros((112, 112, 3), dtype=np.uint8)
+            _ = self.generate_embedding(dummy_crop)
+            logger.info("AdaFace model warmed up on GPU/CPU.")
+        except Exception as w_err:
+            logger.warning(f"AdaFace warmup warning: {w_err}")
         
     def unload_model(self) -> None:
         if self.model is not None:

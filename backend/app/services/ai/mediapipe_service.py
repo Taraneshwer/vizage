@@ -46,7 +46,7 @@ class MediaPipeService:
         try:
             self.mp_face_mesh = mp.solutions.face_mesh
             self.face_mesh = self.mp_face_mesh.FaceMesh(
-                static_image_mode=True,                                                 
+                static_image_mode=True,
                 max_num_faces=self.max_num_faces,
                 refine_landmarks=True,
                 min_detection_confidence=self.min_detection_confidence
@@ -59,7 +59,10 @@ class MediaPipeService:
         
     def unload_model(self) -> None:
         if self.face_mesh is not None:
-            self.face_mesh.close()
+            try:
+                self.face_mesh.close()
+            except Exception as e:
+                logger.warning(f"Ignored MediaPipe close exception on unload: {e}")
             self.face_mesh = None
             self.is_loaded = False
             logger.info("MediaPipe FaceMesh unloaded.")
@@ -72,23 +75,18 @@ class MediaPipeService:
         left_eye_center = np.array(left_eye, dtype=np.float32)
         right_eye_center = np.array(right_eye, dtype=np.float32)
         
-                         
         dy = right_eye_center[1] - left_eye_center[1]
         dx = right_eye_center[0] - left_eye_center[0]
         angle = np.degrees(np.arctan2(dy, dx))
         
-                          
         eyes_center = ((left_eye_center[0] + right_eye_center[0]) / 2, 
                        (left_eye_center[1] + right_eye_center[1]) / 2)
                        
-                             
         M = cv2.getRotationMatrix2D(eyes_center, angle, scale=1.0)
         
-                                                           
         M[0, 2] += (desired_size[0] * 0.5) - eyes_center[0]
-        M[1, 2] += (desired_size[1] * 0.4) - eyes_center[1]                             
+        M[1, 2] += (desired_size[1] * 0.4) - eyes_center[1]
         
-                             
         aligned_face = cv2.warpAffine(image, M, desired_size, flags=cv2.INTER_CUBIC)
         return aligned_face
 
@@ -96,26 +94,37 @@ class MediaPipeService:
         """
         Extracts landmarks from a face crop and returns an aligned image.
         """
-        if not getattr(self, 'is_loaded', False) or self.face_mesh is None:
-                                                               
-            aligned_face = cv2.resize(face_crop, (112, 112))
+        fallback_aligned = cv2.resize(face_crop, (112, 112)) if face_crop is not None and face_crop.size > 0 else None
+
+        if not getattr(self, 'is_loaded', False) or self.face_mesh is None or fallback_aligned is None:
             return LandmarkResult(
                 landmarks=np.array([]),
-                aligned_face_crop=aligned_face,
-                upper_face_crop=aligned_face
+                aligned_face_crop=fallback_aligned,
+                upper_face_crop=fallback_aligned
             )
             
-                                
         try:
             img_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
         except Exception as e:
             logger.error(f"Failed to convert face_crop to RGB: {e}")
-            return None
+            return LandmarkResult(
+                landmarks=np.array([]),
+                aligned_face_crop=fallback_aligned,
+                upper_face_crop=fallback_aligned
+            )
             
-        results = self.face_mesh.process(img_rgb)
+        try:
+            results = self.face_mesh.process(img_rgb)
+        except Exception as e:
+            logger.warning(f"MediaPipe process exception: {e}")
+            results = None
         
-        if not results.multi_face_landmarks:
-            return None
+        if not results or not results.multi_face_landmarks:
+            return LandmarkResult(
+                landmarks=np.array([]),
+                aligned_face_crop=fallback_aligned,
+                upper_face_crop=fallback_aligned
+            )
             
                         
         face_landmarks = results.multi_face_landmarks[0]

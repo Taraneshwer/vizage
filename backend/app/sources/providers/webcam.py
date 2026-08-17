@@ -121,7 +121,7 @@ class WebcamSource(StreamingSource):
                     frame_number=self.frame_counter,
                     timestamp=time.time()
                 )
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.002)
             
         self.health.last_error = "Timeout waiting for new frame from webcam thread"
         return None

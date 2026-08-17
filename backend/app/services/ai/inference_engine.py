@@ -133,28 +133,38 @@ class InferenceEngine:
                                     
                 self.perf_monitor.start_timer(timers, "mask_detection")
                 try:
-                    mask_res = self.mask.detect_mask(det.face_crop)
+                    cls_id = getattr(det, 'class_id', 0)
+                    mask_res = self.mask.detect_mask(det.face_crop, class_id=cls_id)
                     result.mask = mask_res
                 except Exception as e:
                     logger.error(f"Mask Detection failed: {e}")
                 mask_time = self.perf_monitor.stop_timer(timers, "mask_detection")
                 self.model_manager.update_model_metrics("MaskDetector", mask_time)
                 
-                                                  
+                # Determine crop for embedding (aligned, upper, or resized fallback)
+                is_masked = result.mask.has_mask if result.mask else False
+                face_for_embedding = None
+                is_upper = False
+                
                 if result.landmarks and result.landmarks.aligned_face_crop is not None:
-                                                 
-                    is_masked = result.mask.has_mask if result.mask else False
                     if is_masked and result.landmarks.upper_face_crop is not None:
                         face_for_embedding = result.landmarks.upper_face_crop
                         is_upper = True
                     else:
                         face_for_embedding = result.landmarks.aligned_face_crop
                         is_upper = False
+                else:
+                    try:
+                        face_for_embedding = cv2.resize(det.face_crop, (112, 112))
+                    except Exception:
+                        face_for_embedding = None
                         
+                if face_for_embedding is not None:
                     self.perf_monitor.start_timer(timers, "adaface_embedding")
                     try:
                         emb = self.embedding.generate_embedding(face_for_embedding)
-                        emb.is_upper_face = is_upper
+                        if emb:
+                            emb.is_upper_face = is_upper
                         result.embedding = emb
                     except Exception as e:
                         logger.error(f"AdaFace Inference failed: {e}")

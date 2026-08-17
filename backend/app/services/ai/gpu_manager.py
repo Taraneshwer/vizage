@@ -28,8 +28,10 @@ class GPUManager:
         
         if self.is_cuda:
             logger.info(f"GPU Manager initialized. Device: {torch.cuda.get_device_name(0)}")
-                                                              
             torch.backends.cudnn.benchmark = True
+            torch.backends.cudnn.allow_tf32 = True
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.set_float32_matmul_precision('high')
         else:
             logger.warning("GPU Manager initialized on CPU. Performance will be degraded.")
             

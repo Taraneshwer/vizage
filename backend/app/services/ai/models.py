@@ -38,6 +38,7 @@ class DetectionResult(BaseModel):
     confidence: float
     face_crop: Optional[np.ndarray] = Field(default=None, repr=False)
     tracking_id: Optional[str] = None
+    class_id: int = 0
     
     class Config:
         arbitrary_types_allowed = True

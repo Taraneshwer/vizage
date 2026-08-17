@@ -37,7 +37,8 @@ class RecognitionOrchestrator:
         self.pipeline.add_middleware(LoggingMiddleware())
         self.pipeline.add_middleware(MemoryOptimizationMiddleware())
         
-                           
+        self._last_logged_tracks: dict[str, float] = {}
+        
         self.camera_runtime.set_callback(self._on_frame_received)
         
     async def start_session(self, active_cam: Optional[object] = None) -> None:
@@ -66,7 +67,6 @@ class RecognitionOrchestrator:
                 logger.error(f"Failed to load active camera configuration: {e}")
             
         self.session_manager.set_state("RUNNING")
-                                                                                        
         self._camera_task = asyncio.create_task(self.camera_runtime.start())
         logger.info("Camera runtime task started in background.")
         
@@ -93,36 +93,48 @@ class RecognitionOrchestrator:
             
         logger.info("Activating camera session with the new active camera...")
         await self.start_session(active_cam)
-        
+
     def _on_frame_received(self, frame: Frame) -> None:
-        """Called by CameraRuntime when a frame is ready."""
+        """Called by CameraRuntime when a frame is ready. Non-blocking dispatcher."""
+        if self._is_inferencing:
+            # Skip queueing intermediate frames to maintain 0ms latency and 0 thread pool backlog
+            return
+        self._is_inferencing = True
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(self._on_frame_received_async(frame))
+        except RuntimeError:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self._on_frame_received_async(frame))
+        except Exception as e:
+            self._is_inferencing = False
+            logger.error(f"Error dispatching frame: {e}")
+
+    async def _on_frame_received_async(self, frame: Frame) -> None:
+        """Asynchronous pipeline execution using thread pool for ML inference."""
         try:
             import time
             t_dequeue = time.time()
             t_preprocess_start = time.time()
             
-                                
             frame = self.pipeline.run_before(frame)
             t_preprocess_end = time.time()
             
-                                                                                          
             t_inference_start = time.time()
-            context = self.inference_engine.process_frame(frame)
+            context = await asyncio.to_thread(self.inference_engine.process_frame, frame)
             t_inference_end = time.time()
             
-                               
             t_postprocess_start = time.time()
             context = self.pipeline.run_after(context)
             t_postprocess_end = time.time()
             
-                                      
             latency_queue = (t_dequeue - frame.timestamp) * 1000
             latency_preprocess = (t_preprocess_end - t_preprocess_start) * 1000
             latency_inference = (t_inference_end - t_inference_start) * 1000
             latency_postprocess = (t_postprocess_end - t_postprocess_start) * 1000
             latency_total = (t_postprocess_end - frame.timestamp) * 1000
             
-            logger.info(
+            logger.debug(
                 f"[Latency Tracker] Frame={frame.frame_id} | "
                 f"Queue={latency_queue:.1f}ms | "
                 f"Pre={latency_preprocess:.1f}ms | "
@@ -131,14 +143,19 @@ class RecognitionOrchestrator:
                 f"Backend E2E={latency_total:.1f}ms"
             )
             
-                                          
+            now_sec = time.time()
             for res in context.detections:
-                                      
                 self.session_manager.log_recognition(res.is_unknown, res.verification_score)
                 
-                                               
-                loop = asyncio.get_event_loop()
-                loop.create_task(self._save_history_event(frame, res, context))
+                # Debounce database history saves per track to eliminate DB write locks
+                track_id = res.tracking_id or "untracked"
+                identity_key = res.candidate.identity_id if (not res.is_unknown and res.candidate) else "unknown"
+                track_key = f"{track_id}_{identity_key}"
+                
+                last_logged = self._last_logged_tracks.get(track_key, 0.0)
+                if (now_sec - last_logged) >= 5.0:
+                    self._last_logged_tracks[track_key] = now_sec
+                    asyncio.create_task(self._save_history_event(frame, res, context))
                 
                 if res.is_unknown:
                     # Publish Unknown event for internal triggers
@@ -165,9 +182,8 @@ class RecognitionOrchestrator:
                     capture_timestamp=frame.timestamp
                 ))
                     
-                                  
             total_time = sum([v for k, v in context.timers.items() if k.endswith("_duration")])
-            self.session_manager.log_frame(fps=0.0, processing_time_ms=total_time)                                  
+            self.session_manager.log_frame(fps=0.0, processing_time_ms=total_time)
             
         except Exception as e:
             self.session_manager.log_error()
@@ -176,6 +192,8 @@ class RecognitionOrchestrator:
                 source="RecognitionOrchestrator",
                 error_msg=str(e)
             ))
+        finally:
+            self._is_inferencing = False
 
     async def _save_history_event(self, frame, res, context):
         try:

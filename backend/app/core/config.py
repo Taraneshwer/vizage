@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     LOG_DIR: str = "logs"
     
                
-    YOLO_MODEL_PATH: str = str(MODELS_DIR / "yolo11n.pt")
+    YOLO_MODEL_PATH: str = str(MODELS_DIR / "best_yolo.onnx")
     ADAFACE_MODEL_PATH: str = str(MODELS_DIR / "best_adaface.pth")
     MASK_MODEL_PATH: str = str(MODELS_DIR / "mask_detector.pth")
     EXECUTION_PROVIDER: str = "CUDA"                      

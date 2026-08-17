@@ -33,7 +33,11 @@ async def init_db() -> None:
     from app.core.security import get_password_hash
 
     try:
+        from sqlalchemy import text
         async with engine.begin() as conn:
+            if "sqlite" in settings.DATABASE_URL:
+                await conn.execute(text("PRAGMA journal_mode=WAL;"))
+                await conn.execute(text("PRAGMA busy_timeout=10000;"))
             await conn.run_sync(Base.metadata.create_all)
         
         async with AsyncSessionLocal() as session:

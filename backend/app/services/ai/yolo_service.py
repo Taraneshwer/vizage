@@ -36,15 +36,21 @@ class YOLODetectionService:
         logger.info(f"Loading YOLO model from {self.model_path}...")
         
         try:
-                                                                                                          
             self.model = YOLO(self.model_path, task='detect')
             
-                                                       
             if self.model_path.endswith('.pt') and getattr(self.gpu_manager, 'is_cuda', False):
                 self.model.to('cuda')
                 
             self.is_loaded = True
             logger.info("YOLO model loaded successfully.")
+
+            # Model Warmup to eliminate runtime latency spike
+            try:
+                dummy_img = np.zeros((480, 640, 3), dtype=np.uint8)
+                _ = self.model(dummy_img, conf=self.conf_threshold, verbose=False)
+                logger.info("YOLO model warmed up on GPU/CPU.")
+            except Exception as w_err:
+                logger.warning(f"YOLO warmup warning: {w_err}")
         except Exception as e:
             logger.error(f"Failed to load YOLO model: {e}")
             self.is_loaded = False
@@ -68,21 +74,20 @@ class YOLODetectionService:
         results = []
         
         with self.gpu_manager.autocast():
-                            
-            preds = self.model(img_array, conf=self.conf_threshold, verbose=False)
+            device_target = 0 if getattr(self.gpu_manager, 'is_cuda', False) else 'cpu'
+            preds = self.model(img_array, conf=self.conf_threshold, verbose=False, device=device_target)
             
         for pred in preds:
             boxes = pred.boxes
             for box in boxes:
                 x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
                 conf = float(box.conf[0].item())
+                cls_id = int(box.cls[0].item()) if hasattr(box, 'cls') and len(box.cls) > 0 else 0
                 
-                                                    
                 h, w = img_array.shape[:2]
                 x1, y1 = max(0, x1), max(0, y1)
                 x2, y2 = min(w, x2), min(h, y2)
                 
-                              
                 face_crop = img_array[y1:y2, x1:x2].copy()
                 
                 if face_crop.size == 0:
@@ -91,7 +96,8 @@ class YOLODetectionService:
                 results.append(DetectionResult(
                     bbox=BoundingBox(x1=x1, y1=y1, x2=x2, y2=y2),
                     confidence=conf,
-                    face_crop=face_crop
+                    face_crop=face_crop,
+                    class_id=cls_id
                 ))
                 
         return results

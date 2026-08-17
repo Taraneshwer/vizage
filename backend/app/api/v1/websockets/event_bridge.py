@@ -61,12 +61,15 @@ class EventBridge:
 
     async def broadcast_camera_frame(self, camera_id: str, frame_id: str, image_matrix, capture_timestamp: float = 0.0):
         """Called directly by CameraRuntime or Orchestrator to avoid EventBus memory bloat."""
-                        
-                                                                   
         if not self.manager.active_connections.get("camera"):
             return
             
-        success, buffer = cv2.imencode('.jpg', image_matrix, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+        now = time.time()
+        if (now - getattr(self, '_last_frame_ws_time', 0.0)) < 0.033:
+            return
+        self._last_frame_ws_time = now
+            
+        success, buffer = await asyncio.to_thread(cv2.imencode, '.jpg', image_matrix, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
         if not success:
             return
             
